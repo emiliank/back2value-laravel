@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SiteContentSeeder::class,
             AdminUserSeeder::class,
+            BatterySeeder::class,
+            DiagnosticSeeder::class,
         ]);
     }
 }

@@ -1,7 +1,7 @@
 @extends('admin.layout', ['title' => 'Cilësimet & faqja'])
 
 @section('content')
-    <form method="POST" action="{{ route('admin.settings.update') }}" class="admin-form">
+    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="admin-form">
         @csrf
         @method('PUT')
 
@@ -33,6 +33,24 @@
                 <label class="admin-field admin-field--wide">
                     <span>Përshkrimi kryesor</span>
                     <textarea name="hero_description" rows="3" maxlength="500" required>{{ old('hero_description', $settings['hero_description']) }}</textarea>
+                </label>
+                <label class="admin-field admin-field--wide">
+                    <span>Logo e faqes</span>
+                    <input type="file" name="logo_image" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                    @if (! empty($settings['logo_image']))
+                        @php
+                            $previewLogo = str_starts_with($settings['logo_image'], 'images/')
+                                ? asset($settings['logo_image'])
+                                : \Illuminate\Support\Facades\Storage::disk('public')->url($settings['logo_image']);
+                        @endphp
+                        <div class="admin-logo-preview">
+                            <img src="{{ $previewLogo }}" alt="Logo e faqes">
+                            <label class="admin-inline-checkbox">
+                                <input type="checkbox" name="remove_logo" value="1">
+                                Fshije logon aktuale
+                            </label>
+                        </div>
+                    @endif
                 </label>
                 <label class="admin-field">
                     <span>Butoni i WhatsApp</span>

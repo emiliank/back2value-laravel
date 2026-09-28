@@ -116,6 +116,32 @@ class CmsDashboardTest extends TestCase
             ->assertSee('#15803d');
     }
 
+    public function test_admin_can_upload_and_render_a_custom_logo(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+
+        $this->actingAs($admin)
+            ->put(route('admin.settings.update'), array_merge($this->siteSettings(), [
+                'logo_image' => UploadedFile::fake()->image('logo.png', 1200, 500),
+            ]))
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Back2Value logo', false)
+            ->assertSee('/storage/', false);
+
+        $this->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('Back2Value logo', false)
+            ->assertSee('/storage/', false);
+    }
+
     public function test_settings_reject_invalid_accent_colors(): void
     {
         $admin = User::factory()->create([
@@ -174,7 +200,7 @@ class CmsDashboardTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('Bateri e re për industri')
+            ->assertDontSee('Bateri e re për industri')
             ->assertDontSee('Bateri Startimi (Flota &amp; Kamionë)');
     }
 

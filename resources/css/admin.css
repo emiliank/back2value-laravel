@@ -617,6 +617,38 @@
     cursor: pointer;
 }
 
+.admin-logo-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.admin-logo-preview img {
+    display: block;
+    width: auto;
+    max-width: 220px;
+    max-height: 80px;
+    border: 1px solid #dfe4eb;
+    border-radius: 10px;
+    background: #fff;
+    object-fit: contain;
+}
+
+.admin-inline-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6f7c8f;
+    font-size: 0.73rem;
+    font-weight: 550;
+}
+
+.admin-inline-checkbox input {
+    width: 14px;
+    height: 14px;
+}
+
 .admin-save-bar {
     position: sticky;
     z-index: 5;

@@ -9,6 +9,11 @@ class LandingController extends Controller
 {
     public function index(SiteContentService $siteContent): View
     {
-        return view('landing', $siteContent->all());
+        $content = $siteContent->all();
+
+        // Products are kept off the homepage per client specifications and organized in /products
+        $content['products'] = [];
+
+        return view('landing', $content);
     }
 }

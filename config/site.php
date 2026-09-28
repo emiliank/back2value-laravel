@@ -2,6 +2,7 @@
 
 return [
     'settings' => [
+        'logo_image' => null,
         'meta_title' => 'Back2Value | Bateri gjermane. Garanci reale. Shërbim vendor.',
         'meta_description' => 'Back2Value furnizon dhe mirëmban bateri industriale RID-Batterie për flota, UPS, institucionet financiare dhe infrastrukturat kritike në Shqipëri.',
         'accent_color' => '#17b78b',
@@ -36,6 +37,7 @@ return [
         [
             'key' => 'traction',
             'title' => 'Bateri Traksionare (PzS)',
+            'status' => 'Stock',
             'description' => 'Seria RID PzS për pirunë elektrike dhe makineri magazinash. Cikle të rënda pune, jetëgjatësi e lartë dhe konsum optimal energjie.',
             'features' => [
                 'Përmasa DIN / BS — për të gjitha markat e pirunëve',
@@ -49,6 +51,7 @@ return [
         [
             'key' => 'ups-industrial',
             'title' => 'Bateri UPS & Industriale (AGM / OPzV)',
+            'status' => 'Pre-order',
             'description' => 'RID Xtreme AGM dhe OPzV — pa mirëmbajtje, për sisteme kritike energjie, banka, telekomunikacion dhe qendra të dhënash.',
             'features' => [
                 'Valve-regulated, zero mirëmbajtje',
@@ -62,6 +65,7 @@ return [
         [
             'key' => 'starting',
             'title' => 'Bateri Startimi (Flota & Kamionë)',
+            'status' => 'Stock',
             'description' => 'Seria RID ST2 për kamionë, autobusë, makineri ndërtimi dhe flota tregtare. Fuqi e lartë startimi (CCA), edhe në temperatura ekstreme.',
             'features' => [
                 'CCA e lartë — startim i besueshëm',
@@ -84,7 +88,7 @@ return [
         [
             'key' => 'reconditioning',
             'title' => 'Rigjenerim & Rikthim Kapaciteti',
-            'description' => 'Desulfatim profesional që rikthen kapacitetin e baterisë dhe zgjat jetëgjatësinë — duke shmangur zëvendësimin e panevojshëm.',
+            'description' => 'Me anë të RID Tester kontrollohet, testohet dhe diagnostikohet bateria, rigjenerohet (shërbimi: rigjenerim bateria). Ky shërbim ofrohet falas brenda 3 vjetësh për çdo bateri të re të blerë tek Back2Value shpk, me anë të një database blerësit kontaktohen pas 1 viti pas blerjes për të kontrolluar gjendjen e baterisë dhe ofrohet rikarikimi nëse blerësi/subjekti dëshiron të optimizojë jetën e baterisë.',
             'icon' => 'refresh',
             'sort_order' => 2,
         ],
@@ -134,4 +138,535 @@ return [
         'guarantee' => 'Garanci 2 Vjet',
         'service' => 'Shërbim Teknik · Pogradec',
     ],
+    'value_props' => [
+        'eyebrow' => 'ZGJATIMI I JETËS SË BATERIVE',
+        'title' => 'Rikthejmë 50–100% të kapacitetit origjinal',
+        'description' => 'Diagnostikojmë, rikarikojmë dhe rigjenerojmë bateritë tuaja industriale para se ato të zëvendësohen. Rezultati: më shumë cikle jete, kosto operative më të ulëta dhe një ndikim mjedisor shumë më i vogël.',
+        'items' => [
+            [
+                'key' => 'life-extension',
+                'icon' => 'battery',
+                'value' => '50–100%',
+                'title' => 'Kapacitet i rikthyer',
+                'description' => 'Me RID-Logger matim gjendjen reale (State of Health), pastaj me procesin e rigjenerimit rikthejmë 50–100% të kapacitetit origjinal dhe shtojmë cikle të reja pune.',
+            ],
+            [
+                'key' => 'cost-reduction',
+                'icon' => 'coins',
+                'value' => '−60%',
+                'title' => 'Ulje kostosh',
+                'description' => 'Reaktivimi dhe mirëmbajtja periodike kushtojnë shumë më pak se blerja e baterive të reja, pa kompromentuar besueshmërinë e sistemeve kritike.',
+            ],
+            [
+                'key' => 'responsible-management',
+                'icon' => 'leaf',
+                'value' => '100%',
+                'title' => 'Menaxhim i përgjegjshëm',
+                'description' => 'Grumbullojmë bateritë e përdorura, i dorëzojmë për riciklim të licencuar dhe dokumentojmë çdo hap të procesit sipas kërkesave mjedisore.',
+            ],
+        ],
+    ],
+    'diagnostics_teaser' => [
+        'eyebrow' => 'DIAGNOSTIKIM I SHPEJTË',
+        'title' => 'Rezervoni testimin e baterive tuaja',
+        'description' => 'Dërgoni një kërkesë të shpejtë dhe ekipi teknik cakton testin, rigjenerimin ose grumbullimin e baterive brenda 24 orëve.',
+        'steps' => [
+            [
+                'key' => 'request',
+                'title' => 'Kërkesa',
+                'description' => 'Plotësoni formularin online ose na shkruani në WhatsApp me numrin, llojin dhe vendndodhjen e baterive.',
+            ],
+            [
+                'key' => 'assessment',
+                'title' => 'Vlerësimi',
+                'description' => 'Testojmë kapacitetin dhe rezistencën e brendshme me pajisje RID-Logger dhe përcaktojmë nëse bateria mund të rigjenerohet.',
+            ],
+            [
+                'key' => 'reactivation',
+                'title' => 'Rikthimi i kapacitetit',
+                'description' => 'Aplikojmë procesin e rigjenerimit dhe rikarikimit, testojmë përsëri dhe ju dorëzojmë raportin zyrtar teknik.',
+            ],
+        ],
+        'cta' => 'Rezervo Diagnostikim',
+    ],
+    'circular_process' => [
+        'eyebrow' => 'PROCESI YNË',
+        'title' => 'Nga mbledhja te rikthimi në qarkullim',
+        'description' => 'Çdo bateri kalon nëpër të njëjtin cikël të kontrolluar: grumbullim, testim, sortim dhe aktivizim — deri te rishitja ose riciklimi.',
+        'steps' => [
+            [
+                'key' => 'collection',
+                'icon' => 'truck',
+                'title' => 'Mbledhja',
+                'description' => 'Grumbullojmë bateritë e përdorura nga biznese, auto servise dhe individë në të gjithë Shqipërinë.',
+            ],
+            [
+                'key' => 'testing',
+                'icon' => 'pulse',
+                'title' => 'Testimi',
+                'description' => 'Çdo bateri testohet me RID Tester: matet kapaciteti real, rezistenca e brendshme dhe gjendja e rikarikimit.',
+            ],
+            [
+                'key' => 'sorting',
+                'icon' => 'layers',
+                'title' => 'Sortimi',
+                'description' => 'Bateritë ndahen sipas gjendjes: të rikthyeshme në punë, për përdorim të dytë ose për riciklim.',
+            ],
+            [
+                'key' => 'activation',
+                'icon' => 'zap',
+                'title' => 'Aktivizimi',
+                'description' => 'Bateritë e përshtatshme rigjenerohen me RID Rigenerator dhe rikthehen në qarkullim me performancë të verifikuar.',
+            ],
+        ],
+        'note' => [
+            'eyebrow' => 'EKONOMI RRETHORE',
+            'title' => 'Zero mbetje në landfill',
+            'description' => 'Çdo hap dokumentohet — nga grumbullimi deri te destinoja përfundimtare, në përputhje me legjislacionin shqiptar dhe evropian për bateritë.',
+            'cta' => 'Mëso për qëndrueshmërinë',
+        ],
+        'outcomes' => [
+            [
+                'key' => 'resale',
+                'icon' => 'coins',
+                'title' => 'Rishitje',
+                'description' => 'Bateritë e rigjeneruara rikthehen në treg me garanci dhe raport teknik.',
+            ],
+            [
+                'key' => 'recycling',
+                'icon' => 'recycle',
+                'title' => 'Riciklim',
+                'description' => 'Çfarë nuk rikthehet në punë dërgohet për riciklim të licencuar.',
+            ],
+        ],
+    ],
+    'partners' => [
+        'eyebrow' => 'PARTNERË & CERTIFIKIME',
+        'title' => 'Të mbështetur nga partnerë ndërkombëtarë',
+        'description' => 'Bashkëpunojmë me prodhues gjermanë dhe programme evropiane që garantojnë standarde teknike, transparencë dhe përgjegjshmëri mjedisore.',
+        'items' => [
+            [
+                'key' => 'rid-battery',
+                'name' => 'RID Battery GmbH',
+                'country' => 'Gjermani',
+                'description' => 'Prodhuesi gjerman i baterive industriale RID-Batterie dhe partneri ynë i prodhimit.',
+            ],
+            [
+                'key' => 'enterprise-europe-network',
+                'name' => 'Enterprise Europe Network Albania',
+                'country' => 'Shqipëri · BE',
+                'description' => 'Rrjeti evropian i mbështetjes së biznesit për inovacion, partneritete dhe zgjerim tregu.',
+            ],
+            [
+                'key' => 'nehemiah-gateway',
+                'name' => 'Nehemiah Gateway Albania',
+                'country' => 'Shqipëri',
+                'description' => 'Organizatë partnere për zhvillim të qëndrueshëm, trajnime teknike dhe projekte sociale.',
+            ],
+        ],
+    ],
+    'application_filters' => [
+        'industrial' => [
+            'label' => 'Industriale & Pirunë',
+            'categories' => [
+                'RID Motive Power (Forklifts)',
+                'Hoppecke Series FNC (NiCd)',
+                'Hoppecke Series GroE',
+                'Hoppecke Series OGi',
+            ],
+        ],
+        'backup_power' => [
+            'label' => 'Backup Power & UPS',
+            'application_types' => ['backup_power'],
+        ],
+        'solar' => [
+            'label' => 'Solar & Energji e Rinovueshme',
+            'application_types' => ['solar'],
+        ],
+        'auto' => [
+            'label' => 'Auto & Automjete',
+            'categories' => ['RID ST Series (Commercial Vehicles)'],
+        ],
+    ],
+    'services_page' => [
+        'eyebrow' => 'SHËRBIMET TONA',
+        'title' => 'Zgjidhje të plota për jetëgjatësinë e baterive',
+        'description' => 'Nga diagnostikimi i parë deri në grumbullimin e baterive të përdorura — mbulojmë të gjithë ciklin e jetës së baterive tuaja industriale.',
+        'items' => [
+            [
+                'key' => 'diagnostics',
+                'icon' => 'clipboard',
+                'title' => 'Diagnostikim & Vlerësim i Baterive',
+                'description' => 'Matim kapacitetin real, rezistencën e brendshme dhe tensionin me pajisje RID-Logger, pastaj hartojmë raport teknik zyrtar mbi gjendjen e baterive (State of Health).',
+                'features' => [
+                    'Testim i plotë i bankës së baterive, qelizë për qelizë',
+                    'Raport teknik zyrtar për auditim dhe vendimmarrje',
+                    'Vlerësim i kostos së rigjenerimit kundrejt zëvendësimit',
+                    'Rekomandim i shkruar për ciklin e ardhshëm të mirëmbajtjes',
+                ],
+            ],
+            [
+                'key' => 'reactivation',
+                'icon' => 'refresh',
+                'title' => 'Karikim & Rigjenerim i Baterive',
+                'description' => 'Aplikojmë karikim të kontrolluar dhe pulse desulfimi për të rikthyer kapacitetin e humbur. Ky shërbim ofrohet falas brenda 3 vjetësh për bateritë e reja të blera nga Back2Value shpk.',
+                'features' => [
+                    'Rikthim i 50–100% të kapacitetit origjinal',
+                    'Pulse desulfimi dhe balancim i qelizave',
+                    'Rikariko fillimisht falas brenda 3 vjetësh nga blerja',
+                    'Testim final dhe raport i kapacitetit të rikthyer',
+                ],
+            ],
+            [
+                'key' => 'maintenance',
+                'icon' => 'calendar',
+                'title' => 'Kontrata Mirëmbajtjeje (SLA)',
+                'description' => 'Inspektime periodike, raporte teknike për auditim dhe reagim emergjent brenda 48 orëve — me kalendar të planifikuar sipas kritikalitetit të sistemeve tuaja.',
+                'features' => [
+                    'Kalendar inspektimesh periodike sipas SLA',
+                    'Raportim zyrtar për kërkesat e Bankës së Shqipërisë',
+                    'Reagim emergjent brenda 48 orëve',
+                    'Menaxhim i inventarit të baterive dhe historikut të testeve',
+                ],
+            ],
+            [
+                'key' => 'trade-in',
+                'icon' => 'download',
+                'title' => 'Grumbullim & Trade-In i Baterive',
+                'description' => 'Grumbullojmë bateritë e përdorura në të gjithë Shqipërinë, i transportojmë për riciklim të licencuar dhe ofrojmë vlerë trade-in për bateritë e reja.',
+                'features' => [
+                    'Grumbullim dhe transport i baterive të përdorura',
+                    'Riciklim i licencuar me dokumentacion të plotë',
+                    'Vlerë trade-in e zbritshme nga blerja e baterive të reja',
+                    'Shërbim i përshtatshëm për auto servise dhe flota',
+                ],
+            ],
+        ],
+    ],
+    'regeneration_page' => [
+        'eyebrow' => 'SHËRBIME TEKNIKE',
+        'title' => 'RID Tester & RID Rigenerator',
+        'description' => 'Test, diagnostikim dhe rigjenerim baterish si shërbim profesional për klientët e Back2Value — jo si produkte për shitje.',
+        'teaser' => [
+            'eyebrow' => 'RIGJENERIM BATERIE',
+            'title' => 'RID Tester & RID Rigenerator',
+            'description' => 'Bazës së shërbimit tonë të rigjenerimit i qëndrojnë dy pajisje profesionale: RID Tester kontrollon, teston dhe diagnostikon çdo bateri, ndërsa RID Rigenerator rikthen kapacitetin e humbur. Të dyja ofrohen si shërbim për klientët, jo si produkte për shitje.',
+            'cta' => 'Mëso më shumë',
+        ],
+        'tools' => [
+            [
+                'key' => 'rid-tester',
+                'icon' => 'battery',
+                'model' => 'RID BMG-30 Battery Tester',
+                'title' => 'RID Tester',
+                'description' => 'Me anë të RID Tester kontrollohet, testohet dhe diagnostikohet bateria: matet kapaciteti reale, rezistenca e brendshme dhe gjendja e rikarikimit, për të kuptuar nëse bateria mund të rigjenerohet.',
+                'features' => [
+                    'Matje e kapacitetit dhe rezistencës së brendshme',
+                    'Diagnostikim i gjendjes reale të baterisë (State of Health)',
+                    'Vendos nëse bateria kualifikohet për rigjenerim',
+                    'Raport teknik që rrugëton çdo vendimmarrje',
+                ],
+            ],
+            [
+                'key' => 'rid-rigenerator',
+                'icon' => 'recycle',
+                'model' => 'RID BRG Series Battery Regenerator',
+                'title' => 'RID Rigenerator',
+                'description' => 'RID Rigenerator aplikon procesin profesional të rigjenerimit me karikim të kontrolluar dhe pulse desulfimi, duke rikthyer deri në 50–100% të kapacitetit origjinal pa zëvendësuar bankën e baterive.',
+                'features' => [
+                    'Rikthim i 50–100% të kapacitetit origjinal',
+                    'Karikim i kontrolluar dhe pulse desulfimi',
+                    'Testim i dytë pas procesit me raport zyrtar',
+                    'Ofrohet si shërbim — jo si produkt për shitje',
+                ],
+            ],
+        ],
+        'process' => [
+            'eyebrow' => 'SI FUNKSIONON',
+            'title' => 'Nga blerja te rigjenerimi',
+            'description' => 'Çdo bateri e re e blerë tek Back2Value shpk hyn në një cikël të dokumentuar kontrolli dhe rigjenerimi.',
+            'steps' => [
+                [
+                    'key' => 'purchase',
+                    'title' => 'Blerja dhe regjistrimi',
+                    'description' => 'Çdo bateri e re e blerë tek Back2Value shpk regjistrohet në database-in e blerësve.',
+                ],
+                [
+                    'key' => 'testing',
+                    'title' => 'Kontroll me RID Tester',
+                    'description' => 'Pas 1 viti nga blerja, ekipi ju kontakton për të kontrolluar gjendjen e baterisë dhe me RID Tester teston kapacitetin dhe rezistencën e saj.',
+                ],
+                [
+                    'key' => 'reconditioning',
+                    'title' => 'Rigjenerim me RID Rigenerator',
+                    'description' => 'Nëse bateria kualifikohet, ofrohet rikarikimi i kontrolluar dhe rigjenerimi për të optimizuar jetën e saj — me raport teknik zyrtar.',
+                ],
+            ],
+        ],
+        'offer' => [
+            'title' => 'Falas brenda 3 vjetësh për çdo bateri të re',
+            'description' => 'Ky shërbim ofrohet falas brenda 3 vjetësh për çdo bateri të re të blerë tek Back2Value shpk. Me anë të një database, blerësit kontaktohen pas 1 viti nga blerja për të kontrolluar gjendjen e baterisë dhe u ofrohet rikarikimi nëse dëshironi të optimizoni jetën e saj.',
+        ],
+    ],
+    'solutions' => [
+        'eyebrow' => 'ZGJIDHJET SIPAS SEKTORIT',
+        'title' => 'Për kë punojmë',
+        'description' => 'Të njëjtat shërbime teknikë, të përshtatur sipas mënyrës se si operoni, buxhetit dhe kërkesave të dokumentacionit.',
+        'items' => [
+            [
+                'key' => 'enterprise',
+                'icon' => 'factory',
+                'title' => 'Ndërmarrje & Industri',
+                'audience' => 'Telekomunikacion, banka, data center, ndërtim, agrobiznes dhe logjistikë',
+                'description' => 'Operacione me sisteme kritike që nuk tolerojnë ndërprerje. Projektet e mirëmbajtjes dhe reagimi i shpejtë parandalojnë dështimet e papritura të baterive.',
+                'benefits' => [
+                    'Kontrata SLA me reagim emergjent brenda 48 orëve',
+                    'Raportim zyrtar për auditimet e Bankës së Shqipërisë',
+                    'Menaxhim i plotë i inventarit të baterive sipas lokacionit',
+                    'Zvogëlim i kostove operative të energjisë rezervë',
+                ],
+                'applications' => ['industrial', 'backup_power'],
+            ],
+            [
+                'key' => 'renewable',
+                'icon' => 'sun',
+                'title' => 'Energji e Rinovueshme',
+                'audience' => 'Operatorë sistemesh solare, projekte off-grid dhe përdorues të energjisë rezervë',
+                'description' => 'Bateritë e sistemeve solare humbin kapacitet përpara se të jenë në fund të jetës. Testimi dhe rigjenerimi rikthejnë prodhimin e energjisë me një investim shumë më të vogël.',
+                'benefits' => [
+                    'Vlerësim i kapacitetit real të bankës së baterive',
+                    'Balancim i qelizave dhe rikthim i kapacitetit të humbur',
+                    'Këshillim teknik për dimensionimin e sistemit',
+                    'Planifikim mirëmbajtjeje sipas stinëve',
+                ],
+                'applications' => ['solar'],
+            ],
+            [
+                'key' => 'automotive',
+                'icon' => 'car',
+                'title' => 'Automotive & Konsumator',
+                'audience' => 'Pronarë automjetesh, auto servise, familje dhe përdorues sistemesh diellore shtëpiake',
+                'description' => 'Shërbim i shpejtë për bateritë e automjeteve dhe sistemeve shtëpiake, me grumbullim dhe vlerë trade-in për bateritë e përdorura.',
+                'benefits' => [
+                    'Testim i shpejtë dhe diagnozë e qartë',
+                    'Vlerë trade-in për bateritë e vjetra',
+                    'Rikariko dhe rigjenerim kur është teknikisht e mundur',
+                    'Pika grumbullimi të aksesueshme në qytetet kryesore',
+                ],
+                'applications' => ['auto', 'solar'],
+            ],
+            [
+                'key' => 'public-sector',
+                'icon' => 'landmark',
+                'title' => 'Sektor Publik',
+                'audience' => 'Bashki, spitale, shkolla, institucione dhe ndërmarrje publike',
+                'description' => 'Dokumentacion i plotë, procedura transparente prokurimi dhe mirëmbajtje e planifikuar për institucionet që administrojnë infrastrukturë kritike.',
+                'benefits' => [
+                    'Raporte teknike të përshtatshme për prokurim publik',
+                    'Kalendar mirëmbajtjeje me afate të kontrolluara',
+                    'Plan menaxhimi për bateritë në fund të jetës',
+                    'Trajnim i stafit teknik për kontrollin bazë',
+                ],
+                'applications' => ['backup_power', 'industrial'],
+            ],
+        ],
+    ],
+    'sustainability' => [
+        'eyebrow' => 'QËNDRUESHMËRIA & PËRPUTHSHMËRIA',
+        'title' => 'Menaxhim i përgjegjshëm i baterive',
+        'description' => 'Zgjatja e jetës së baterive është veprimi më i thjeshtë mjedisor: më pak plumb i nxjerrë, më pak bateri të hedhura dhe më pak energji e harxhuar për prodhim të re.',
+        'commitments' => [
+            [
+                'key' => 'life-extension-first',
+                'icon' => 'battery',
+                'title' => 'Zgjatja e jetës para zëvendësimit',
+                'description' => 'Gjithmonë vlerësojmë nëse një bateri mund të rigjenerohet përpara se t\'ju sugjerojmë blerjen e një baterie të re.',
+            ],
+            [
+                'key' => 'licensed-recycling',
+                'icon' => 'recycle',
+                'title' => 'Riciklim i licencuar',
+                'description' => 'Bateritë në fund të jetës grumbullohen dhe dorëzohen vetëm në impiante riciklimi të licencuara, me gjurmueshmëri të plotë.',
+            ],
+            [
+                'key' => 'documentation',
+                'icon' => 'document',
+                'title' => 'Dokumentacion i plotë',
+                'description' => 'Çdo grumbullim, test dhe trajtim dokumentohet, në mënyrë që subjekti të plotësojë kërkesat e auditeve mjedisore dhe financiare.',
+            ],
+            [
+                'key' => 'customer-education',
+                'icon' => 'academic',
+                'title' => 'Edukim i klientëve',
+                'description' => 'Trajnojmë stafin e klientëve për karikim, temperaturë pune, ventilim dhe mirëmbajtje bazë, për të zgjatur jetën e baterive.',
+            ],
+        ],
+        'metrics' => [
+            ['key' => 'capacity-restored', 'value' => '50–100%', 'label' => 'Kapacitet i rikthyer'],
+            ['key' => 'cost-saved', 'value' => '−60%', 'label' => 'Kosto ndaj zëvendësimit'],
+            ['key' => 'lead-recovered', 'value' => '98%', 'label' => 'Plumb i riciklueshëm'],
+            ['key' => 'response', 'value' => '48h', 'label' => 'Reagim emergjent SLA'],
+        ],
+        'compliance' => [
+            'title' => 'Përputhshmëria & dokumentacioni',
+            'description' => 'Mbështesim subjektet që duhet të provojnë mirëmbajtjen dhe trajtimin e baterive para audituesve dhe institucioneve mbikëqyrëse.',
+            'points' => [
+                'Raporte teknike për mirëmbajtjen e baterive të sistemeve UPS dhe energjisë rezervë',
+                'Dokumentacion i mirëmbajtjes sipas kërkesave të mbikëqyrjes financiare (Vendimi Nr. 48/2024)',
+                'Vërtetime grumbullimi dhe dorëzimi për riciklim të licencuar',
+                'Regjistër i testeve, mirëmbajtjes dhe historikut të çdo banke baterish',
+            ],
+        ],
+    ],
+    'resources' => [
+        'eyebrow' => 'EDUKIM I KLIENTËVE',
+        'title' => 'Qendra e burimeve',
+        'description' => 'Udhëzues praktikë mbi zgjatjen e jetës së baterive, përfitimet ekonomike dhe ato mjedisore.',
+        'articles' => [
+            [
+                'key' => 'extend-battery-life',
+                'category' => 'Jetëgjatësia e baterive',
+                'title' => 'Si të zgjatni jetën e baterive tuaja industriale',
+                'excerpt' => 'Temperatura, thellësia e shkarkimit dhe mirëmbajtja periodike përcaktojnë më shumë se çdo faktor tjetër sa do të zgjasë bateria.',
+                'reading_time' => '4 min',
+                'paragraphs' => [
+                    'Temperatura e punës është faktori numër një: nga 25°C e lart, çdo rritje prej 10°C shkurton ndjeshëm jetën e pritshme të baterive me plumb-acid.',
+                    'Thellësia e shkarkimit ndikon drejtpërdrejt në numrin e cikleve. Kufizimi i shkarkimit dhe kalimi në rikarikim në kohë rrisin ciklet totale që bateria mund të japë.',
+                    'Kontrolli periodik i tensionit dhe rezistencës së brendshme zbulon qelizat e dobëta përpara se ato të dëmtojnë të gjithë bankën e baterive.',
+                ],
+            ],
+            [
+                'key' => 'reactivation-vs-replacement',
+                'category' => 'Ekonomia',
+                'title' => 'Rigjenerim apo zëvendësim? Si merr vendimin e saktë',
+                'excerpt' => 'Jo çdo bateri duhet zëvendësuar. Kriteri është kapaciteti i mbetur dhe kushtet e përdorimit, jo mosha e baterisë.',
+                'reading_time' => '5 min',
+                'paragraphs' => [
+                    'Kur kapaciteti i matur mbetet mbi gjysmën e kapacitetit të pritshëm, bateria zakonisht plotëson kushtet për rigjenerim dhe rikarikim të kontrolluar.',
+                    'Vlerësimi duhet të përfshijë aksesin fizik, kushtet e ambientit dhe kritikalitetin e sistemit. Për banka baterish të vjetra dhe pa mbikëqyrje, zëvendësimi i planifikuar është më i sigurt.',
+                    'Krahasimi i duhur nuk është vetëm kosto blerjeje: merrni parasysh konsumin e energjisë për rikarikim, humbjet e kapacitetit dhe kohën e ndërprerjes.',
+                ],
+            ],
+            [
+                'key' => 'environmental-impact',
+                'category' => 'Qëndrueshmëria',
+                'title' => 'Ndikimi mjedisor i baterive: çfarë ndryshon me rigjenerimin',
+                'excerpt' => 'Riciklimi është i domosdoshëm, por zgjatja e jetës është hapi që parandalon krijimin e mbetjeve në burim.',
+                'reading_time' => '4 min',
+                'paragraphs' => [
+                    'Prodhimi i një baterie të re kërkon nxjerrjen dhe përpunimin e plumbit, energji të konsiderueshme dhe transport ndërkombëtar. Zgjatja e jetës shmang këto kosto mjedisore për çdo vit shtesë shërbimi.',
+                    'Rigjenerimi zvogëlon volumin e baterive që hyjnë në rrjedhën e mbetjeve dhe vonon blerjen e produkteve të reja.',
+                    'Bateritë që dalin përfundimisht nga shërbimi dorëzohen për riciklim të licencuar, ku plumbi rikuperohet pothuajse plotësisht dhe rikthehet në prodhim.',
+                ],
+            ],
+            [
+                'key' => 'ups-battery-audit',
+                'category' => 'Përputhshmëria',
+                'title' => 'Kontrolli i baterive UPS për auditimet financiare',
+                'excerpt' => 'Institucionet financiare duhet të dokumentojnë mirëmbajtjen e baterive të sistemeve UPS. Ja si përgatitet dosja.',
+                'reading_time' => '6 min',
+                'paragraphs' => [
+                    'Audituesit kërkojnë provë që sistemet e energjisë rezervë mirëmbahen vazhdimisht dhe se bateritë zëvendësohen sipas planit.',
+                    'Dosja duhet të përmbajë inventarin e baterive me datën e instalimit, raportet e testeve të kapacitetit, historikun e mirëmbajtjes dhe rekomandimet për zëvendësim.',
+                    'Kontratat e mirëmbajtjes me raportim periodik i sigurojnë institucionit gjurmueshmërinë e plotë pa angazhimin e burimeve të brendshme.',
+                ],
+            ],
+            [
+                'key' => 'charging-best-practices',
+                'category' => 'Operimi',
+                'title' => 'Karikimi i saktë: gabimet që shkurtojnë jetën e baterive',
+                'excerpt' => 'Karikim i tepërt, sulfatimi dhe qelizat e pabalancuara janë arsyet kryesore të humbjes së kapacitetit.',
+                'reading_time' => '5 min',
+                'paragraphs' => [
+                    'Karikuesit me kompensim temperature dhe karikim në faza parandalojnë mbikarikimin, i cili shkakton humbje të elektrolitit dhe oksidim të pllakës pozitive.',
+                    'Sulfatimi i plumbit është i kthyeshëm në faza të hershme: pulse desulfimi dhe cikle të kontrolluara rikarikimi rikthejnë pjesë të mirë të kapacitetit të humbur.',
+                    'Qelizat e pabalancuara e shkarkojnë bankën në mënyrë të pabarabartë. Matja periodike dhe balancimi i qelizave ruajnë performancën e të gjithë sistemit.',
+                ],
+            ],
+            [
+                'key' => 'maintenance-plan',
+                'category' => 'Mirëmbajtja',
+                'title' => 'Si të ndërtohet një plan mirëmbajtjeje vjetore për bateritë',
+                'excerpt' => 'Një kalendar i thjeshtë inspektimesh parandalon shpenzimet e papritura dhe ndërprerjet e sistemit.',
+                'reading_time' => '5 min',
+                'paragraphs' => [
+                    'Filloni me një inventar të plotë: modeli, kapaciteti, data e instalimit, lokacioni dhe kritikaliteti i çdo banke baterish.',
+                    'Përcaktoni frekuencën e inspektimeve sipas kritikalitetit: sistemet kritike kërkojnë kontroll tremujor, ato sekondare mjaftohen me kontroll vjetor.',
+                    'Përfshini në plan testin e kapacitetit, matjen e rezistencës së brendshme, pastrimin e terminaleve dhe verifikimin e sistemit të karikimit.',
+                ],
+            ],
+        ],
+    ],
+    'drop_off_points' => [
+        'eyebrow' => 'RRJETI I GRUMBULLIMIT',
+        'title' => 'Pika grumbullimi dhe servisi të autorizuara',
+        'description' => 'Pranojmë bateri për testim, rigjenerim dhe riciklim në pikat e mëposhtme. Për flota dhe banka të mëdha baterish organizojmë transport të dedikuar.',
+        'items' => [
+            [
+                'key' => 'pogradec-hq',
+                'title' => 'Pogradec — Qendra Kryesore Teknike',
+                'type' => 'Laborator & servis i autorizuar',
+                'category' => 'licensed',
+                'address' => 'Rruga Nehemia, Buçimas, Pogradec',
+                'phone' => '+355 69 273 4476',
+                'hours' => 'E hënë – E premte · 08:00 – 17:00',
+            ],
+            [
+                'key' => 'tirana-hub',
+                'title' => 'Tiranë — Qendra e Servisit',
+                'type' => 'Pikë grumbullimi e autorizuar',
+                'category' => 'licensed',
+                'address' => 'Tiranë (adresa konfirmohet pas kërkesës)',
+                'phone' => '+355 69 273 4476',
+                'hours' => 'E hënë – E shtunë · 08:30 – 18:00',
+            ],
+            [
+                'key' => 'durres-point',
+                'title' => 'Durrës — Pika e Grumbullimit',
+                'type' => 'Qendër grumbullimi baterish',
+                'category' => 'collection',
+                'address' => 'Durrës (adresa konfirmohet pas kërkesës)',
+                'phone' => '+355 69 273 4476',
+                'hours' => 'E hënë – E premte · 09:00 – 17:30',
+            ],
+            [
+                'key' => 'workshop-network',
+                'title' => 'Rrjeti i Auto Serviseve Partnere',
+                'type' => 'Servis partner automjetesh',
+                'category' => 'workshop',
+                'address' => 'Tiranë, Durrës, Fier, Shkodër, Elbasan',
+                'phone' => '+355 69 273 4476',
+                'hours' => 'Sipas orarit të servisit partner',
+            ],
+        ],
+    ],
+    'diagnostics_page' => [
+        'eyebrow' => 'DIAGNOSTIKIM & RIGJENERIM',
+        'title' => 'Rezervo një diagnostikim baterie',
+        'description' => 'Plotësoni të dhënat e mëposhtme dhe ekipi teknik konfirmon termin, logjistikën dhe kushtet e shërbimit brenda 24 orëve.',
+        'sectors' => [
+            'enterprise' => 'Ndërmarrje & Industri',
+            'telecom' => 'Telekomunikacion',
+            'banking' => 'Banka & Data Center',
+            'solar' => 'Solar & Energji e Rinovueshme',
+            'auto' => 'Auto Servis & Flota',
+            'household' => 'Familje & Konsumator',
+            'public_sector' => 'Sektor Publik',
+        ],
+        'battery_types' => [
+            'rid_industrial' => 'Bateri industriale RID-Batterie',
+            'ups_backup' => 'Sistem UPS / energji rezervë',
+            'solar_storage' => 'Bateri sistemi solar',
+            'automotive' => 'Bateri automjeti / servisi',
+            'forklift' => 'Bateri piruni / traksionare',
+            'other' => 'Tjetër',
+        ],
+        'service_preferences' => [
+            'pickup' => 'Grumbullim nga lokacioni ynë',
+            'drop_off' => 'Dorëzim në pikën më të afërt',
+            'onsite' => 'Testim në vend (on-site)',
+            'courier' => 'Koordinim transporti me korrier',
+        ],
+    ],
 ];
+

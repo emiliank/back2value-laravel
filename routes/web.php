@@ -3,10 +3,30 @@
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\ContentController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\DiagnosticBookingController;
+use App\Http\Controllers\DiagnosticController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RegenerationController;
+use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\SolutionsController;
+use App\Http\Controllers\SustainabilityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
+Route::get('/solutions', [SolutionsController::class, 'index'])->name('solutions.index');
+Route::get('/sustainability', [SustainabilityController::class, 'index'])->name('sustainability.index');
+Route::get('/regeneration', [RegenerationController::class, 'index'])->name('regeneration.index');
+Route::get('/resources', [ResourceController::class, 'index'])->name('resources.index');
+
+Route::get('/diagnostics', [DiagnosticBookingController::class, 'create'])->name('diagnostics.create');
+Route::post('/diagnostics/bookings', [DiagnosticBookingController::class, 'store'])->name('diagnostics.bookings.store');
+
+Route::post('/diagnostics', [DiagnosticController::class, 'store'])->name('diagnostics.store');
+Route::put('/diagnostics/{diagnostic}', [DiagnosticController::class, 'update'])->name('diagnostics.update');
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/login', [AdminAuthController::class, 'create'])->name('login');

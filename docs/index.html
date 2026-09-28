@@ -8,21 +8,42 @@
     <title>Back2Value | Bateri gjermane. Garanci reale. Shërbim vendor.</title>
     <link rel="stylesheet" href="./assets/app-NTpE_MrG.css" />
     <script defer src="./assets/app-CgF83RrO.js"></script>
+    <style>
+      .brand-box {
+        display: none !important;
+      }
+      .site-brand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .site-brand img {
+        display: block;
+        width: 130px;
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+        filter: none;
+      }
+      @media (max-width: 560px) {
+        .site-brand img {
+          width: 100px;
+        }
+      }
+    </style>
   </head>
   <body style="--green: #17b78b">
     <header class="site-header">
       <div class="site-header__inner">
-        <a href="#top" class="brand-box" aria-label="Back2Value, faqja kryesore">
-          <span class="brand-box__inner">
-            <span class="brand-word">back</span>
-            <span class="brand-word">to</span>
-            <span class="brand-word">value</span>
-          </span>
+        <a href="#top" class="site-brand" aria-label="Back2Value, faqja kryesore">
+          <img src="./images/back-to-value-logo.svg" alt="Back2Value logo" />
         </a>
 
         <nav class="main-nav" aria-label="Navigimi kryesor">
           <a href="#baterite">Bateritë</a>
           <a href="#sherbimet">Shërbimet</a>
+          <a href="#rigjenerimi">Rigjenerim</a>
           <a href="#pse-back2value">Pse Back2Value</a>
           <a href="#kontakt">Kontakt</a>
         </nav>
@@ -38,6 +59,7 @@
         <nav id="mobile-menu" data-mobile-menu class="mobile-menu" aria-label="Navigimi për celular" hidden>
           <a href="#baterite">Bateritë</a>
           <a href="#sherbimet">Shërbimet</a>
+          <a href="#rigjenerimi">Rigjenerim</a>
           <a href="#pse-back2value">Pse Back2Value</a>
           <a href="#kontakt">Kontakt</a>
           <a class="primary-cta" href="https://wa.me/355692734476?text=Po%20interesohem%20p%C3%ABr%20nj%C3%AB%20ofert%C3%AB%20p%C3%ABr%20bateri%20industriale.">Na Kontaktoni</a>
@@ -66,10 +88,15 @@
         </div>
       </section>
 
-      <a class="promo-strip" href="#sherbimet">
-        <span><strong>Vendimi Nr. 48 (2024) i Bankës së Shqipërisë</strong> — institucionet financiare duhet të dokumentojnë mirëmbajtjen e baterive UPS.</span>
-        <span class="promo-strip__link">Kontratat tona SLA ofrojnë dokumentacionin e plotë <span aria-hidden="true">→</span></span>
-      </a>
+      <div class="promo-strip">
+        <p class="promo-strip__compliance">
+          Back2Value operates in line with
+          <a class="promo-strip__link" href="https://akm.gov.al/ova_doc/ligj-nr-10463-date-22-9-2011-per-menaxhimin-e-integruar-te-mbetjeve/" target="_blank" rel="noreferrer">Albanian waste-management legislation</a>
+          and the
+          <a class="promo-strip__link" href="https://eur-lex.europa.eu/eli/reg/2023/1542/oj/" target="_blank" rel="noreferrer">EU regulatory framework</a>
+          for batteries, waste batteries, and circular economy principles.
+        </p>
+      </div>
 
       <section class="trust-band" aria-label="Përfitimet kryesore">
         <div class="trust-band__inner">
@@ -205,6 +232,39 @@
         </div>
       </section>
 
+      <section id="rigjenerimi" class="services">
+        <div class="section-shell">
+          <div class="section-intro section-intro--small">
+            <span class="eyebrow">RIGJENERIM BATERIE</span>
+            <h2>RID Tester &amp; RID Rigenerator</h2>
+            <p>Dy pajisjet tona profesionale ofrohen si shërbim për klientët tanë — jo si produkte për shitje. Testojmë, diagnostikojmë dhe rikthejmë kapacitetin e baterive tuaja.</p>
+          </div>
+
+          <div class="service-grid">
+            <article class="service-card">
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="7" width="16" height="10" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M21.5 10.5v3" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 12h5m-2.5-2.5v5" stroke="currentColor" stroke-width="1.8"/></svg>
+              </div>
+              <h3>RID Tester</h3>
+              <p>RID BMG-30 Battery Tester — kontrollon, teston dhe diagnostikon çdo bateri: mat kapacitetin reale dhe rezistencën e brendshme dhe përcakton nëse bateria mund të rigjenerohet.</p>
+            </article>
+
+            <article class="service-card">
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 13.6-5.7" stroke="currentColor" stroke-width="1.8"/><path d="M20 12a8 8 0 0 1-13.6 5.7" stroke="currentColor" stroke-width="1.8"/><path d="M17.6 2.8v3.6h-3.6M6.4 21.2v-3.6h3.6" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </div>
+              <h3>RID Rigenerator</h3>
+              <p>RID BRG Series — aplikon rigjenerimin profesional me karikim të kontrolluar dhe pulse desulfimi, duke rikthyer 50–100% të kapacitetit origjinal. Falas brenda 3 vjetësh për bateritë e reja.</p>
+            </article>
+          </div>
+
+          <div class="hero__actions">
+            <a class="primary-cta" href="https://wa.me/355692734476?text=P%C3%ABrsh%C3%ABndetje!%20Po%20interesohem%20p%C3%ABr%20sh%C3%ABrbimin%20e%20rigjenerimit%20me%20RID%20Tester%20dhe%20RID%20Rigenerator.">Na Kontaktoni</a>
+            <a class="secondary-cta" href="#sherbimet">Shiko shërbimet</a>
+          </div>
+        </div>
+      </section>
+
       <section id="pse-back2value" class="about">
         <div class="section-shell">
           <div class="section-intro section-intro--dark">
@@ -290,16 +350,13 @@
 
     <footer class="site-footer">
       <div class="site-footer__inner">
-        <a href="#top" class="brand-box brand-box--footer" aria-label="Back2Value, kthehu në krye">
-          <span class="brand-box__inner">
-            <span class="brand-word">back</span>
-            <span class="brand-word">to</span>
-            <span class="brand-word">value</span>
-          </span>
+        <a href="#top" class="site-brand" aria-label="Back2Value, kthehu në krye">
+          <img src="./images/back-to-value-logo.svg" alt="Back2Value logo" />
         </a>
         <nav class="footer-nav" aria-label="Lidhje të shpejta">
           <a href="#baterite">Bateritë</a>
           <a href="#sherbimet">Shërbimet</a>
+          <a href="#rigjenerimi">Rigjenerim</a>
           <a href="#pse-back2value">Pse Ne</a>
           <a href="#kontakt">Kontakt</a>
         </nav>

@@ -24,6 +24,8 @@ class ContentController extends Controller
     public function updateSettings(Request $request, SiteContentService $siteContent): RedirectResponse
     {
         $validated = $request->validate([
+            'logo_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120'],
+            'remove_logo' => ['nullable', 'boolean'],
             'meta_title' => ['required', 'string', 'max:120'],
             'meta_description' => ['required', 'string', 'max:300'],
             'accent_color' => ['required', 'regex:/\A#[0-9a-fA-F]{6}\z/'],
@@ -54,6 +56,19 @@ class ContentController extends Controller
             'hours' => ['required', 'string', 'max:120'],
             'map_query' => ['required', 'string', 'max:180'],
         ]);
+
+        $settings = $siteContent->all()['settings'];
+        $previousLogo = $settings['logo_image'] ?? null;
+
+        if (filter_var($request->boolean('remove_logo'), FILTER_VALIDATE_BOOLEAN)) {
+            $this->deleteStoredImage($previousLogo);
+            $validated['logo_image'] = null;
+        } elseif ($request->hasFile('logo_image')) {
+            $this->deleteStoredImage($previousLogo);
+            $validated['logo_image'] = $request->file('logo_image')->store('logos', 'public');
+        } else {
+            $validated['logo_image'] = $previousLogo;
+        }
 
         $siteContent->save('settings', $validated);
 

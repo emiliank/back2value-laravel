@@ -62,6 +62,85 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    document.querySelectorAll('[data-savings-calculator]').forEach((root) => {
+        const count = root.querySelector('[data-battery-count]');
+        const weight = root.querySelector('[data-battery-weight]');
+        const lead = root.querySelector('[data-result-lead]');
+        const co2 = root.querySelector('[data-result-co2]');
+
+        if (!count || !weight || !lead || !co2) {
+            return;
+        }
+
+        const leadShare = 0.55;
+        const co2PerKgLead = 1.6;
+
+        const readNumber = (input) => {
+            const value = Number.parseInt(input.value, 10);
+
+            return Number.isFinite(value) && value > 0 ? value : 0;
+        };
+
+        const format = (value) => new Intl.NumberFormat('sq-AL', { maximumFractionDigits: 0 }).format(Math.round(value));
+
+        const update = () => {
+            const totalWeight = readNumber(count) * readNumber(weight);
+            const recoveredLead = totalWeight * leadShare;
+
+            lead.textContent = format(recoveredLead);
+            co2.textContent = format(recoveredLead * co2PerKgLead);
+        };
+
+        [count, weight].forEach((input) => input.addEventListener('input', update));
+
+        update();
+    });
+
+    document.querySelectorAll('[data-maintenance-inquiry]').forEach((form) => {
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const feedback = form.querySelector('[data-inquiry-feedback]');
+            const submit = form.querySelector('[type="submit"]');
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            if (submit) {
+                submit.disabled = true;
+            }
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token ?? '',
+                    },
+                    body: JSON.stringify(Object.fromEntries(new FormData(form))),
+                });
+
+                const payload = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(payload.message ?? 'Kërkesa nuk mund të dërgohet. Provoni përsëri.');
+                }
+
+                feedback.hidden = false;
+                feedback.classList.add('status-alert');
+                feedback.textContent = 'Faleminderit! Kërkesa u dërgua dhe ekipi ynë teknik ju kontakton brenda 24 orëve.';
+                form.reset();
+            } catch (error) {
+                feedback.hidden = false;
+                feedback.classList.add('error-summary');
+                feedback.textContent = error instanceof Error ? error.message : 'Kërkesa nuk mund të dërgohet. Provoni përsëri.';
+            } finally {
+                if (submit) {
+                    submit.disabled = false;
+                }
+            }
+        });
+    });
+
     document.querySelectorAll('[data-repeat-list]').forEach((list) => {
         list.addEventListener('click', (event) => {
             if (!(event.target instanceof Element)) {

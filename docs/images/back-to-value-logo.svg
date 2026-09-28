@@ -1,0 +1,24 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#F3F3F3"/>
+
+  <g>
+    <path d="M80 50H1520V130H80V50Z" fill="#0F9D67"/>
+    <path d="M80 130H1520V770H80V130Z" fill="#0F9D67"/>
+    <path d="M80 130H1520V770H80V130Z" stroke="#0F9D67" stroke-width="8"/>
+    <path d="M120 770H1480V820H120V770Z" fill="#F3F3F3"/>
+    <path d="M120 770H1480V820H120V770Z" stroke="#0F9D67" stroke-width="8"/>
+  </g>
+
+  <rect x="150" y="120" width="1300" height="650" fill="#F3F3F3"/>
+
+  <g fill="#415B69">
+    <text x="180" y="360" font-family="Arial, Helvetica, sans-serif" font-size="300" font-weight="700" letter-spacing="-12">back</text>
+    <text x="180" y="610" font-family="Arial, Helvetica, sans-serif" font-size="300" font-weight="700" letter-spacing="-12">to</text>
+    <text x="180" y="860" font-family="Arial, Helvetica, sans-serif" font-size="300" font-weight="700" letter-spacing="-12">value</text>
+  </g>
+
+  <g transform="translate(820 360)">
+    <path d="M120 0L220 120H160L200 240L20 120H92L40 0H120Z" fill="#F4A21A"/>
+    <path d="M130 120C173 94 194 60 198 18C214 46 228 82 228 120C228 178 183 224 120 232C80 238 48 233 16 214L32 176C55 188 80 191 106 188C147 182 174 160 181 122L130 120Z" fill="#F4A21A"/>
+  </g>
+</svg>
