@@ -1,12 +1,16 @@
 @props([
     'data' => [],
-    'showDownload' => true,
+    'siteLogo' => null,
 ])
 
 @php
     $steps = $data['steps'] ?? [];
     $badge = $data['badge'] ?? null;
-    $download = $showDownload ? ($data['download'] ?? null) : null;
+    $siteLogoUrl = blank($siteLogo) ? null : (
+        str_starts_with($siteLogo, 'logos/')
+            ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteLogo)
+            : asset($siteLogo)
+    );
 @endphp
 
 @if ($steps !== [])
@@ -26,16 +30,31 @@
                 <div class="lab-flow__head">
                     <p class="lab-flow__headline">{{ $data['panel_title'] ?? '' }}</p>
 
-                    @isset($data['brand'])
-                        <span class="lab-flow__brand">
-                            <img
-                                src="{{ asset($data['brand']['logo']) }}"
-                                alt="{{ $data['brand']['alt'] ?? 'RID Battery · Germany' }}"
-                                loading="lazy"
-                                decoding="async"
-                            >
+                    <div class="lab-flow__brands">
+                        <span class="lab-flow__brand lab-flow__brand--site">
+                            @if ($siteLogoUrl)
+                                <img
+                                    src="{{ $siteLogoUrl }}"
+                                    alt="Back2Value logo"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            @else
+                                <span class="site-brand-word">Back<span>2</span>Value</span>
+                            @endif
                         </span>
-                    @endisset
+
+                        @isset($data['brand'])
+                            <span class="lab-flow__brand">
+                                <img
+                                    src="{{ asset($data['brand']['logo']) }}"
+                                    alt="{{ $data['brand']['alt'] ?? 'RID Battery · Germany' }}"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            </span>
+                        @endisset
+                    </div>
                 </div>
 
                 <ol class="lab-flow__grid">
@@ -76,15 +95,6 @@
                         >
                     @endif
                 </div>
-
-                @if ($download)
-                    <p class="lab-flow__download">
-                        <a href="{{ asset($download['url']) }}" download="{{ basename($download['url']) }}">{{ $download['label'] }}</a>
-                        @isset($download['meta'])
-                            <span>{{ $download['meta'] }}</span>
-                        @endisset
-                    </p>
-                @endif
             </div>
         </div>
     </section>

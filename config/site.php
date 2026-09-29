@@ -435,11 +435,6 @@ return [
                 'width' => 380,
                 'height' => 343,
             ],
-            'download' => [
-                'label' => 'Shkarko grafikun (PNG)',
-                'meta' => 'PNG · 5860 × 3292 px',
-                'url' => 'images/rid-lab/rid-lab-flow-sq.png',
-            ],
         ],
         'process' => [
             'eyebrow' => 'SI FUNKSIONON',

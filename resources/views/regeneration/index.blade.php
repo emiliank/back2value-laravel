@@ -37,7 +37,10 @@
         </div>
     </section>
 
-    <x-rid-lab-flow :data="$page['lab_flow'] ?? config('site.regeneration_page.lab_flow', [])" />
+    <x-rid-lab-flow
+        :data="$page['lab_flow'] ?? config('site.regeneration_page.lab_flow', [])"
+        :site-logo="$settings['logo_image'] ?? null"
+    />
 
     <section class="page-section page-section--soft">
         <div class="section-shell">

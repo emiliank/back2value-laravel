@@ -42,7 +42,9 @@ class RegenerationPageTest extends TestCase
             ->assertSee('përqindjen e suksesit të rigjenerimit')
             ->assertSee('images/rid-lab/step-1.png', false)
             ->assertSee('images/rid-lab/badge-quality.png', false)
-            ->assertSee('images/rid-lab/rid-lab-flow-sq.png', false);
+            ->assertSee('lab-flow__brand lab-flow__brand--site', false)
+            ->assertDontSee('Shkarko grafikun')
+            ->assertDontSee('lab-flow__download');
     }
 
     public function test_homepage_promotes_rid_tester_and_rigenerator_as_services(): void

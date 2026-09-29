@@ -2040,6 +2040,15 @@ svg {
     text-align: center;
 }
 
+.lab-flow__brands {
+    display: inline-flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 1.8vw, 28px);
+}
+
 .lab-flow__brand {
     display: inline-flex;
     flex: 0 0 auto;
@@ -2050,6 +2059,15 @@ svg {
     display: block;
     width: clamp(112px, 11vw, 186px);
     height: auto;
+}
+
+.lab-flow__brand--site img {
+    width: clamp(84px, 9vw, 138px);
+    border-radius: 8px;
+}
+
+.lab-flow__brand--site .site-brand-word {
+    font-size: clamp(1.1rem, 2vw, 1.6rem);
 }
 
 .lab-flow__grid {
@@ -2140,30 +2158,6 @@ svg {
     flex: 0 0 auto;
     width: clamp(104px, 11vw, 168px);
     height: auto;
-}
-
-.lab-flow__download {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 6px 16px;
-    margin: clamp(16px, 2vw, 24px) 0 0;
-    color: var(--muted);
-    font-size: 0.88rem;
-}
-
-.lab-flow__download a {
-    color: var(--text);
-    font-weight: 750;
-    text-decoration: underline;
-    text-decoration-color: rgba(234, 103, 8, 0.45);
-    text-underline-offset: 4px;
-}
-
-.lab-flow__download a:hover {
-    color: #b8560a;
-    text-decoration-color: currentColor;
 }
 
 .compliance-panel {
