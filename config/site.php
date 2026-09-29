@@ -381,6 +381,66 @@ return [
                 ],
             ],
         ],
+        'lab_flow' => [
+            'eyebrow' => 'LABORATORI I BATERIVE',
+            'title' => 'Nga pranimi te testi i performancës',
+            'description' => 'Të njëjtin proces të dokumentuar e kalon çdo bateri që na besohet — pavarësisht nëse është një bateri e vetme apo një bankë e tërë baterish.',
+            'panel_title' => 'Si funksionon laboratori ynë i baterive:',
+            'brand' => [
+                'logo' => 'images/rid-lab/rid-wordmark.png',
+                'alt' => 'RID Battery · Germany',
+            ],
+            'steps' => [
+                [
+                    'key' => 'pranimi',
+                    'title' => 'Pranimi',
+                    'description' => 'Na e sillni baterinë dhe mbështeteni te shërbimi ynë i plotë.',
+                    'image' => 'images/rid-lab/step-1.png',
+                    'alt' => 'Dorëzimi i baterisë në laboratorin e Back2Value',
+                    'width' => 440,
+                    'height' => 280,
+                ],
+                [
+                    'key' => 'diagnostikimi',
+                    'title' => 'Diagnostikimi i baterisë',
+                    'description' => 'Analizojmë gjendjen aktuale dhe vlerësojmë nëse rigjenerimi është i arsyeshëm teknikisht dhe ekonomikisht.',
+                    'image' => 'images/rid-lab/step-2.png',
+                    'alt' => 'Diagnostikimi i baterisë me RID Tester',
+                    'width' => 440,
+                    'height' => 334,
+                ],
+                [
+                    'key' => 'rigjenerimi',
+                    'title' => 'Rigjenerimi',
+                    'description' => 'Bateritë e përshtatshme trajtohen teknikisht në mënyrë të synuar dhe riaktivizohen.',
+                    'image' => 'images/rid-lab/step-3.png',
+                    'alt' => 'Rigjenerimi i baterisë me RID Rigenerator',
+                    'width' => 440,
+                    'height' => 365,
+                ],
+                [
+                    'key' => 'testi-performances',
+                    'title' => 'Testi i performancës',
+                    'description' => 'Testet përfundimtare konfirmojnë fuqinë, stabilitetin dhe gatishmërinë për përdorim.',
+                    'image' => 'images/rid-lab/step-4.png',
+                    'alt' => 'Testi final i performancës së baterisë së rigjeneruar',
+                    'width' => 440,
+                    'height' => 316,
+                ],
+            ],
+            'note' => 'Merrni një bateri të testuar dhe funksionale, së bashku me një vlerësim të detajuar: me të dhëna për jetëgjatësinë e mbetur të parashikuar dhe përqindjen e suksesit të rigjenerimit.',
+            'badge' => [
+                'image' => 'images/rid-lab/badge-quality.png',
+                'alt' => 'Selli i cilësisë — bateri e kontrolluar nga Back2Value',
+                'width' => 380,
+                'height' => 343,
+            ],
+            'download' => [
+                'label' => 'Shkarko grafikun (PNG)',
+                'meta' => 'PNG · 5860 × 3292 px',
+                'url' => 'images/rid-lab/rid-lab-flow-sq.png',
+            ],
+        ],
         'process' => [
             'eyebrow' => 'SI FUNKSIONON',
             'title' => 'Nga blerja te rigjenerimi',
@@ -669,4 +729,3 @@ return [
         ],
     ],
 ];
-

@@ -1992,6 +1992,180 @@ svg {
     line-height: 1.62;
 }
 
+/* ------------------------------------------------------------------ */
+/* RID battery lab flow (regeneration page)                            */
+/* ------------------------------------------------------------------ */
+
+.lab-flow {
+    padding: clamp(24px, 3vw, 40px) clamp(20px, 3vw, 38px) clamp(26px, 3.2vw, 44px);
+    border-radius: 30px;
+    background: linear-gradient(
+        180deg,
+        #ec6608 0%,
+        #e77d30 17%,
+        #eb9658 33%,
+        #eeaa78 46%,
+        #efb388 53%,
+        #f2c7a9 66%,
+        #f5d8c1 78%,
+        #fbe5d5 85%,
+        #fdf1e8 90%,
+        #fffaf5 96%,
+        #fffdfb 100%
+    );
+}
+
+.lab-flow__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 18px 28px;
+    margin-bottom: clamp(22px, 2.8vw, 36px);
+}
+
+.lab-flow__headline {
+    flex: 1 1 auto;
+    max-width: 66%;
+    margin: 0;
+    padding: clamp(14px, 1.6vw, 22px) clamp(22px, 2.4vw, 36px);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 12px 26px -24px rgba(64, 24, 0, 0.5);
+    color: var(--text);
+    font-size: clamp(1.05rem, 1.7vw, 1.75rem);
+    font-weight: 850;
+    letter-spacing: -0.035em;
+    line-height: 1.12;
+    text-align: center;
+}
+
+.lab-flow__brand {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+}
+
+.lab-flow__brand img {
+    display: block;
+    width: clamp(112px, 11vw, 186px);
+    height: auto;
+}
+
+.lab-flow__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(12px, 1.5vw, 20px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lab-flow__card {
+    --lab-card-pad: clamp(16px, 1.7vw, 24px);
+    display: flex;
+    flex-direction: column;
+    padding: clamp(18px, 1.8vw, 26px) var(--lab-card-pad) clamp(20px, 2vw, 28px);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 20px 34px -30px rgba(90, 32, 0, 0.55);
+    text-align: center;
+}
+
+.lab-flow__figure {
+    display: flex;
+    min-height: clamp(104px, 11vw, 156px);
+    align-items: center;
+    justify-content: center;
+}
+
+.lab-flow__figure img {
+    width: auto;
+    max-width: 100%;
+    height: clamp(92px, 9.5vw, 142px);
+    object-fit: contain;
+}
+
+.lab-flow__ribbon {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    margin: clamp(16px, 1.8vw, 24px) calc(var(--lab-card-pad) * -0.6) 0;
+    padding: 6px clamp(18px, 2.2vw, 34px);
+    background: #ea6708;
+    clip-path: polygon(0 50%, 21px 0, calc(100% - 21px) 0, 100% 50%, calc(100% - 21px) 100%, 21px 100%);
+    color: #fff;
+    font-size: clamp(0.98rem, 1.12vw, 1.16rem);
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+}
+
+.lab-flow__ribbon-text {
+    text-align: center;
+}
+
+.lab-flow__copy {
+    margin: clamp(14px, 1.6vw, 20px) auto 0;
+    color: var(--text);
+    font-size: clamp(0.92rem, 1vw, 1.02rem);
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+.lab-flow__note {
+    display: flex;
+    width: min(100%, 960px);
+    align-items: center;
+    gap: clamp(16px, 2vw, 30px);
+    margin: clamp(18px, 2.4vw, 30px) auto 0;
+    padding: clamp(18px, 2vw, 26px) clamp(20px, 2.2vw, 30px);
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 20px 34px -30px rgba(90, 32, 0, 0.5);
+}
+
+.lab-flow__note p {
+    flex: 1 1 auto;
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(0.95rem, 1.05vw, 1.08rem);
+    font-weight: 650;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.lab-flow__badge {
+    flex: 0 0 auto;
+    width: clamp(104px, 11vw, 168px);
+    height: auto;
+}
+
+.lab-flow__download {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 16px;
+    margin: clamp(16px, 2vw, 24px) 0 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.lab-flow__download a {
+    color: var(--text);
+    font-weight: 750;
+    text-decoration: underline;
+    text-decoration-color: rgba(234, 103, 8, 0.45);
+    text-underline-offset: 4px;
+}
+
+.lab-flow__download a:hover {
+    color: #b8560a;
+    text-decoration-color: currentColor;
+}
+
 .compliance-panel {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
@@ -2356,6 +2530,10 @@ textarea.field__control {
         grid-template-columns: 1fr;
         gap: 32px;
     }
+
+    .lab-flow__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 860px) {
@@ -2405,6 +2583,14 @@ textarea.field__control {
         flex-direction: column;
         align-items: flex-start;
     }
+
+    .lab-flow {
+        border-radius: 26px;
+    }
+
+    .lab-flow__headline {
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 560px) {
@@ -2437,6 +2623,23 @@ textarea.field__control {
     .form-actions .primary-cta,
     .form-actions .secondary-cta {
         width: 100%;
+    }
+
+    .lab-flow {
+        padding: 22px 16px 26px;
+        border-radius: 22px;
+    }
+
+    .lab-flow__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lab-flow__note {
+        flex-direction: column;
+    }
+
+    .lab-flow__figure img {
+        height: 116px;
     }
 }
 

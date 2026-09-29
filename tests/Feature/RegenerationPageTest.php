@@ -28,6 +28,23 @@ class RegenerationPageTest extends TestCase
             ->assertSee(route('services.index'), false);
     }
 
+    public function test_regeneration_page_renders_rid_lab_flow_section(): void
+    {
+        $this->seed(SiteContentSeeder::class);
+
+        $this->get('/regeneration')
+            ->assertOk()
+            ->assertSee('Si funksionon laboratori ynë i baterive:')
+            ->assertSee('1. Pranimi')
+            ->assertSee('2. Diagnostikimi i baterisë')
+            ->assertSee('3. Rigjenerimi')
+            ->assertSee('4. Testi i performancës')
+            ->assertSee('përqindjen e suksesit të rigjenerimit')
+            ->assertSee('images/rid-lab/step-1.png', false)
+            ->assertSee('images/rid-lab/badge-quality.png', false)
+            ->assertSee('images/rid-lab/rid-lab-flow-sq.png', false);
+    }
+
     public function test_homepage_promotes_rid_tester_and_rigenerator_as_services(): void
     {
         $this->seed(SiteContentSeeder::class);
