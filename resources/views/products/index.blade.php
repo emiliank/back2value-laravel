@@ -1,12 +1,12 @@
 @extends('layouts.public')
 
-@section('title', 'Katalogu i Produkteve | Back2Value - Bateri Gjermane')
-@section('meta_description', 'Katalogu zyrtar i produkteve RID-Batterie dhe zgjidhjeve partnere në Shqipëri. Bateri industriale, UPS, traksionare dhe solare me çmime me kërkesë.')
+@section('title', $page['meta_title'])
+@section('meta_description', $page['meta_description'])
 
 @section('content')
     @php
         $whatsappNumber = preg_replace('/\D+/', '', $settings['whatsapp'] ?? '355692734476');
-        $defaultWhatsappUrl = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode('Përshëndetje! Po interesohem për një ofertë për bateri industriale nga katalogu.');
+        $defaultWhatsappUrl = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode($page['whatsapp_message']);
     @endphp
 
     <div class="products-catalog-page pb-20">
@@ -17,20 +17,18 @@
                         <div class="max-w-3xl">
                         <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3.5 py-1 text-xs font-bold tracking-widest text-emerald-800 uppercase border border-emerald-200">
                             <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Portofoli Zyrtar · RID Battery Gjermani
+                            {{ $page['badge'] }}
                         </span>
                         <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-                            Bateri Industriale me Kategori
+                            {{ $page['hero_title'] }}
                         </h1>
-                        <p class="mt-4 text-lg leading-relaxed text-slate-600">
-                            Portofoli i plotë sipas katalogut teknik gjerman të <strong>RID-Batterie GmbH</strong> dhe partnerëve të autorizuar Hoppecke &amp; Socomec. Zgjidhje të testuara për sisteme diellore, telekomunikacion, UPS, flota kamionësh dhe pirunë industrialë.
-                        </p>
+                        <p class="mt-4 text-lg leading-relaxed text-slate-600">{{ $page['hero_description'] }}</p>
                         <div class="mt-6 flex flex-wrap items-center gap-4 text-sm text-slate-700 bg-emerald-50/70 border border-emerald-100 rounded-xl p-3.5">
                             <div class="flex items-center gap-2 font-medium text-emerald-900">
                                 <svg class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>Të gjitha çmimet ofrohen <strong>me kërkesë (Request a Quote)</strong> sipas vëllimit dhe nevojave tuaja teknike.</span>
+                                <span>{{ $page['price_note'] }}</span>
                             </div>
                         </div>
                         </div>
@@ -63,7 +61,7 @@
                             </div>
                             <div class="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-slate-800 shadow-md ring-1 ring-slate-200">
                                 <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                                RID-Batterie GmbH · Bateri Gjermane
+                                {{ $page['portfolio_label'] }}
                             </div>
                         </div>
                     </div>
@@ -81,7 +79,7 @@
                                     type="text"
                                     name="q"
                                     value="{{ $searchQuery ?? '' }}"
-                                    placeholder="Kërko sipas modelit, kapacitetit (Ah), teknologjisë ose markës..."
+                                    placeholder="{{ $page['search_placeholder'] }}"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-11 pr-4 text-sm text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
                                 >
                             </div>
@@ -100,11 +98,11 @@
 
                             <div class="flex items-center gap-3">
                                 <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition">
-                                    Kërko
+                                    {{ $page['search_button'] }}
                                 </button>
                                 @if (filled($searchQuery) || filled($activeCategory) || filled($activeApplication) || !empty($vehicleProfile))
                                     <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition">
-                                        Pastro
+                                        {{ $page['clear_button'] }}
                                     </a>
                                 @endif
                             </div>
@@ -113,12 +111,12 @@
                         <!-- Category Filter Pills -->
                         @if (!empty($allCategories))
                             <div class="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
-                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider shrink-0 mr-1">Kategoritë:</span>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider shrink-0 mr-1">{{ $page['categories_label'] }}</span>
                                 <a
                                     href="{{ route('products.index', array_filter(['q' => $searchQuery, 'application' => $activeApplication])) }}"
                                     class="shrink-0 rounded-full px-3.5 py-1 text-xs font-semibold transition {{ empty($activeCategory) ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}"
                                 >
-                                    Të gjitha
+                                    {{ $page['all_label'] }}
                                 </a>
                                 @foreach ($allCategories as $cat)
                                     <a
@@ -134,12 +132,12 @@
                         <!-- Application Filter Pills -->
                         @if (!empty($applicationFilters))
                             <div class="mt-3 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
-                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider shrink-0 mr-1">Aplikimi:</span>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider shrink-0 mr-1">{{ $page['applications_label'] }}</span>
                                 <a
                                     href="{{ route('products.index', array_filter(['q' => $searchQuery, 'category' => $activeCategory])) }}"
                                     class="shrink-0 rounded-full px-3.5 py-1 text-xs font-semibold transition {{ empty($activeApplication) ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}"
                                 >
-                                    Të gjitha
+                                    {{ $page['all_label'] }}
                                 </a>
                                 @foreach ($applicationFilters as $key => $filter)
                                     <a
@@ -155,6 +153,19 @@
                 </div>
             </section>
 
+            @if ($hasPreorderProducts)
+                <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-10">
+                    <div class="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
+                        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </span>
+                        <p class="text-sm leading-relaxed text-amber-900">{{ $page['preorder_notice'] }}</p>
+                    </div>
+                </section>
+            @endif
+
             <!-- Vehicle Finder -->
             <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-10">
                 <div class="rounded-2xl border border-emerald-100 bg-white p-5 sm:p-6 shadow-sm">
@@ -167,8 +178,8 @@
                                 </svg>
                             </span>
                             <div>
-                                <h2 class="text-lg font-extrabold text-slate-900">Gjej baterinë për mjetin tënd</h2>
-                                <p class="text-sm text-slate-500">Zgjidhni tipin, markën, modelin dhe vitin — ose jepni VIN-in dhe kapacitetin aktual — dhe ju tregojmë përshtatjen më të mirë nga seritë e baterive tona.</p>
+                                <h2 class="text-lg font-extrabold text-slate-900">{{ $page['finder_title'] }}</h2>
+                                <p class="text-sm text-slate-500">{{ $page['finder_description'] }}</p>
                             </div>
                         </div>
                         <img
@@ -188,9 +199,9 @@
                         @endif
 
                         <label class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Tipi i mjetit</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_type_label'] }}</span>
                             <select name="v_type" class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition">
-                                <option value="">Zgjidhni tipin</option>
+                                <option value="{{ $page['finder_type_placeholder'] }}"
                                 @foreach ($vehicleOptions['types'] as $typeKey => $typeLabel)
                                     <option value="{{ $typeKey }}" @selected(($vehicleProfile['type'] ?? '') === $typeKey)>{{ $typeLabel }}</option>
                                 @endforeach
@@ -198,9 +209,9 @@
                         </label>
 
                         <label class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Marka</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_make_label'] }}</span>
                             <select name="v_make" class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition">
-                                <option value="">Zgjidhni markën</option>
+                                <option value="{{ $page['finder_make_placeholder'] }}"
                                 @foreach ($vehicleOptions['makes'] as $makeName)
                                     <option value="{{ $makeName }}" @selected(($vehicleProfile['make'] ?? '') === $makeName)>{{ $makeName }}</option>
                                 @endforeach
@@ -208,20 +219,20 @@
                         </label>
 
                         <label class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Modeli</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_model_label'] }}</span>
                             <input
                                 type="text"
                                 name="v_model"
                                 value="{{ $vehicleProfile['model'] ?? '' }}"
                                 maxlength="60"
-                                placeholder="p.sh. Sprinter, Golf, A4..."
+                                placeholder="{{ $page['finder_model_placeholder'] }}"
                                 class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
                             >
                         </label>
                         <label class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Viti i prodhimit</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_year_label'] }}</span>
                             <select name="v_year" class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition">
-                                <option value="">Zgjidhni vitin</option>
+                                <option value="{{ $page['finder_year_placeholder'] }}"
                                 @foreach ($vehicleOptions['years'] as $yearValue)
                                     <option value="{{ $yearValue }}" @selected(($vehicleProfile['year'] ?? '') === (string) $yearValue)>{{ $yearValue }}</option>
                                 @endforeach
@@ -229,9 +240,9 @@
                         </label>
 
                         <label class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Karburanti</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_fuel_label'] }}</span>
                             <select name="v_fuel" class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition">
-                                <option value="">Zgjidhni karburantin</option>
+                                <option value="{{ $page['finder_fuel_placeholder'] }}"
                                 @foreach ($vehicleOptions['fuels'] as $fuelKey => $fuelLabel)
                                     <option value="{{ $fuelKey }}" @selected(($vehicleProfile['fuel'] ?? '') === $fuelKey)>{{ $fuelLabel }}</option>
                                 @endforeach
@@ -239,7 +250,7 @@
                         </label>
 
                         <label class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Sistemi Start-Stop</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_startstop_label'] }}</span>
                             <select name="v_startstop" class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition">
                                 <option value="">Zgjidhni</option>
                                 @foreach ($vehicleOptions['start_stop'] as $startStopKey => $startStopLabel)
@@ -249,51 +260,51 @@
                         </label>
 
                         <label class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Kapaciteti aktual (Ah)</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_capacity_label'] }}</span>
                             <input
                                 type="number"
                                 name="v_capacity"
                                 value="{{ $vehicleProfile['capacity'] ?? '' }}"
                                 min="10"
                                 max="1000"
-                                placeholder="p.sh. 74"
+                                placeholder="{{ $page['finder_capacity_placeholder'] }}"
                                 class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
                             >
                         </label>
                         <label class="block">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">VIN (17 karaktere)</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_vin_label'] }}</span>
                             <input
                                 type="text"
                                 name="vin"
                                 value="{{ $vehicleProfile['vin'] ?? '' }}"
                                 maxlength="17"
-                                placeholder="p.sh. WVWZZZ1KZAW000001"
+                                placeholder="{{ $page['finder_vin_placeholder'] }}"
                                 class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm uppercase tracking-wider text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
                             >
                         </label>
 
                         <label class="block sm:col-span-2 lg:col-span-3">
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Detaje të tjera (opsional)</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $page['finder_notes_label'] }}</span>
                             <input
                                 type="text"
                                 name="v_notes"
                                 value="{{ $vehicleProfile['notes'] ?? '' }}"
                                 maxlength="300"
-                                placeholder="p.sh. motori 2.0 TDI, përdorim në ndërtim, bateria aktuale 5 vjet e vjetër..."
+                                placeholder="{{ $page['finder_notes_placeholder'] }}"
                                 class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
                             >
                         </label>
 
                         <div class="flex flex-wrap items-center gap-3 sm:col-span-2 lg:col-span-4">
                             <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-bold uppercase tracking-wider text-white shadow-sm hover:bg-emerald-700 active:scale-[0.98] transition">
-                                Gjej përshtatjen më të mirë
+                                {{ $page['finder_submit'] }}
                             </button>
                             @if (!empty($vehicleProfile))
                                 <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition">
-                                    Pastro kërkimin e mjetit
+                                    {{ $page['finder_reset'] }}
                                 </a>
                             @endif
-                            <span class="text-xs text-slate-400">Kërkimi i mjetit shfaq bateritë e serisë RID ST për startim.</span>
+                            <span class="text-xs text-slate-400">{{ $page['finder_hint'] }}</span>
                         </div>
 
 
@@ -308,7 +319,7 @@
                             <div class="flex flex-wrap items-start justify-between gap-4">
                                 <div class="min-w-0 space-y-2">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <span class="inline-flex items-center rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white">Kërkim mjeti</span>
+                                        <span class="inline-flex items-center rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white">{{ $page['vehicle_badge'] }}</span>
                                         @if ($vehicleProfile['summary'] !== '')
                                             <span class="text-sm font-bold text-slate-800">{{ $vehicleProfile['summary'] }}</span>
                                         @endif
@@ -316,13 +327,13 @@
 
                                     @if (($vehicleVinInfo['state'] ?? '') === 'valid')
                                         <p class="text-sm text-slate-600">
-                                            <span class="font-semibold text-slate-800">VIN i vlefshëm</span>
-                                            — Rajoni: {{ $vehicleVinInfo['region'] }}
+                                            <span class="font-semibold text-slate-800">{{ $page['vin_valid_text'] }}</span>
+                                            — {{ $page['vin_region_label'] }}: {{ $vehicleVinInfo['region'] }}
                                             @if (!empty($vehicleVinInfo['year_candidates']))
-                                                · Viti i modelit (kodit): {{ implode(' / ', $vehicleVinInfo['year_candidates']) }}
+                                                · {{ $page['vin_year_label'] }}: {{ implode(' / ', $vehicleVinInfo['year_candidates']) }}
                                             @endif
                                             @if (!empty($vehicleVinInfo['year_matches_selection']))
-                                                — <span class="font-medium text-emerald-700">përputhet me vitin e zgjedhur</span>
+                                                — <span class="font-medium text-emerald-700">{{ $page['vin_match_text'] }}</span>
                                             @endif
                                         </p>
                                     @elseif (($vehicleVinInfo['state'] ?? '') === 'invalid')
@@ -332,7 +343,7 @@
                                     @endif
 
                                     <p class="text-sm text-slate-600">
-                                        <span class="font-semibold text-slate-800">Rekomandim: {{ $vehicleRecommendation['label'] }} · {{ $vehicleRecommendation['capacity_label'] }}</span>
+                                        <span class="font-semibold text-slate-800">{{ $page['recommendation_label'] }}: {{ $vehicleRecommendation['label'] }} · {{ $vehicleRecommendation['capacity_label'] }}</span>
                                         — {{ $vehicleRecommendation['reason'] }}
                                     </p>
 
@@ -348,11 +359,11 @@
                                         rel="noopener"
                                         class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-[0.98] transition"
                                     >
-                                        Konfirmo përshtatjen me VIN
+                                        {{ $page['vin_confirm_label'] }}
                                         <span aria-hidden="true">&rarr;</span>
                                     </a>
                                     <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition">
-                                        Pastro
+                                        {{ $page['clear_button'] }}
                                     </a>
                                 </div>
                             </div>
@@ -370,16 +381,31 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 class="text-xl font-bold text-slate-800">Nuk u gjet asnjë produkt</h2>
-                        <p class="mt-2 text-sm text-slate-500">Provoni të kërkoni me fjalë të tjera ose pastroni filtrat e kategorive.</p>
+                        <h2 class="text-xl font-bold text-slate-800">{{ $page['empty_title'] }}</h2>
+                        <p class="mt-2 text-sm text-slate-500">{{ $page['empty_description'] }}</p>
                         <a href="{{ route('products.index') }}" class="mt-5 inline-flex rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
-                            Shfaq të gjitha bateritë
+                            {{ $page['empty_action'] }}
                         </a>
                     </div>
                 @else
+                    @php
+                        $categoryDescriptions = $page['category_descriptions'] ?? [];
+                    @endphp
+
                     @foreach ($groupedProducts as $categoryName => $products)
+                        @php
+                            $categoryDescription = $page['category_fallback_description'] ?? '';
+
+                            foreach ($categoryDescriptions as $needle => $description) {
+                                if (str_contains($categoryName, (string) $needle)) {
+                                    $categoryDescription = $description;
+
+                                    break;
+                                }
+                            }
+                        @endphp
                         <section class="mb-16 scroll-mt-28" id="kategoria-{{ \Illuminate\Support\Str::slug($categoryName) }}">
-                            <div class="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 pb-4">
+                            <div class="product-group__head mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 pb-4">
                                 <div>
                                     <div class="flex items-center gap-3">
                                         <img
@@ -392,47 +418,21 @@
                                         >
                                         <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{{ $categoryName }}</h2>
                                         <span class="rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-800">
-                                            {{ $products->count() }} {{ $products->count() === 1 ? 'model' : 'modele' }}
+                                            {{ $products->count() }} {{ $products->count() === 1 ? $page['model_unit_one'] : $page['model_unit_many'] }}
                                         </span>
                                     </div>
-                                    <p class="mt-1 text-sm text-slate-500">
-                                        @if (str_contains($categoryName, 'OPzS'))
-                                            Bateri tubulare vented 2V me jetëgjatësi 20 vjet për aplikime fotovoltaike dhe industriale.
-                                        @elseif (str_contains($categoryName, 'OPzV'))
-                                            Bateri me xhel pa mirëmbajtje sipas standardeve DIN për telekomunikacion dhe fshatra energjetikë.
-                                        @elseif (str_contains($categoryName, 'Xtreme'))
-                                            Teknologji Pure Lead AGM (99.99%) me shkarkim të shpejtë për UPS, data centers dhe banka.
-                                        @elseif (str_contains($categoryName, 'ST'))
-                                            Bateri startimi komerciale (Heavy-Duty, EFB, AGM, Marine) për kamionë dhe makineri të rënda.
-                                        @elseif (str_contains($categoryName, 'Motive Power'))
-                                            Qeliza traksionare 2V PzS (50-150 Ah/Plate) për pirunë elektrikë dhe makineri magazinash.
-                                        @elseif (str_contains($categoryName, 'FNC'))
-                                            Teknologji nikel-kadmium me fibra për temperatura ekstreme (-50°C deri +60°C) dhe 3000+ cikle.
-                                        @elseif (str_contains($categoryName, 'GroE'))
-                                            Bateri Planté me plumb të pastër me jetëgjatësi 25 vjet për centrale dhe nënstacione energjie.
-                                        @elseif (str_contains($categoryName, 'OGi'))
-                                            Aftësi shumë e lartë për rryma të forta, jetëgjatësi deri në 18 vjet për hekurudha dhe UPS.
-                                        @elseif (str_contains($categoryName, 'Power Cell'))
-                                            Kontejner i integruar ruajtjeje energjie 15 kVA me qeliza NiCd dhe inverter Sierra 25-48.
-                                        @elseif (str_contains($categoryName, 'Diagnostics'))
-                                            Pajisje profesionale laboratorike për testimin, regjistrimin dhe rigjenerimin e baterive.
-                                        @elseif (str_contains($categoryName, 'Socomec'))
-                                            Sisteme të plota UPS për energji emergjence, ndriçim evakuimi dhe mbrojtje nga zjarri.
-                                        @else
-                                            Zgjidhje profesionale për ruajtje dhe furnizim të pandërprerë energjie.
-                                        @endif
-                                    </p>
+                                    <p class="mt-1 text-sm text-slate-500">{{ $categoryDescription }}</p>
                                 </div>
 
-                                <a href="https://wa.me/{{ $whatsappNumber }}?text={{ rawurlencode('Përshëndetje! Po kërkoj ofertë për kategorinë: ' . $categoryName) }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 transition">
-                                    <span>Kërko ofertë për këtë kategori</span>
+                                <a href="https://wa.me/{{ $whatsappNumber }}?text={{ rawurlencode($page['quote_whatsapp_message'].' '.$categoryName) }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 transition">
+                                    <span>{{ $page['quote_category'] }}</span>
                                     <span aria-hidden="true">&rarr;</span>
                                 </a>
                             </div>
 
-                            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            <div class="grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach ($products as $product)
-                                    <article class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md hover:border-emerald-300">
+                                    <article class="product-card flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md hover:border-emerald-300">
                                         <div>
                                             <img
                                                 src="{{ asset($categoryImages[$categoryName]['image']) }}"
@@ -441,10 +441,10 @@
                                                 width="336"
                                                 height="112"
                                                 loading="lazy"
-                                                class="mb-4 h-28 w-full rounded-xl object-cover ring-1 ring-slate-100"
+                                                class="mb-3 h-[88px] w-full rounded-xl object-cover ring-1 ring-slate-100"
                                             >
                                             <!-- Top tags -->
-                                            <div class="flex items-center justify-between gap-2 mb-3">
+                                            <div class="flex items-center justify-between gap-2 mb-2">
                                                 <span class="inline-flex items-center rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 tracking-wide">
                                                     {{ $product['brand'] }}
                                                 </span>
@@ -454,14 +454,14 @@
                                                             {{ $product['voltage'] }}
                                                         </span>
                                                     @endif
-                                                    <span class="rounded-md bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
+                                                    <span class="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
                                                         {{ $product['capacity_ah'] }} Ah
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <!-- Product Title -->
-                                            <h3 class="text-xl font-bold text-slate-900 tracking-tight leading-snug">
+                                            <h3 class="text-lg font-bold text-slate-900 tracking-tight leading-snug">
                                                 {{ $product['title'] }}
                                             </h3>
 
@@ -471,14 +471,29 @@
                                                 </p>
                                             @endif
 
+                                            <!-- Stock status -->
+                                            <div class="mt-2 flex items-center gap-2">
+                                                @php
+                                                    [$stockTone, $stockDot] = match ($product['stock_status']) {
+                                                        'in_stock' => ['bg-emerald-50 text-emerald-700 border-emerald-200', 'bg-emerald-500'],
+                                                        'low_stock' => ['bg-amber-50 text-amber-700 border-amber-200', 'bg-amber-500'],
+                                                        default => ['bg-slate-100 text-slate-600 border-slate-300', 'bg-slate-400'],
+                                                    };
+                                                @endphp
+                                                <span class="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-semibold {{ $stockTone }}">
+                                                    <span class="h-1.5 w-1.5 rounded-full {{ $stockDot }}" aria-hidden="true"></span>
+                                                    {{ $product['stock_label'] }}
+                                                </span>
+                                            </div>
+
                                             <!-- Description -->
-                                            <p class="mt-3 text-sm leading-relaxed text-slate-600">
+                                            <p class="mt-2 text-sm leading-relaxed text-slate-600">
                                                 {{ $product['description'] }}
                                             </p>
 
                                             <!-- Technical Specs -->
                                             @if (!empty($product['specs']))
-                                                <div class="mt-4 rounded-xl bg-slate-50 p-3 text-xs text-slate-600 border border-slate-100 space-y-1.5">
+                                                <div class="mt-3 rounded-xl bg-slate-50 p-2.5 text-xs text-slate-600 border border-slate-100 space-y-1">
                                                     @if (!empty($product['specs']['dimensions']))
                                                         <div class="flex justify-between gap-2">
                                                             <span class="text-slate-400 font-medium">Përmasat:</span>
@@ -514,34 +529,40 @@
                                         </div>
 
                                         <!-- Footer card: NO PRICE SHOWN, quote request instead -->
-                                        <div class="mt-6 border-t border-slate-100 pt-4">
-                                            <div class="mb-3 flex items-center justify-between text-xs text-slate-500">
+                                        <div class="mt-4 border-t border-slate-100 pt-3">
+                                            <div class="mb-2 flex items-center justify-between text-xs text-slate-500">
                                                 <span class="flex items-center gap-1 text-emerald-700 font-medium">
                                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                                     </svg>
-                                                    Garanci: {{ $product['warranty_months'] }} muaj
+                                                    {{ $page['warranty_prefix'] }}: {{ $product['warranty_months'] }} muaj
                                                 </span>
                                                 <span class="font-semibold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                                                    Çmimi me kërkesë
+                                                    {{ $page['price_request_label'] }}
                                                 </span>
                                             </div>
+
+                                            @if ($product['needs_preorder'])
+                                                <p class="mb-2 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs leading-relaxed text-amber-800 border border-amber-200">
+                                                    {{ $page['preorder_notice'] }}
+                                                </p>
+                                            @endif
 
                                             <div class="flex items-center gap-2">
                                                 <a
                                                     href="{{ $product['quote_url'] }}"
                                                     target="_blank"
                                                     rel="noopener"
-                                                    class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm hover:bg-emerald-700 active:scale-[0.98] transition"
+                                                    class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-sm hover:bg-emerald-700 active:scale-[0.98] transition"
                                                 >
                                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                                     </svg>
-                                                    Kërko Ofertë
+                                                    {{ $page['quote_button'] }}
                                                 </a>
                                                 <a
                                                     href="{{ route('home') }}#kontakt"
-                                                    title="Kontakto me email ose telefon"
+                                                    title="{{ $page['contact_title'] }}"
                                                     class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition"
                                                 >
                                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -562,18 +583,16 @@
             <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-12">
                 <div class="rounded-3xl bg-slate-900 p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
                     <div class="max-w-2xl relative z-10">
-                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-400">Konsulencë Teknike B2B</span>
-                        <h2 class="mt-3 text-3xl font-extrabold sm:text-4xl">Keni nevojë për dimensionim apo ofertë të personalizuar?</h2>
-                        <p class="mt-4 text-slate-300 text-base leading-relaxed">
-                            Ekipi ynë teknik në Pogradec llogarit kapacitetet e kërkuara, përzgjedh teknologjinë optimale (OPzS, OPzV, AGM apo NiCd) dhe harton ofertën zyrtare me kushte partneriteti.
-                        </p>
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-400">{{ $page['bottom_kicker'] }}</span>
+                        <h2 class="mt-3 text-3xl font-extrabold sm:text-4xl">{{ $page['bottom_title'] }}</h2>
+                        <p class="mt-4 text-slate-300 text-base leading-relaxed">{{ $page['bottom_description'] }}</p>
                         <div class="mt-8 flex flex-wrap gap-4">
                             <a href="{{ $defaultWhatsappUrl }}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-emerald-600 transition">
-                                <span>Bisedo në WhatsApp</span>
+                                <span>{{ $page['bottom_primary'] }}</span>
                                 <span aria-hidden="true">&rarr;</span>
                             </a>
                             <a href="{{ route('home') }}#kontakt" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 px-6 py-3 text-sm font-bold text-white hover:bg-slate-800 transition">
-                                <span>Formulari i Kontaktit</span>
+                                <span>{{ $page['bottom_secondary'] }}</span>
                             </a>
                         </div>
                     </div>

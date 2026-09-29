@@ -38,6 +38,10 @@
         @case('plus')
             <path d="M12 5v14M5 12h14"/>
             @break
+        @case('clock')
+            <path d="M12 8v4l3 3"/>
+            <circle cx="12" cy="12" r="9"/>
+            @break
         @case('sparkles')
             <path d="m12 3 1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3Z"/>
             <path d="m19 14 1 2.5 2.5 1-2.5 1L19 21l-1-2.5-2.5-1 2.5-1L19 14Z"/>
@@ -49,6 +53,12 @@
             @break
         @case('chart')
             <path d="M4 20V10m5 10V4m5 16v-7m5 7V7"/>
+            @break
+        @case('refresh')
+            <path d="M20 11a8 8 0 0 0-13.7-5.2L4 8"/>
+            <path d="M4 4v4h4"/>
+            <path d="M4 13a8 8 0 0 0 13.7 5.2L20 16"/>
+            <path d="M20 20v-4h-4"/>
             @break
     @endswitch
 </svg>

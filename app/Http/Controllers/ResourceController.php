@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SiteContentService;
+use App\Content\SiteContentRepository;
 use Illuminate\View\View;
 
 class ResourceController extends Controller
 {
-    public function index(SiteContentService $siteContent): View
+    public function index(SiteContentRepository $content): View
     {
-        $content = $siteContent->all();
-
         return view('resources.index', [
-            'settings' => $content['settings'],
-            'page' => $content['resources'],
+            'page' => $content->section('resources'),
             'activeNav' => 'resources',
         ]);
     }

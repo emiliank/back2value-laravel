@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Content\SiteContentRepository;
 use App\Models\Battery;
-use App\Services\SiteContentService;
 use App\Services\VehicleFitmentService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    public function index(Request $request, SiteContentService $siteContent, VehicleFitmentService $vehicleFitment): View
+    public function index(Request $request, SiteContentRepository $content, VehicleFitmentService $vehicleFitment): View
     {
-        $content = $siteContent->all();
-        $settings = $content['settings'] ?? config('site.settings');
-        $applicationFilters = $content['application_filters'] ?? config('site.application_filters');
+        $settings = $content->section('settings');
+        $catalogPage = $content->section('catalog_page');
+        $applicationFilters = $content->section('application_filters');
         $whatsappNumber = preg_replace('/\D+/', '', $settings['whatsapp'] ?? '355692734476');
 
         $vehicleActive = $vehicleFitment->isActive($request->query());
@@ -23,6 +23,8 @@ class ProductController extends Controller
             ? $vehicleFitment->profile($request->query(), $whatsappNumber)
             : null;
 
+        // Every listed product is shown, including out-of-stock ones, so a
+        // customer can still find it and place a pre-order.
         $query = Battery::query()->where('is_available', true);
 
         $activeApplication = (string) $request->query('application', '');
@@ -92,7 +94,7 @@ class ProductController extends Controller
         }
 
         $products = $products
-            ->map(function (Battery $battery) use ($whatsappNumber): array {
+            ->map(function (Battery $battery) use ($whatsappNumber, $catalogPage): array {
                 $title = filled($battery->model)
                     ? $battery->model
                     : ($battery->brand.' '.$battery->capacity_ah.'Ah');
@@ -122,6 +124,10 @@ class ProductController extends Controller
                     'application_type' => $battery->application_type,
                     'status' => $battery->status,
                     'warranty_months' => $battery->warranty_months,
+                    'stock_status' => $battery->stock_status,
+                    'needs_preorder' => $battery->needsPreorder(),
+                    'stock_label' => $catalogPage["stock_label_{$battery->stock_status}"]
+                        ?? $catalogPage['stock_label_in_stock'],
                     'specs' => is_array($battery->specs) ? $battery->specs : [],
                     'quote_url' => $quoteUrl,
                     'description' => filled($battery->description)
@@ -136,6 +142,11 @@ class ProductController extends Controller
 
         $groupedProducts = $products->groupBy('category');
 
+        // Only advertise the pre-order policy when at least one product needs it.
+        $hasPreorderProducts = $groupedProducts->contains(
+            fn ($items): bool => $items->contains('needs_preorder', true)
+        );
+
         $categoryImages = $groupedProducts->mapWithKeys(
             fn ($items, string $category): array => [$category => $this->categoryImage($category)]
         );
@@ -145,6 +156,8 @@ class ProductController extends Controller
             'categoryImages' => $categoryImages,
             'allCategories' => $allCategories,
             'applicationFilters' => $applicationFilters,
+            'page' => $catalogPage,
+            'hasPreorderProducts' => $hasPreorderProducts,
             'settings' => $settings,
             'activeCategory' => $request->query('category'),
             'activeApplication' => $activeApplication,

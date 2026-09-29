@@ -1,20 +1,20 @@
 @extends('layouts.public')
 
-@section('title', 'Qëndrueshmëria & përputhshmëria | Back2Value')
-@section('meta_description', 'Zgjatja e jetës së baterive, riciklim i licencuar dhe dokumentacion për auditimet: si e menaxhojmë përgjegjshëm çdo bankë baterish në Shqipëri.')
+@section('title', $page['meta_title'])
+@section('meta_description', $page['meta_description'])
 
 @section('content')
     <x-page-hero :eyebrow="$page['eyebrow']" :title="$page['title']" :description="$page['description']">
-        <a class="primary-cta" href="{{ route('diagnostics.create') }}">Rezervo Diagnostikim</a>
-        <a class="secondary-cta" href="{{ route('services.index') }}">Shiko shërbimet</a>
+        <a class="primary-cta" href="{{ site_link('diagnostics') }}">{{ $page['hero_cta_primary'] }}</a>
+        <a class="secondary-cta" href="{{ site_link($page['hero_cta_secondary_target'] ?? 'services') }}">{{ $page['hero_cta_secondary'] }}</a>
     </x-page-hero>
 
     <section class="about">
         <div class="section-shell">
             <div class="section-intro section-intro--dark">
-                <span class="eyebrow">ANGAZHIMET TONA</span>
-                <h2>Katër angazhime operative</h2>
-                <p>Zbatojmë të njëjtat standarde për çdo klient — nga një bateri e vetme deri në flota të plota institucionale.</p>
+                <span class="eyebrow">{{ $page['commitments_eyebrow'] }}</span>
+                <h2>{{ $page['commitments_title'] }}</h2>
+                <p>{{ $page['commitments_description'] }}</p>
             </div>
 
             <div class="commitment-grid">
@@ -43,13 +43,13 @@
         <div class="section-shell">
             <div class="compliance-panel">
                 <div>
-                    <span class="eyebrow">DOKUMENTACION</span>
-                    <h2>{{ $page['compliance']['title'] }}</h2>
-                    <p>{{ $page['compliance']['description'] }}</p>
+                    <span class="eyebrow">{{ $page['compliance_eyebrow'] }}</span>
+                    <h2>{{ $page['compliance_title'] }}</h2>
+                    <p>{{ $page['compliance_description'] }}</p>
                 </div>
 
                 <ul class="info-list">
-                    @foreach ($page['compliance']['points'] as $point)
+                    @foreach ($page['compliance_points'] as $point)
                         <li>{{ $point }}</li>
                     @endforeach
                 </ul>
@@ -60,10 +60,11 @@
     <x-savings-calculator />
 
     <x-cta-band
-        title="Ktheni bateritë në cikël pune, jo në mbetje"
-        description="Vlerësojmë kapacitetin real të baterive tuaja dhe ju tregojmë qartë kur rigjenerimi është zgjedhja e saktë."
-        primary-label="Rezervo Diagnostikim"
-        secondary-label="Qendra e burimeve"
-        :secondary-url="route('resources.index')"
+        :title="$page['cta_title']"
+        :description="$page['cta_description']"
+        :primary-label="$page['cta_primary']"
+        :primary-url="site_link($page['cta_primary_target'] ?? 'diagnostics')"
+        :secondary-label="$page['cta_secondary']"
+        :secondary-url="site_link($page['cta_secondary_target'] ?? 'resources')"
     />
 @endsection

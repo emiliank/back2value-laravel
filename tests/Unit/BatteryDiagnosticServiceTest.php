@@ -37,6 +37,7 @@ class BatteryDiagnosticServiceTest extends TestCase
             $table->decimal('sale_price', 10, 2);
             $table->unsignedInteger('warranty_months');
             $table->boolean('is_available')->default(true);
+            $table->string('stock_status')->default('in_stock');
             $table->timestamps();
         });
 

@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SiteContentService;
+use App\Content\SiteContentRepository;
 use Illuminate\View\View;
 
 class ServicesController extends Controller
 {
-    public function index(SiteContentService $siteContent): View
+    public function index(SiteContentRepository $content): View
     {
-        $content = $siteContent->all();
-
         return view('services.index', [
-            'settings' => $content['settings'],
-            'page' => $content['services_page'],
-            'dropOffPoints' => $content['drop_off_points'],
+            'page' => $content->section('services_page'),
+            'dropOffPoints' => $content->section('drop_off_points'),
             'activeNav' => 'services',
         ]);
     }

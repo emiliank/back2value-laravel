@@ -1,6 +1,6 @@
 @props(['name' => 'shield'])
 
-<span {{ $attributes->merge(['class' => 'icon-badge']) }} aria-hidden="true">
+<span {{ $attributes->merge(['class' => 'icon-badge icon-badge--plain']) }} aria-hidden="true">
     <svg viewBox="0 0 24 24" fill="none">
         @switch($name)
             @case('battery')
@@ -73,6 +73,65 @@
                 @break
             @case('zap')
                 <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                @break
+            @case('calendar')
+                <rect x="3.5" y="5" width="17" height="16" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M9 15.5 11 17.5 15 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                @break
+            @case('services')
+                <path d="M4 21v-4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M8 21v-8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M12 21v-11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M16 21v-6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M20 21V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                @break
+            @case('clipboard')
+                <rect x="5" y="4" width="14" height="17" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+                <rect x="9" y="2.5" width="6" height="3.5" rx="1.2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M9 11h6M9 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                @break
+            @case('refresh')
+                <path d="M20 12a8 8 0 1 1-2.6-5.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M20 3.5V9h-5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                @break
+            @case('whatsapp')
+                <path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M9 8.5c.4 2.5 2 4.1 4.5 5l1.1-1.2 2 .9c-.2 1.2-1.2 2-2.5 2-3.6-.3-6.5-3.2-6.8-6.8 0-1.3.8-2.3 2-2.5l.9 2L9 8.5Z" fill="currentColor"/>
+                @break
+            @case('mail')
+                <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                @break
+            @case('phone')
+                <path d="M7 3H4a1 1 0 0 0-1 1 17 17 0 0 0 17 17 1 1 0 0 0 1-1v-3l-5-2-2 3a14 14 0 0 1-5-5l3-2-2-5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                @break
+            @case('home')
+                <path d="m3 11 9-7 9 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 10v10h12V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                @break
+            @case('chart')
+                <path d="M4 20V4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M4 20h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M8 17V12M12.5 17V8M17 17v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                @break
+            @case('image')
+                <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+                <circle cx="8.5" cy="10" r="1.6" stroke="currentColor" stroke-width="1.8"/>
+                <path d="m4 17 4.5-4.5 3.5 3.5 3-3L20 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                @break
+            @case('sparkles')
+                <path d="m12 3 1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="m18.5 15.5.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                @break
+            @case('box')
+                <path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M4 7l8 4 8-4M12 11v10" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                @break
+            @case('settings')
+                <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M12 2.8v2.4M12 18.8v2.4M4.5 12H2.1M21.9 12h-2.4M6.7 6.7 5 5M19 19l-1.7-1.7M6.7 17.3 5 19M19 5l-1.7 1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                 @break
             @default
                 <path d="M12 3 4.5 6v5.2c0 4.6 3.2 8.3 7.5 9.8 4.3-1.5 7.5-5.2 7.5-9.8V6L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>

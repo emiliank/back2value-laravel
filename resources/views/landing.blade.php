@@ -6,8 +6,11 @@
 @section('content')
     @php
         $whatsappNumber = preg_replace('/\D+/', '', $settings['whatsapp'] ?? '355692734476');
-        $whatsappUrl = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode('Po interesohem për një ofertë për bateri industriale.');
+        $whatsappUrl = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode($settings['whatsapp_message'] ?? 'Po interesohem për një ofertë për bateri industriale.');
         $mapUrl = 'https://maps.google.com/?q='.rawurlencode($settings['map_query'] ?? '');
+        $banner = site('compliance_banner');
+        $contactCards = site('contact_cards');
+        $trust = site('trust');
     @endphp
 
     <section id="top" class="hero">
@@ -30,64 +33,50 @@
 
             <div class="hero__visual">
                 <img
-                    src="{{ asset('images/hero-illustration.svg') }}"
-                    alt="Ilustrim: energji e pastër me bateri industriale, panele solare, turbina erës dhe ekonomi rrethore"
-                    width="960"
-                    height="440"
+                    src="{{ site_image($settings['hero_image'] ?? null) ?? asset('images/hero-illustration.svg') }}"
+                    alt="{{ $settings['hero_image_alt'] ?? '' }}"
+                    width="{{ $settings['hero_image_width'] ?? 960 }}"
+                    height="{{ $settings['hero_image_height'] ?? 440 }}"
                 >
             </div>
         </div>
     </section>
 
-    <div class="promo-strip">
-        <p class="promo-strip__compliance">
-            Back2Value operates in line with
-            <a class="promo-strip__link" href="https://akm.gov.al/ova_doc/ligj-nr-10463-date-22-9-2011-per-menaxhimin-e-integruar-te-mbetjeve/" target="_blank" rel="noreferrer">Albanian waste-management legislation</a>
-            and the
-            <a class="promo-strip__link" href="https://eur-lex.europa.eu/eli/reg/2023/1542/oj/" target="_blank" rel="noreferrer">EU regulatory framework</a>
-            for batteries, waste batteries, and circular economy principles.
-        </p>
-    </div>
+    @if ($banner['enabled'] ?? true)
+        <div class="promo-strip">
+            <p class="promo-strip__compliance">
+                {{ $banner['prefix'] ?? '' }}
+                <a class="promo-strip__link" href="{{ $banner['first_url'] ?? '#' }}" target="_blank" rel="noreferrer">{{ $banner['first_label'] ?? '' }}</a>
+                {{ $banner['middle'] ?? '' }}
+                <a class="promo-strip__link" href="{{ $banner['second_url'] ?? '#' }}" target="_blank" rel="noreferrer">{{ $banner['second_label'] ?? '' }}</a>
+                {{ $banner['suffix'] ?? '' }}
+            </p>
+        </div>
+    @endif
 
     <section class="trust-band" aria-label="Përfitimet kryesore">
         <div class="trust-band__inner">
-            <div class="trust-item">
-                <span class="trust-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4.5 6v5.2c0 4.6 3.2 8.3 7.5 9.8 4.3-1.5 7.5-5.2 7.5-9.8V6L12 3Z" stroke="currentColor" stroke-width="1.8"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-                <span>{{ $trust['title'] }}</span>
-            </div>
-            <div class="trust-item">
-                <span class="trust-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M4 20V8l8-4 8 4v12M8 20v-7h8v7M8 9h.01M12 9h.01M16 9h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-                <span>{{ $trust['subtitle'] }}</span>
-            </div>
-            <div class="trust-item">
-                <span class="trust-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4.5 6v5.2c0 4.6 3.2 8.3 7.5 9.8 4.3-1.5 7.5-5.2 7.5-9.8V6L12 3Z" stroke="currentColor" stroke-width="1.8"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                </span>
-                <span>{{ $trust['guarantee'] }}</span>
-            </div>
-            <div class="trust-item">
-                <span class="trust-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1m-8.6 8.6-2.1 2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/></svg>
-                </span>
-                <span>{{ $trust['service'] }}</span>
-            </div>
+            @foreach ($trust['items'] as $item)
+                <div class="trust-item">
+                    <span class="trust-icon" aria-hidden="true">
+                        <x-section-icon :name="$item['icon']" />
+                    </span>
+                    <span>{{ $item['text'] }}</span>
+                </div>
+            @endforeach
         </div>
     </section>
 
     <section class="page-section page-section--soft">
         <div class="section-shell">
             <div class="section-intro section-intro--small">
-                <span class="eyebrow">{{ $value_props['eyebrow'] }}</span>
-                <h2>{{ $value_props['title'] }}</h2>
-                <p>{{ $value_props['description'] }}</p>
+                <span class="eyebrow">{{ $valueProps['eyebrow'] }}</span>
+                <h2>{{ $valueProps['title'] }}</h2>
+                <p>{{ $valueProps['description'] }}</p>
             </div>
 
             <div class="value-grid">
-                @foreach ($value_props['items'] as $prop)
+                @foreach ($valueProps['items'] as $prop)
                     <article class="value-prop">
                         <x-section-icon :name="$prop['icon']" class="value-prop__icon" />
                         <span class="value-prop__value">{{ $prop['value'] }}</span>
@@ -102,13 +91,13 @@
     <section class="page-section page-section--green">
         <div class="section-shell">
             <div class="section-intro section-intro--small">
-                <span class="eyebrow">{{ $diagnostics_teaser['eyebrow'] }}</span>
-                <h2>{{ $diagnostics_teaser['title'] }}</h2>
-                <p>{{ $diagnostics_teaser['description'] }}</p>
+                <span class="eyebrow">{{ $diagnosticsTeaser['eyebrow'] }}</span>
+                <h2>{{ $diagnosticsTeaser['title'] }}</h2>
+                <p>{{ $diagnosticsTeaser['description'] }}</p>
             </div>
 
             <div class="steps-grid">
-                @foreach ($diagnostics_teaser['steps'] as $index => $step)
+                @foreach ($diagnosticsTeaser['steps'] as $index => $step)
                     <article class="step-card">
                         <span class="step-card__index">{{ $index + 1 }}</span>
                         <h3>{{ $step['title'] }}</h3>
@@ -118,8 +107,10 @@
             </div>
 
             <div class="page-hero__actions">
-                <a class="primary-cta" href="{{ route('diagnostics.create') }}">{{ $diagnostics_teaser['cta'] }}</a>
-                <a class="secondary-cta" href="{{ route('services.index') }}">Shiko shërbimet</a>
+                <a class="primary-cta" href="{{ site_link($diagnosticsTeaser['cta_target'] ?? 'diagnostics') }}">{{ $diagnosticsTeaser['cta'] }}</a>
+                @if (filled($diagnosticsTeaser['secondary_cta'] ?? null))
+                    <a class="secondary-cta" href="{{ site_link($diagnosticsTeaser['secondary_cta_target'] ?? 'services') }}">{{ $diagnosticsTeaser['secondary_cta'] }}</a>
+                @endif
             </div>
         </div>
     </section>
@@ -143,7 +134,7 @@
             </div>
 
             <div class="page-hero__actions">
-                <a class="link-cta link-cta--green" href="{{ route('services.index') }}">Detajet e shërbimeve <span aria-hidden="true">→</span></a>
+                <a class="link-cta link-cta--green" href="{{ site_link(site('services_page', 'detail_link_target', 'regeneration')) }}">{{ site('services_page', 'detail_link', 'Detajet e shërbimeve') }} <span aria-hidden="true">→</span></a>
             </div>
         </div>
     </section>
@@ -151,13 +142,13 @@
     <section id="rigjenerimi" class="page-section page-section--soft">
         <div class="section-shell">
             <div class="section-intro section-intro--small">
-                <span class="eyebrow">{{ $regeneration_page['teaser']['eyebrow'] }}</span>
-                <h2>{{ $regeneration_page['teaser']['title'] }}</h2>
-                <p>{{ $regeneration_page['teaser']['description'] }}</p>
+                <span class="eyebrow">{{ $regenerationPage['teaser_eyebrow'] }}</span>
+                <h2>{{ $regenerationPage['teaser_title'] }}</h2>
+                <p>{{ $regenerationPage['teaser_description'] }}</p>
             </div>
 
             <div class="solution-grid">
-                @foreach ($regeneration_page['tools'] as $tool)
+                @foreach ($regenerationPage['tools'] as $tool)
                     <article class="solution-card">
                         <x-section-icon :name="$tool['icon']" class="solution-card__icon" />
 
@@ -175,8 +166,8 @@
             </div>
 
             <div class="page-hero__actions">
-                <a class="primary-cta" href="{{ route('regeneration.index') }}">{{ $regeneration_page['teaser']['cta'] }}</a>
-                <a class="secondary-cta" href="{{ route('diagnostics.create') }}">Rezervo Diagnostikim</a>
+                <a class="primary-cta" href="{{ site_link($regenerationPage['teaser_cta_target'] ?? 'regeneration') }}">{{ $regenerationPage['teaser_cta'] }}</a>
+                <a class="secondary-cta" href="{{ site_link($regenerationPage['teaser_secondary_cta_target'] ?? 'diagnostics') }}">{{ $regenerationPage['teaser_secondary_cta'] }}</a>
             </div>
         </div>
     </section>
@@ -184,13 +175,13 @@
     <section id="procesi" class="page-section process-section">
         <div class="section-shell">
             <div class="section-intro section-intro--small">
-                <span class="eyebrow">{{ $circular_process['eyebrow'] }}</span>
-                <h2>{{ $circular_process['title'] }}</h2>
-                <p>{{ $circular_process['description'] }}</p>
+                <span class="eyebrow">{{ $circularProcess['eyebrow'] }}</span>
+                <h2>{{ $circularProcess['title'] }}</h2>
+                <p>{{ $circularProcess['description'] }}</p>
             </div>
 
             <ol class="process-flow">
-                @foreach ($circular_process['steps'] as $step)
+                @foreach ($circularProcess['steps'] as $step)
                     <li class="process-step">
                         <span class="process-step__node">
                             <x-section-icon :name="$step['icon']" class="process-step__icon" />
@@ -211,7 +202,7 @@
             </div>
 
             <div class="process-outcomes">
-                @foreach ($circular_process['outcomes'] as $outcome)
+                @foreach ($circularProcess['outcomes'] as $outcome)
                     <article class="process-outcome process-outcome--{{ $outcome['key'] }}">
                         <x-section-icon :name="$outcome['icon']" class="process-outcome__icon" />
                         <div>
@@ -222,10 +213,10 @@
                 @endforeach
 
                 <aside class="process-note">
-                    <span class="eyebrow">{{ $circular_process['note']['eyebrow'] }}</span>
-                    <strong>{{ $circular_process['note']['title'] }}</strong>
-                    <p>{{ $circular_process['note']['description'] }}</p>
-                    <a class="secondary-cta" href="{{ route('sustainability.index') }}">{{ $circular_process['note']['cta'] }}</a>
+                    <span class="eyebrow">{{ $circularProcess['note_eyebrow'] }}</span>
+                    <strong>{{ $circularProcess['note_title'] }}</strong>
+                    <p>{{ $circularProcess['note_description'] }}</p>
+                    <a class="secondary-cta" href="{{ site_link($circularProcess['note_cta_target'] ?? 'sustainability') }}">{{ $circularProcess['note_cta'] }}</a>
                 </aside>
             </div>
         </div>
@@ -300,29 +291,29 @@
         <div class="contact-grid">
             <a class="contact-card contact-card--green" href="{{ $whatsappUrl }}">
                 <span class="contact-ico contact-ico--wa" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.5c.4 2.5 2 4.1 4.5 5l1.1-1.2 2 .9c-.2 1.2-1.2 2-2.5 2-3.6-.3-6.5-3.2-6.8-6.8 0-1.3.8-2.3 2-2.5l.9 2L9 8.5Z" fill="currentColor"/></svg>
+                    <x-section-icon name="whatsapp" />
                 </span>
-                <strong>WhatsApp</strong>
+                <strong>{{ $contactCards['whatsapp_label'] }}</strong>
                 <span>{{ $settings['phone'] }}</span>
             </a>
             <a class="contact-card" href="mailto:{{ $settings['email'] }}">
                 <span class="contact-ico" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <x-section-icon name="mail" />
                 </span>
-                <strong>Email</strong>
+                <strong>{{ $contactCards['email_label'] }}</strong>
                 <span>{{ $settings['email'] }}</span>
             </a>
             <a class="contact-card" href="tel:{{ preg_replace('/\s+/', '', $settings['phone']) }}">
                 <span class="contact-ico" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none"><path d="M7 3H4a1 1 0 0 0-1 1 17 17 0 0 0 17 17 1 1 0 0 0 1-1v-3l-5-2-2 3a14 14 0 0 1-5-5l3-2-2-5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <x-section-icon name="phone" />
                 </span>
-                <strong>Telefon</strong>
+                <strong>{{ $contactCards['phone_label'] }}</strong>
                 <span>{{ $settings['phone'] }}</span>
             </a>
         </div>
 
         <div class="map-wrap">
-            <a class="map-link" href="{{ $mapUrl }}" target="_blank" rel="noreferrer">Hap në Maps <span aria-hidden="true">↗</span></a>
+            <a class="map-link" href="{{ $mapUrl }}" target="_blank" rel="noreferrer">{{ $contactCards['map_label'] }} <span aria-hidden="true">↗</span></a>
             <iframe
                 title="Vendndodhja e Back2Value: {{ $settings['address'] }}"
                 src="https://www.google.com/maps?q={{ urlencode($settings['map_query']) }}&amp;output=embed"

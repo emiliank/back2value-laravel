@@ -1,18 +1,12 @@
 @extends('layouts.public')
 
-@section('title', 'Qendra e burimeve | Back2Value')
-@section('meta_description', 'Udhëzues praktikë për jetëgjatësinë e baterive industriale: karikim, mirëmbajtje, kosto, riciklim dhe përgatitja e dokumentacionit për auditime.')
+@section('title', $page['meta_title'])
+@section('meta_description', $page['meta_description'])
 
 @section('content')
-    @php
-        $whatsappUrl = filled($settings['whatsapp'] ?? null)
-            ? 'https://wa.me/'.preg_replace('/\D+/', '', $settings['whatsapp']).'?text='.rawurlencode('Pyetje teknike për bateritë tona.')
-            : route('home').'#kontakt';
-    @endphp
-
     <x-page-hero :eyebrow="$page['eyebrow']" :title="$page['title']" :description="$page['description']">
-        <a class="primary-cta" href="{{ route('diagnostics.create') }}">Rezervo Diagnostikim</a>
-        <a class="secondary-cta" href="{{ route('services.index') }}">Shërbimet teknike</a>
+        <a class="primary-cta" href="{{ site_link('diagnostics') }}">{{ $page['hero_cta_primary'] }}</a>
+        <a class="secondary-cta" href="{{ site_link($page['hero_cta_secondary_target'] ?? 'services') }}">{{ $page['hero_cta_secondary'] }}</a>
     </x-page-hero>
 
     <section class="page-section">
@@ -31,7 +25,7 @@
 
                         @if (filled($article['paragraphs'] ?? []))
                             <details class="article-more">
-                                <summary>Lexo udhëzuesin e plotë</summary>
+                                <summary>{{ $page['article_more_label'] }}</summary>
 
                                 @foreach ($article['paragraphs'] as $paragraph)
                                     <p>{{ $paragraph }}</p>
@@ -48,30 +42,26 @@
         <div class="section-shell">
             <div class="compliance-panel">
                 <div>
-                    <span class="eyebrow">PLANIFIKIM</span>
-                    <h2>Nga leximi në plan mirëmbajtjeje</h2>
-                    <p>
-                        Materialet janë përgatitur nga ekipi teknik i Back2Value për klientët që duan të ulin kostot dhe të
-                        provojnë mirëmbajtjen para audituesve. Nëse doni një plan konkret për bankën tuaj të baterive,
-                        nisni me një diagnostikim.
-                    </p>
+                    <span class="eyebrow">{{ $page['planning_eyebrow'] }}</span>
+                    <h2>{{ $page['planning_title'] }}</h2>
+                    <p>{{ $page['planning_description'] }}</p>
                 </div>
 
                 <ul class="info-list">
-                    <li>Inventar i plotë i baterive me lokacion dhe kritikalitet</li>
-                    <li>Frekuencë inspektimesh sipas rëndësisë së sistemit</li>
-                    <li>Matje të kapacitetit dhe rezistencës së brendshme në çdo vizitë</li>
-                    <li>Raport zyrtar teknik për çdo cikël mirëmbajtjeje</li>
+                    @foreach ($page['planning_points'] as $point)
+                        <li>{{ $point }}</li>
+                    @endforeach
                 </ul>
             </div>
         </div>
     </section>
 
     <x-cta-band
-        title="Keni një pyetje teknike për bateritë tuaja?"
-        description="Na shkruani ose rezervoni një diagnostikim — përgjigjemi me të dhëna reale nga matjet, jo me supozime."
-        primary-label="Rezervo Diagnostikim"
-        secondary-label="Kontakto në WhatsApp"
-        :secondary-url="$whatsappUrl"
+        :title="$page['cta_title']"
+        :description="$page['cta_description']"
+        :primary-label="$page['cta_primary']"
+        :primary-url="site_link($page['cta_primary_target'] ?? 'diagnostics')"
+        :secondary-label="$page['cta_secondary']"
+        :secondary-url="site_link($page['cta_secondary_target'] ?? 'services')"
     />
 @endsection

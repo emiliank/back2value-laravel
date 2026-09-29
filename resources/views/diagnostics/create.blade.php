@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'Rezervo një diagnostikim baterie | Back2Value')
-@section('meta_description', 'Rezervoni testimin, rigjenerimin ose grumbullimin e baterive tuaja industriale, UPS ose solare. Konfirmim dhe koordinim brenda 24 orëve.')
+@section('title', $page['meta_title'])
+@section('meta_description', $page['meta_description'])
 
 @section('content')
     <x-page-hero :eyebrow="$page['eyebrow']" :title="$page['title']" :description="$page['description']" />
@@ -22,7 +22,7 @@
 
                     @if (isset($errors) && $errors->any())
                         <div class="error-summary" role="alert">
-                            <strong>Formulari ka gabime që duhen korrigjuar:</strong>
+                            <strong>{{ $page['error_summary'] }}</strong>
                             <ul>
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -35,7 +35,7 @@
                         @csrf
 
                         <label class="field">
-                            <span class="field__label">Emri dhe mbiemri</span>
+                            <span class="field__label">{{ $page['label_name'] }}</span>
                             <input class="field__control" type="text" name="customer_name" value="{{ old('customer_name') }}" maxlength="255" required>
                             @error('customer_name')
                                 <span class="field__error">{{ $message }}</span>
@@ -43,7 +43,7 @@
                         </label>
 
                         <label class="field">
-                            <span class="field__label">Kompania (opsionale)</span>
+                            <span class="field__label">{{ $page['label_company'] }}</span>
                             <input class="field__control" type="text" name="company_name" value="{{ old('company_name') }}" maxlength="255">
                             @error('company_name')
                                 <span class="field__error">{{ $message }}</span>
@@ -51,14 +51,14 @@
                         </label>
 
                         <label class="field">
-                            <span class="field__label">Email</span>
+                            <span class="field__label">{{ $page['label_email'] }}</span>
                             <input class="field__control" type="email" name="email" value="{{ old('email') }}" maxlength="255" required>
                             @error('email')
                                 <span class="field__error">{{ $message }}</span>
                             @enderror
                         </label>
                         <label class="field">
-                            <span class="field__label">Telefon</span>
+                            <span class="field__label">{{ $page['label_phone'] }}</span>
                             <input class="field__control" type="tel" name="phone" value="{{ old('phone') }}" maxlength="50" required>
                             @error('phone')
                                 <span class="field__error">{{ $message }}</span>
@@ -68,9 +68,9 @@
 
 
                         <label class="field">
-                            <span class="field__label">Sektori</span>
+                            <span class="field__label">{{ $page['label_sector'] }}</span>
                             <select class="field__control" name="sector" required>
-                                <option value="">Zgjidhni sektorin</option>
+                                <option value="">{{ $page['placeholder_select'] }}</option>
                                 @foreach ($page['sectors'] as $value => $label)
                                     <option value="{{ $value }}" @selected(old('sector') === $value)>{{ $label }}</option>
                                 @endforeach
@@ -81,9 +81,9 @@
                         </label>
 
                         <label class="field">
-                            <span class="field__label">Lloji i baterive</span>
+                            <span class="field__label">{{ $page['label_battery_type'] }}</span>
                             <select class="field__control" name="battery_type" required>
-                                <option value="">Zgjidhni llojin</option>
+                                <option value="">{{ $page['placeholder_select'] }}</option>
                                 @foreach ($page['battery_types'] as $value => $label)
                                     <option value="{{ $value }}" @selected(old('battery_type') === $value)>{{ $label }}</option>
                                 @endforeach
@@ -94,7 +94,7 @@
                         </label>
 
                         <label class="field">
-                            <span class="field__label">Data e preferuar</span>
+                            <span class="field__label">{{ $page['label_date'] }}</span>
                             <input class="field__control" type="date" name="preferred_date" value="{{ old('preferred_date') }}" min="{{ now()->toDateString() }}" required>
                             @error('preferred_date')
                                 <span class="field__error">{{ $message }}</span>
@@ -102,9 +102,9 @@
                         </label>
 
                         <label class="field">
-                            <span class="field__label">Mënyra e shërbimit</span>
+                            <span class="field__label">{{ $page['label_service_preference'] }}</span>
                             <select class="field__control" name="service_preference" required>
-                                <option value="">Zgjidhni mënyrën</option>
+                                <option value="">{{ $page['placeholder_select'] }}</option>
                                 @foreach ($page['service_preferences'] as $value => $label)
                                     <option value="{{ $value }}" @selected(old('service_preference') === $value)>{{ $label }}</option>
                                 @endforeach
@@ -115,7 +115,7 @@
                         </label>
 
                         <label class="field field--wide">
-                            <span class="field__label">Shënime (numri i baterive, vendndodhja, simptomat)</span>
+                            <span class="field__label">{{ $page['label_notes'] }}</span>
                             <textarea class="field__control" name="notes" maxlength="1500">{{ old('notes') }}</textarea>
                             @error('notes')
                                 <span class="field__error">{{ $message }}</span>
@@ -123,8 +123,8 @@
                         </label>
 
                         <div class="form-actions field--wide">
-                            <button class="primary-cta" type="submit">Dërgo kërkesën</button>
-                            <span class="field__hint">Konfirmimi i terminit dhe logjistikës kryhet brenda 24 orëve nga ekipi teknik.</span>
+                            <button class="primary-cta" type="submit">{{ $page['submit_label'] }}</button>
+                            <span class="field__hint">{{ $page['submit_hint'] }}</span>
                         </div>
                     </form>
                 </div>
@@ -135,10 +135,11 @@
     <x-drop-off-points :section="$dropOffPoints" />
 
     <x-cta-band
-        title="Preferoni kontakt të drejtpërdrejtë?"
-        description="Telefononi ose shkruani në WhatsApp dhe ekipi teknik koordinon testin, rigjenerimin ose grumbullimin e baterive."
-        primary-label="Rezervo Diagnostikim"
-        secondary-label="Shiko shërbimet"
-        :secondary-url="route('services.index')"
+        :title="$page['cta_title']"
+        :description="$page['cta_description']"
+        :primary-label="$page['cta_primary']"
+        :primary-url="site_link($page['cta_primary_target'] ?? 'services')"
+        :secondary-label="$page['cta_secondary']"
+        :secondary-url="site_link($page['cta_secondary_target'] ?? 'resources')"
     />
 @endsection

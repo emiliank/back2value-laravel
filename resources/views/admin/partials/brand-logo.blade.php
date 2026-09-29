@@ -1,10 +1,5 @@
 @php
-    $brandSettings = app(\App\Services\SiteContentService::class)->all()['settings'] ?? [];
-    $brandLogo = blank($brandSettings['logo_image'] ?? null) ? null : (
-        str_starts_with($brandSettings['logo_image'], 'logos/')
-            ? \Illuminate\Support\Facades\Storage::disk('public')->url($brandSettings['logo_image'])
-            : asset($brandSettings['logo_image'])
-    );
+    $brandLogo = site_image(site('settings', 'logo_image'));
 @endphp
 
 <span class="brand-box admin-brand__logo{{ $brandLogo ? ' brand-box--image' : '' }}" aria-hidden="true">

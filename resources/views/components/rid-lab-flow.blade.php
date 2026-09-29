@@ -1,59 +1,42 @@
-@props([
-    'data' => [],
-    'siteLogo' => null,
-])
+@props(['data' => [], 'siteLogo' => null])
 
 @php
-    $steps = $data['steps'] ?? [];
-    $badge = $data['badge'] ?? null;
-    $siteLogoUrl = blank($siteLogo) ? null : (
-        str_starts_with($siteLogo, 'logos/')
-            ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteLogo)
-            : asset($siteLogo)
-    );
+    $steps = $data['lab_steps'] ?? [];
+    $siteLogoUrl = site_image($siteLogo);
 @endphp
 
 @if ($steps !== [])
     <section class="page-section">
         <div class="section-shell">
             <div class="section-intro section-intro--small">
-                @isset($data['eyebrow'])
-                    <span class="eyebrow">{{ $data['eyebrow'] }}</span>
-                @endisset
-                <h2>{{ $data['title'] ?? '' }}</h2>
-                @isset($data['description'])
-                    <p>{{ $data['description'] }}</p>
-                @endisset
+                <span class="eyebrow">{{ $data['lab_eyebrow'] ?? '' }}</span>
+                <h2>{{ $data['lab_title'] ?? '' }}</h2>
+                <p>{{ $data['lab_description'] ?? '' }}</p>
             </div>
 
             <div class="lab-flow">
                 <div class="lab-flow__head">
-                    <p class="lab-flow__headline">{{ $data['panel_title'] ?? '' }}</p>
+                    <p class="lab-flow__headline">{{ $data['lab_panel_title'] ?? '' }}</p>
 
                     <div class="lab-flow__brands">
                         <span class="lab-flow__brand lab-flow__brand--site">
                             @if ($siteLogoUrl)
-                                <img
-                                    src="{{ $siteLogoUrl }}"
-                                    alt="Back2Value logo"
-                                    loading="lazy"
-                                    decoding="async"
-                                >
+                                <img src="{{ $siteLogoUrl }}" alt="Back2Value logo" loading="lazy" decoding="async">
                             @else
                                 <span class="site-brand-word">Back<span>2</span>Value</span>
                             @endif
                         </span>
 
-                        @isset($data['brand'])
+                        @if (filled($data['lab_brand_logo'] ?? null))
                             <span class="lab-flow__brand">
                                 <img
-                                    src="{{ asset($data['brand']['logo']) }}"
-                                    alt="{{ $data['brand']['alt'] ?? 'RID Battery · Germany' }}"
+                                    src="{{ site_image($data['lab_brand_logo']) }}"
+                                    alt="{{ $data['lab_brand_alt'] ?? 'RID Battery · Germany' }}"
                                     loading="lazy"
                                     decoding="async"
                                 >
                             </span>
-                        @endisset
+                        @endif
                     </div>
                 </div>
 
@@ -62,7 +45,7 @@
                         <li class="lab-flow__card">
                             <span class="lab-flow__figure">
                                 <img
-                                    src="{{ asset($step['image']) }}"
+                                    src="{{ site_image($step['image'] ?? null) }}"
                                     alt="{{ $step['alt'] ?? $step['title'] }}"
                                     width="{{ $step['width'] ?? null }}"
                                     height="{{ $step['height'] ?? null }}"
@@ -81,15 +64,15 @@
                 </ol>
 
                 <div class="lab-flow__note">
-                    <p>{{ $data['note'] ?? '' }}</p>
+                    <p>{{ $data['lab_note'] ?? '' }}</p>
 
-                    @if ($badge)
+                    @if (filled($data['lab_badge_image'] ?? null))
                         <img
                             class="lab-flow__badge"
-                            src="{{ asset($badge['image']) }}"
-                            alt="{{ $badge['alt'] ?? '' }}"
-                            width="{{ $badge['width'] ?? null }}"
-                            height="{{ $badge['height'] ?? null }}"
+                            src="{{ site_image($data['lab_badge_image']) }}"
+                            alt="{{ $data['lab_badge_alt'] ?? '' }}"
+                            width="{{ $data['lab_badge_width'] ?? null }}"
+                            height="{{ $data['lab_badge_height'] ?? null }}"
                             loading="lazy"
                             decoding="async"
                         >

@@ -1,7 +1,7 @@
 @props([
     'title',
-    'description',
-    'primaryLabel' => 'Rezervo Diagnostikim',
+    'description' => null,
+    'primaryLabel' => null,
     'primaryUrl' => null,
     'secondaryLabel' => null,
     'secondaryUrl' => null,
@@ -12,12 +12,16 @@
         <div class="cta-band__inner">
             <div class="cta-band__copy">
                 <h2>{{ $title }}</h2>
-                <p>{{ $description }}</p>
+                @if (filled($description))
+                    <p>{{ $description }}</p>
+                @endif
             </div>
 
             <div class="cta-band__actions">
-                <a class="primary-cta" href="{{ $primaryUrl ?? route('diagnostics.create') }}">{{ $primaryLabel }}</a>
-                @if ($secondaryLabel && $secondaryUrl)
+                @if (filled($primaryLabel))
+                    <a class="primary-cta" href="{{ $primaryUrl ?? route('diagnostics.create') }}">{{ $primaryLabel }}</a>
+                @endif
+                @if (filled($secondaryLabel) && filled($secondaryUrl))
                     <a class="secondary-cta" href="{{ $secondaryUrl }}">{{ $secondaryLabel }}</a>
                 @endif
             </div>

@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SiteContentService;
+use App\Content\SiteContentRepository;
 use Illuminate\View\View;
 
 class SustainabilityController extends Controller
 {
-    public function index(SiteContentService $siteContent): View
+    public function index(SiteContentRepository $content): View
     {
-        $content = $siteContent->all();
-
         return view('sustainability.index', [
-            'settings' => $content['settings'],
-            'page' => $content['sustainability'],
+            'page' => $content->section('sustainability'),
             'activeNav' => 'sustainability',
         ]);
     }

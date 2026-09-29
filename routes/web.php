@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\BatteryController;
 use App\Http\Controllers\Admin\ContentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\DiagnosticBookingController;
@@ -36,16 +37,18 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
         Route::post('/logout', [AdminAuthController::class, 'destroy'])->name('logout');
 
-        Route::get('/settings', [ContentController::class, 'settings'])->name('settings');
-        Route::put('/settings', [ContentController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/content/{page}', [ContentController::class, 'edit'])->name('content.edit');
+        Route::put('/content/{page}', [ContentController::class, 'update'])->name('content.update');
+        Route::post('/content/{page}/reset', [ContentController::class, 'reset'])->name('content.reset');
 
-        Route::get('/products', [ContentController::class, 'products'])->name('products');
-        Route::put('/products', [ContentController::class, 'updateProducts'])->name('products.update');
+        Route::resource('catalog', BatteryController::class)->except('show')->parameters([
+            'catalog' => 'battery',
+        ]);
 
-        Route::get('/services', [ContentController::class, 'services'])->name('services');
-        Route::put('/services', [ContentController::class, 'updateServices'])->name('services.update');
-
-        Route::get('/about', [ContentController::class, 'about'])->name('about');
-        Route::put('/about', [ContentController::class, 'updateAbout'])->name('about.update');
+        // Backwards-compatible links to the previous bespoke screens.
+        Route::redirect('/settings', '/admin/content/settings')->name('settings');
+        Route::redirect('/products', '/admin/catalog')->name('products');
+        Route::redirect('/services', '/admin/content/services')->name('services');
+        Route::redirect('/about', '/admin/content/about')->name('about');
     });
 });

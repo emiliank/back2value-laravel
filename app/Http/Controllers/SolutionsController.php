@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SiteContentService;
+use App\Content\SiteContentRepository;
 use Illuminate\View\View;
 
 class SolutionsController extends Controller
 {
-    public function index(SiteContentService $siteContent): View
+    public function index(SiteContentRepository $content): View
     {
-        $content = $siteContent->all();
-
         return view('solutions.index', [
-            'settings' => $content['settings'],
-            'page' => $content['solutions'],
-            'applicationFilters' => $content['application_filters'],
+            'page' => $content->section('solutions'),
+            'applicationFilters' => $content->section('application_filters'),
             'activeNav' => 'solutions',
         ]);
     }

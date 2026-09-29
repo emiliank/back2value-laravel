@@ -1,12 +1,12 @@
 @extends('layouts.public')
 
-@section('title', 'Zgjidhjet sipas sektorit | Back2Value')
-@section('meta_description', 'Zgjidhje baterish për industri, energji të rinovueshme, automotive dhe sektorin publik: kontrata SLA, raportim teknik, rigjenerim dhe grumbullim në Shqipëri.')
+@section('title', $page['meta_title'])
+@section('meta_description', $page['meta_description'])
 
 @section('content')
     <x-page-hero :eyebrow="$page['eyebrow']" :title="$page['title']" :description="$page['description']">
-        <a class="primary-cta" href="{{ route('diagnostics.create') }}">Rezervo Diagnostikim</a>
-        <a class="secondary-cta" href="{{ route('services.index') }}">Shiko shërbimet</a>
+        <a class="primary-cta" href="{{ site_link('diagnostics') }}">{{ $page['hero_cta_primary'] }}</a>
+        <a class="secondary-cta" href="{{ site_link($page['hero_cta_secondary_target'] ?? 'services') }}">{{ $page['hero_cta_secondary'] }}</a>
     </x-page-hero>
 
     <section class="page-section">
@@ -46,36 +46,29 @@
     <section class="page-section page-section--green">
         <div class="section-shell">
             <div class="section-intro section-intro--small">
-                <span class="eyebrow">SI PUNOJMË</span>
-                <h2>Nga vlerësimi teknik deri në raport</h2>
-                <p>Çdo angazhim ndjek të njëjtat hapa: matje, vendim teknik i bazuar në të dhëna, ekzekutim dhe dokumentacion.</p>
+                <span class="eyebrow">{{ $page['process_eyebrow'] }}</span>
+                <h2>{{ $page['process_title'] }}</h2>
+                <p>{{ $page['process_description'] }}</p>
             </div>
 
             <div class="steps-grid">
-                <article class="step-card">
-                    <span class="step-card__index">1</span>
-                    <h3>Inventar &amp; kritikalitet</h3>
-                    <p>Regjistrojmë modelin, kapacitetin, datën e instalimit, lokacionin dhe kritikalitetin e çdo banke baterish.</p>
-                </article>
-                <article class="step-card">
-                    <span class="step-card__index">2</span>
-                    <h3>Matje &amp; vendim</h3>
-                    <p>Testojmë kapacitetin dhe rezistencën e brendshme, pastaj krahasojmë rigjenerimin me zëvendësimin.</p>
-                </article>
-                <article class="step-card">
-                    <span class="step-card__index">3</span>
-                    <h3>Ekzekutim &amp; raport</h3>
-                    <p>Aplikojmë shërbimin e zgjedhur, testojmë përsëri dhe dorëzojmë raportin zyrtar teknik për auditim.</p>
-                </article>
+                @foreach ($page['process_steps'] as $index => $step)
+                    <article class="step-card">
+                        <span class="step-card__index">{{ $index + 1 }}</span>
+                        <h3>{{ $step['title'] }}</h3>
+                        <p>{{ $step['description'] }}</p>
+                    </article>
+                @endforeach
             </div>
         </div>
     </section>
 
     <x-cta-band
-        title="Gjeni zgjidhjen për sektorin tuaj"
-        description="Nga flotat e pirunëve deri në bankat e baterive të data center-it — përshtatim shërbimin, kalendarin dhe dokumentacionin sipas kërkesave tuaja."
-        primary-label="Rezervo Diagnostikim"
-        secondary-label="Katalogu i produkteve"
-        :secondary-url="route('products.index')"
+        :title="$page['cta_title']"
+        :description="$page['cta_description']"
+        :primary-label="$page['cta_primary']"
+        :primary-url="site_link($page['cta_primary_target'] ?? 'diagnostics')"
+        :secondary-label="$page['cta_secondary']"
+        :secondary-url="site_link($page['cta_secondary_target'] ?? 'products')"
     />
 @endsection

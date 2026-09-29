@@ -1,50 +1,42 @@
-@props(['settings', 'whatsappUrl' => null])
+@props(['settings' => [], 'whatsappUrl' => null])
 
 @php
-    $siteLogoUrl = blank($settings['logo_image'] ?? null) ? null : (
-        str_starts_with($settings['logo_image'], 'logos/')
-            ? \Illuminate\Support\Facades\Storage::disk('public')->url($settings['logo_image'])
-            : asset($settings['logo_image'])
-    );
-
-    $footerNav = [
-        ['label' => 'Bateritë', 'url' => route('products.index')],
-        ['label' => 'Shërbimet', 'url' => route('services.index')],
-        ['label' => 'Rigjenerim', 'url' => route('regeneration.index')],
-        ['label' => 'Zgjidhjet', 'url' => route('solutions.index')],
-        ['label' => 'Qëndrueshmëria', 'url' => route('sustainability.index')],
-        ['label' => 'Burimet', 'url' => route('resources.index')],
-        ['label' => 'Diagnostikim', 'url' => route('diagnostics.create')],
-    ];
+    $footerItems = $navigation['footer_items'] ?? [];
+    $brandAlt = $navigation['brand_alt'] ?? 'Back2Value logo';
+    $siteLogoUrl = site_image($settings['logo_image'] ?? null);
+    $mapUrl = 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($settings['map_query'] ?? $settings['address'] ?? '');
 @endphp
 
 <footer class="site-footer">
     <div class="site-footer__inner">
-        <a class="site-footer__brand" href="{{ route('home') }}" aria-label="Back2Value home">
+        <a class="site-footer__brand" href="{{ route('home') }}" aria-label="{{ $brandAlt }}">
             @if ($siteLogoUrl)
-                <img class="site-footer__logo" src="{{ $siteLogoUrl }}" alt="Back2Value logo">
+                <img class="site-footer__logo" src="{{ $siteLogoUrl }}" alt="{{ $brandAlt }}">
             @else
                 <span class="site-footer__word">Back<span>2</span>Value</span>
             @endif
         </a>
 
         <nav class="footer-nav" aria-label="Lidhje të shpejta">
-            @foreach ($footerNav as $item)
-                <a href="{{ $item['url'] }}">{{ $item['label'] }}</a>
+            @foreach ($footerItems as $item)
+                <a href="{{ site_link($item['target'] ?? 'home') }}">{{ $item['label'] }}</a>
             @endforeach
         </nav>
 
         <div class="footer-contact">
             <a href="tel:{{ preg_replace('/\s+/', '', $settings['phone'] ?? '') }}">{{ $settings['phone'] ?? '' }}</a>
             <a href="mailto:{{ $settings['email'] ?? '' }}">{{ $settings['email'] ?? '' }}</a>
-            <a href="{{ $whatsappUrl }}">WhatsApp</a>
+            <a href="{{ $whatsappUrl }}">{{ $navigation['footer_whatsapp_label'] ?? 'WhatsApp' }}</a>
+            <a href="{{ $mapUrl }}" target="_blank" rel="noopener">{{ site('contact_cards.map_label', 'Hap në Maps') }}</a>
         </div>
 
         <p class="footer-description">{{ $settings['footer_description'] ?? '' }}</p>
 
         <div class="footer-bottom">
-            <span>© {{ date('Y') }} Back2Value shpk. Të gjitha të drejtat e rezervuara.</span>
-            <span>Partner zyrtar RID-Batterie në Shqipëri</span>
+            <span>&copy; {{ date('Y') }} {{ $navigation['footer_copyright'] ?? 'Back2Value shpk. Të gjitha të drejtat e rezervuara.' }}</span>
+            @if (filled($navigation['footer_partner_line'] ?? null))
+                <span>{{ $navigation['footer_partner_line'] }}</span>
+            @endif
         </div>
     </div>
 </footer>

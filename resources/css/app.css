@@ -24,36 +24,41 @@
     --shadow: 0 18px 38px -28px rgba(17, 26, 46, 0.28);
 }
 
-* {
-    box-sizing: border-box;
-}
+/* Element resets belong in the base layer. Unlayered rules outrank every
+   Tailwind utility, so an unlayered `a { color: inherit }` would silently
+   defeat utilities such as `text-white` on the catalogue filter pills. */
+@layer base {
+    * {
+        box-sizing: border-box;
+    }
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 106px;
-}
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 106px;
+    }
 
-body {
-    min-width: 320px;
-    min-height: 100vh;
-    margin: 0;
-    background: var(--page-bg);
-    color: var(--text);
-    font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-}
+    body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background: var(--page-bg);
+        color: var(--text);
+        font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
 
-button {
-    font: inherit;
-}
+    button {
+        font: inherit;
+    }
 
-svg {
-    display: block;
+    svg {
+        display: block;
+    }
 }
 
 .site-header {
@@ -423,7 +428,6 @@ svg {
 .product-card {
     display: flex;
     min-width: 0;
-    min-height: 790px;
     flex-direction: column;
     padding: 22px 38px 34px;
     border: 1px solid #e6e9ed;
@@ -985,7 +989,6 @@ svg {
     }
 
     .product-card {
-        min-height: 760px;
         padding-right: 26px;
         padding-left: 26px;
     }
@@ -1423,6 +1426,15 @@ svg {
     *::after {
         scroll-behavior: auto !important;
         transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    /* Reveal targets must not be left hidden when motion is disabled. */
+    .has-motion [data-reveal],
+    .has-motion [data-reveal-icon] {
+        opacity: 1 !important;
+        transform: none !important;
     }
 }
 
@@ -2949,6 +2961,99 @@ textarea.field__control {
 
     .process-note {
         grid-column: auto;
+    }
+}
+
+
+/* Section icons render inline (trust band, lists) without the badge box. */
+.icon-badge--plain svg {
+    width: 100%;
+    height: 100%;
+}
+
+@layer components {
+    /* ------------------------------------------------------------------
+       Motion system
+
+       A restrained, professional set: scroll reveals, gentle hover lifts
+       and a stats count-up. Everything is opt-in through the `has-motion`
+       class that the script adds, so a browser without JavaScript (or a
+       crawler) still sees every element fully visible.
+       ------------------------------------------------------------------ */
+
+    .has-motion [data-reveal] {
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+            opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+            transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+        transition-delay: var(--reveal-delay, 0ms);
+    }
+
+    .has-motion [data-reveal].is-revealed {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* Icon tiles lift a little later than the card they belong to, which
+       reads as the card settling in and its detail following. The observer only
+       ever marks the card, so the icon must follow its revealed ancestor. */
+    .has-motion [data-reveal-icon] {
+        opacity: 0;
+        transform: translateY(10px) scale(0.96);
+        transition:
+            opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+            transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+        transition-delay: var(--reveal-icon-delay, 0ms);
+    }
+
+    .has-motion [data-reveal].is-revealed [data-reveal-icon],
+    .has-motion [data-reveal-icon].is-revealed {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* Hover lift. Scoped to the card families used across the public pages. */
+    .value-prop,
+    .solution-card,
+    .contact-card,
+    .step-card,
+    .partner-card,
+    .stat-card,
+    .service-card,
+    .service-detail,
+    .about-card,
+    .commitment-card,
+    .drop-off-card,
+    .article-card {
+        transition:
+            transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+            box-shadow 0.28s ease,
+            border-color 0.28s ease;
+    }
+
+    @media (hover: hover) {
+        .value-prop:hover,
+        .solution-card:hover,
+        .contact-card:hover,
+        .step-card:hover,
+        .partner-card:hover,
+        .stat-card:hover,
+        .service-card:hover,
+        .service-detail:hover,
+        .about-card:hover,
+        .commitment-card:hover,
+        .drop-off-card:hover,
+        .article-card:hover,
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 34px -22px rgba(17, 26, 46, 0.4);
+        }
+    }
+
+    /* The sticky header gains a little weight once the page scrolls. */
+    .has-motion .site-header.is-scrolled {
+        box-shadow: 0 10px 24px -20px rgba(17, 26, 46, 0.55);
     }
 }
 

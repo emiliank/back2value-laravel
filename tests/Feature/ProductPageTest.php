@@ -122,7 +122,7 @@ class ProductPageTest extends TestCase
         $response = $this->get('/products');
 
         $response->assertOk()
-            ->assertSee('Aplikimi:')
+            ->assertSee(config('site.catalog_page.applications_label'))
             ->assertSee('Industriale & Pirunë')
             ->assertSee('Backup Power & UPS')
             ->assertSee('Solar & Energji e Rinovueshme')
@@ -135,7 +135,7 @@ class ProductPageTest extends TestCase
         $response = $this->get('/products');
 
         $response->assertOk()
-            ->assertSee('Gjej baterinë për mjetin tënd')
+            ->assertSee(config('site.catalog_page.finder_title'))
             ->assertSee('name="v_type"', false)
             ->assertSee('name="v_make"', false)
             ->assertSee('name="v_model"', false)
@@ -145,7 +145,7 @@ class ProductPageTest extends TestCase
             ->assertSee('name="v_capacity"', false)
             ->assertSee('name="vin"', false)
             ->assertSee('name="v_notes"', false)
-            ->assertSee('Gjej përshtatjen më të mirë', false)
+            ->assertSee(config('site.catalog_page.finder_submit'), false)
             ->assertDontSee('€');
     }
 
@@ -185,7 +185,7 @@ class ProductPageTest extends TestCase
 
         $response->assertOk()
             ->assertSee('VIN-i duhet të ketë saktësisht 17 karaktere.', false)
-            ->assertDontSee('VIN i vlefshëm', false);
+            ->assertDontSee(config('site.catalog_page.vin_valid_text'), false);
     }
 
     public function test_vehicle_finder_decodes_valid_vin_region_and_model_year(): void
@@ -193,10 +193,10 @@ class ProductPageTest extends TestCase
         $response = $this->get('/products?vin=WVWZZZ1KZAW000001&v_year=2010');
 
         $response->assertOk()
-            ->assertSee('VIN i vlefshëm', false)
+            ->assertSee(config('site.catalog_page.vin_valid_text'), false)
             ->assertSee('Evropë', false)
-            ->assertSee('përputhet me vitin e zgjedhur', false)
-            ->assertSee('Konfirmo përshtatjen me VIN', false);
+            ->assertSee(config('site.catalog_page.vin_match_text'), false)
+            ->assertSee(config('site.catalog_page.vin_confirm_label'), false);
     }
 
     public function test_products_page_shows_catalog_imagery(): void
@@ -214,4 +214,3 @@ class ProductPageTest extends TestCase
             ->assertDontSee('€');
     }
 }
-

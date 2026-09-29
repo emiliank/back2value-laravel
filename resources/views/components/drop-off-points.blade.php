@@ -1,14 +1,15 @@
-@props(['section'])
+@props(['section' => null])
 
 @php
-    $points = $section['items'] ?? [];
+    $dropOff = $section ?? site('drop_off_points');
+    $points = $dropOff['items'] ?? [];
 @endphp
 
 <section class="drop-off section-shell">
     <div class="section-intro section-intro--small">
-        <span class="eyebrow">{{ $section['eyebrow'] ?? '' }}</span>
-        <h2>{{ $section['title'] ?? '' }}</h2>
-        <p>{{ $section['description'] ?? '' }}</p>
+        <span class="eyebrow">{{ $dropOff['eyebrow'] ?? '' }}</span>
+        <h2>{{ $dropOff['title'] ?? '' }}</h2>
+        <p>{{ $dropOff['description'] ?? '' }}</p>
     </div>
 
     <div class="drop-off-grid">
@@ -18,17 +19,17 @@
                 <h3>{{ $point['title'] ?? '' }}</h3>
                 <dl>
                     <div>
-                        <dt>Adresa</dt>
+                        <dt>{{ $dropOff['address_label'] ?? 'Adresa' }}</dt>
                         <dd>{{ $point['address'] ?? '' }}</dd>
                     </div>
                     <div>
-                        <dt>Telefon</dt>
+                        <dt>{{ $dropOff['phone_label'] ?? 'Telefon' }}</dt>
                         <dd>
                             <a href="tel:{{ preg_replace('/\D+/', '', $point['phone'] ?? '') }}">{{ $point['phone'] ?? '' }}</a>
                         </dd>
                     </div>
                     <div>
-                        <dt>Orari</dt>
+                        <dt>{{ $dropOff['hours_label'] ?? 'Orari' }}</dt>
                         <dd>{{ $point['hours'] ?? '' }}</dd>
                     </div>
                 </dl>

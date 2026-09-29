@@ -18,6 +18,7 @@ class BatteryFactory extends Factory
         $capacity = $this->faker->randomElement([40, 60, 80, 100, 120, 150, 180, 220, 260, 320]);
         $brand = $this->faker->randomElement(['RID', 'Trojan', 'Victron', 'HBL', 'EnerSys', 'PowerSafe']);
         $applicationTypes = ['auto', 'solar', 'backup_power'];
+        $stockStatus = $this->faker->randomElement(Battery::STOCK_STATUSES);
 
         return [
             'serial_number' => 'BAT-'.strtoupper($this->faker->bothify('??###')).'-'.$this->faker->unique()->numerify('####'),
@@ -29,6 +30,23 @@ class BatteryFactory extends Factory
             'sale_price' => $this->faker->randomFloat(2, 320, 1400),
             'warranty_months' => $this->faker->numberBetween(12, 36),
             'is_available' => $this->faker->boolean(70),
+            'stock_status' => $stockStatus,
         ];
+    }
+
+    public function outOfStock(): static
+    {
+        return $this->state(fn (): array => [
+            'is_available' => true,
+            'stock_status' => 'out_of_stock',
+        ]);
+    }
+
+    public function onPreorder(): static
+    {
+        return $this->state(fn (): array => [
+            'is_available' => true,
+            'stock_status' => 'on_preorder',
+        ]);
     }
 }

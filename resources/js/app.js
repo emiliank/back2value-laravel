@@ -1,67 +1,64 @@
-document.addEventListener('DOMContentLoaded', () => {
+const ready = (callback) => {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', callback);
+        return;
+    }
+
+    callback();
+};
+
+// ---------------------------------------------------------------
+// Public site
+// ---------------------------------------------------------------
+
+const initMobileNavigation = () => {
     const toggle = document.querySelector('[data-mobile-toggle]');
     const menu = document.querySelector('[data-mobile-menu]');
 
-    if (toggle && menu) {
-        toggle.addEventListener('click', () => {
-            const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-            toggle.setAttribute('aria-expanded', String(!isOpen));
-            toggle.setAttribute('aria-label', isOpen ? 'Hap menunë' : 'Mbyll menunë');
-            menu.hidden = isOpen;
-        });
+    if (!(toggle instanceof HTMLElement) || !(menu instanceof HTMLElement)) {
+        return;
     }
 
+    const setOpen = (isOpen) => {
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        toggle.setAttribute('aria-label', isOpen ? 'Mbyll menunë' : 'Hap menunë');
+        menu.hidden = !isOpen;
+    };
+
+    toggle.addEventListener('click', () => {
+        setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    menu.addEventListener('click', (event) => {
+        if (event.target.closest('a')) {
+            setOpen(false);
+        }
+    });
+};
+
+const initAnchorScrolling = () => {
     document.querySelectorAll('a[href^="#"]').forEach((link) => {
         link.addEventListener('click', (event) => {
-            const targetId = link.getAttribute('href');
-            if (!targetId || targetId === '#') {
+            const selector = link.getAttribute('href');
+
+            if (!selector || selector === '#') {
                 return;
             }
 
-            const target = document.querySelector(targetId);
+            const target = document.querySelector(selector);
+
             if (!target) {
                 return;
             }
 
             event.preventDefault();
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-            if (menu && !menu.hidden) {
-                menu.hidden = true;
-                toggle.setAttribute('aria-expanded', 'false');
-                toggle.setAttribute('aria-label', 'Hap menunë');
-            }
+            history.replaceState(null, '', selector);
         });
     });
+};
 
-    let rowSequence = 0;
-
-    document.querySelectorAll('[data-add-row]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const template = document.getElementById(button.dataset.addRow);
-            const list = document.getElementById(button.dataset.list);
-
-            if (!(template instanceof HTMLTemplateElement) || !list) {
-                return;
-            }
-
-            const rowKey = `new-${Date.now()}-${rowSequence++}`;
-            const row = template.content.cloneNode(true);
-
-            row.querySelectorAll('[name], [value]').forEach((element) => {
-                ['name', 'value'].forEach((attribute) => {
-                    const value = element.getAttribute(attribute);
-
-                    if (value?.includes('__KEY__')) {
-                        element.setAttribute(attribute, value.replaceAll('__KEY__', rowKey));
-                    }
-                });
-            });
-
-            list.append(row);
-        });
-    });
-
+const initSavingsCalculator = () => {
     document.querySelectorAll('[data-savings-calculator]').forEach((root) => {
         const count = root.querySelector('[data-battery-count]');
         const weight = root.querySelector('[data-battery-weight]');
@@ -72,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const leadShare = 0.55;
-        const co2PerKgLead = 1.6;
+        const leadShare = Number.parseFloat(root.dataset.leadShare ?? '0.55') || 0.55;
+        const co2PerKgLead = Number.parseFloat(root.dataset.co2PerKg ?? '1.6') || 1.6;
 
         const readNumber = (input) => {
             const value = Number.parseInt(input.value, 10);
@@ -81,11 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return Number.isFinite(value) && value > 0 ? value : 0;
         };
 
-        const format = (value) => new Intl.NumberFormat('sq-AL', { maximumFractionDigits: 0 }).format(Math.round(value));
+        const format = (value) =>
+            new Intl.NumberFormat('sq-AL', { maximumFractionDigits: 0 }).format(Math.round(value));
 
         const update = () => {
-            const totalWeight = readNumber(count) * readNumber(weight);
-            const recoveredLead = totalWeight * leadShare;
+            const recoveredLead = readNumber(count) * readNumber(weight) * leadShare;
 
             lead.textContent = format(recoveredLead);
             co2.textContent = format(recoveredLead * co2PerKgLead);
@@ -95,7 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         update();
     });
+};
 
+const initMaintenanceInquiry = () => {
     document.querySelectorAll('[data-maintenance-inquiry]').forEach((form) => {
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -112,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(form.action, {
                     method: 'POST',
                     headers: {
-                        'Accept': 'application/json',
+                        Accept: 'application/json',
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': token ?? '',
                     },
@@ -140,50 +139,324 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+};
 
-    document.querySelectorAll('[data-repeat-list]').forEach((list) => {
-        list.addEventListener('click', (event) => {
-            if (!(event.target instanceof Element)) {
-                return;
-            }
+// ---------------------------------------------------------------
+// Admin content editor
+// ---------------------------------------------------------------
 
-            const removeButton = event.target.closest('[data-remove-row]');
-            removeButton?.closest('[data-repeat-card]')?.remove();
+const uniqueKey = (list) => {
+    const used = new Set(
+        Array.from(list.querySelectorAll('[data-repeat-card] input[name$="[key]"]')).map((input) => input.value),
+    );
+
+    let index = list.querySelectorAll('[data-repeat-card]').length + 1;
+    let key = `item-${index}`;
+
+    while (used.has(key)) {
+        index += 1;
+        key = `item-${index}`;
+    }
+
+    return key;
+};
+
+const hydrate = (node, list) => {
+    node.querySelectorAll('input[type="file"]').forEach((input) => {
+        input.dataset.repeaterBound = 'true';
+    });
+
+    node.querySelectorAll('[data-repeat-card]').forEach((card) => {
+        card.dataset.rowKey = card.querySelector('input[name$="[key]"]')?.value ?? '';
+    });
+
+    refreshMoveButtons(list);
+};
+
+const refreshMoveButtons = (list) => {
+    if (!list) {
+        return;
+    }
+
+    const cards = Array.from(list.querySelectorAll('[data-repeat-card]'));
+
+    cards.forEach((card, index) => {
+        const up = card.querySelector('[data-move-row="up"]');
+        const down = card.querySelector('[data-move-row="down"]');
+
+        if (up) up.hidden = index === 0;
+        if (down) down.hidden = index === cards.length - 1;
+    });
+};
+
+const initRepeaters = () => {
+    document.querySelectorAll('[data-add-row]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const template = document.getElementById(button.dataset.addRow);
+            const list = document.getElementById(button.dataset.list);
+
+            if (!(template instanceof HTMLTemplateElement) || !list) return;
+
+            const key = uniqueKey(list);
+
+            list.querySelector('.admin-repeater__empty')?.remove();
+            list.append(template.content.cloneNode(true).querySelector('[data-repeat-card]'));
+
+            const card = list.querySelector('[data-repeat-card]:last-child');
+
+            card?.querySelectorAll('input, textarea, select').forEach((field) => {
+                field.name = field.name.replaceAll('__KEY__', key);
+            });
+
+            hydrate(card, list);
+            card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
+    });
 
-        list.addEventListener('change', (event) => {
-            if (!(event.target instanceof HTMLInputElement) || event.target.type !== 'file') {
-                return;
+    document.querySelectorAll('[data-remove-row]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const card = button.closest('[data-repeat-card]');
+            const list = button.closest('[data-repeat-list]');
+
+            card?.remove();
+
+            if (list && list.querySelectorAll('[data-repeat-card]').length === 0) {
+                list.insertAdjacentHTML(
+                    'beforeend',
+                    '<p class="admin-repeater__empty">Nuk ka ende rreshta. Shtoni rreshtin e parë me butonin sipër.</p>',
+                );
             }
 
-            const file = event.target.files?.[0];
-            const card = event.target.closest('[data-repeat-card]');
+            refreshMoveButtons(list);
+        });
+    });
 
-            if (!file || !card) {
-                return;
-            }
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-move-row]');
 
-            let preview = card.querySelector('[data-image-preview]');
+        if (!button) return;
 
-            if (!preview) {
-                preview = document.createElement('div');
-                preview.className = 'admin-product-preview';
-                preview.dataset.imagePreview = '';
-                const image = document.createElement('img');
-                image.alt = 'Parapamje e imazhit të ri';
-                preview.append(image);
-                card.querySelector('.admin-product-edit')?.prepend(preview);
+        const card = button.closest('[data-repeat-card]');
+        const list = button.closest('[data-repeat-list]');
 
-                if (!preview.parentElement) {
-                    card.querySelector('.admin-form-grid')?.before(preview);
-                }
-            }
+        if (!card || !list) return;
 
-            const image = preview.querySelector('img');
+        const sibling = button.dataset.moveRow === 'up' ? card.previousElementSibling : card.nextElementSibling;
 
-            if (image) {
-                image.src = URL.createObjectURL(file);
+        if (!sibling || !sibling.matches('[data-repeat-card]')) return;
+
+        if (button.dataset.moveRow === 'up') {
+            list.insertBefore(card, sibling);
+        } else {
+            sibling.after(card);
+        }
+
+        refreshMoveButtons(list);
+    });
+
+    document.querySelectorAll('[data-repeat-list]').forEach((list) => refreshMoveButtons(list));
+};
+
+const initImagePreviews = () => {
+    document.addEventListener('change', (event) => {
+        const input = event.target;
+
+        if (!(input instanceof HTMLInputElement) || input.type !== 'file' || !input.files?.length) return;
+
+        const preview = input.closest('.admin-image-field')?.querySelector('.admin-product-preview');
+
+        if (!preview) return;
+
+        const file = input.files[0];
+
+        if (!file.type.startsWith('image/')) return;
+
+        preview.innerHTML = '';
+        preview.append(Object.assign(new Image(), { src: URL.createObjectURL(file), alt: '' }));
+    });
+};
+
+const initConfirmations = () => {
+    document.querySelectorAll('[data-confirm]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            if (!window.confirm(button.dataset.confirm)) {
+                event.preventDefault();
             }
         });
     });
+};
+
+const initContentForms = () => {
+    document.querySelectorAll('[data-content-form]').forEach((form) => {
+        form.addEventListener('submit', () => {
+            const submit = form.querySelector('button[type="submit"]');
+
+            if (submit) submit.dataset.busy = 'true';
+        });
+    });
+};
+
+// ---------------------------------------------------------------
+// Motion
+// ---------------------------------------------------------------
+
+const REVEAL_SELECTOR = [
+    '.section-intro',
+    '.eyebrow',
+    '.value-prop',
+    '.solution-card',
+    '.contact-card',
+    '.step-card',
+    '.partner-card',
+    '.stat-card',
+    '.service-card',
+    '.service-detail',
+    '.about-card',
+    '.commitment-card',
+    '.drop-off-card',
+    '.article-card',
+    '.product-card',
+    '.product-group__head',
+].join(', ');
+
+const REVEAL_ICON_SELECTOR = '.icon-badge, .contact-ico, .section-icon';
+
+const prefersReducedMotion = () =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * Count a numeric stat up to its final value once it scrolls into view.
+ * Non-numeric values (e.g. "24/7") are left exactly as authored.
+ */
+const countUpStats = (root) => {
+    root.querySelectorAll('.stat-card strong').forEach((node) => {
+        const text = node.textContent.trim();
+        const match = text.match(/^(\D*)(\d[\d\s.,]*)(\D*)$/);
+
+        if (!match) return;
+
+        const [, prefix, digits, suffix] = match;
+        const target = Number(digits.replace(/[\s,.]/g, ''));
+
+        if (!Number.isFinite(target) || target === 0) return;
+
+        const duration = 900;
+        const start = performance.now();
+
+        const tick = (now) => {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - (1 - progress) ** 3;
+            const value = Math.round(target * eased);
+
+            node.textContent = prefix + value.toLocaleString('en-US') + suffix;
+
+            if (progress < 1) {
+                requestAnimationFrame(tick);
+                return;
+            }
+
+            node.textContent = text;
+        };
+
+        requestAnimationFrame(tick);
+    });
+};
+
+const initMotion = () => {
+    const header = document.querySelector('.site-header');
+
+    if (header) {
+        const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+    }
+
+    if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') {
+        return;
+    }
+
+    // Stats that are already on screen at load are not reveal targets, so give
+    // them their count-up directly.
+    document.querySelectorAll('.stat-card').forEach((card) => {
+        if (card.getBoundingClientRect().top < window.innerHeight) {
+            countUpStats(card);
+        }
+    });
+
+    // A section heading contains its own eyebrow label, and a card contains its
+    // icon. Animating both would compound the effect, so keep only the outermost
+    // target in each chain and let the icon fade travel with its card.
+    const targets = [...document.querySelectorAll(REVEAL_SELECTOR)].filter(
+        (element) => !element.parentElement?.closest(REVEAL_SELECTOR),
+    );
+
+    if (!targets.length) {
+        document.documentElement.classList.add('has-motion');
+        return;
+    }
+
+    const groups = new Map();
+
+    targets.forEach((element) => {
+        if (element.closest('header, nav, .site-header, .footer-contact')) return;
+
+        // Never animate what is already on screen at load, otherwise the hero
+        // visibly assembles itself and above-the-fold content flashes.
+        if (element.getBoundingClientRect().top < window.innerHeight) return;
+
+        const parent = element.parentElement;
+
+        if (!groups.has(parent)) groups.set(parent, []);
+        groups.get(parent).push(element);
+
+        element.dataset.reveal = '';
+
+        const icon = element.querySelector(REVEAL_ICON_SELECTOR);
+
+        if (icon) {
+            icon.dataset.revealIcon = '';
+        }
+    });
+
+    // Stagger siblings slightly so a row of cards arrives as a wave.
+    groups.forEach((siblings) => {
+        siblings.forEach((element, index) => {
+            element.style.setProperty('--reveal-delay', `${Math.min(index, 5) * 70}ms`);
+            element.style.setProperty('--reveal-icon-delay', `${Math.min(index, 5) * 70 + 90}ms`);
+        });
+    });
+
+    document.documentElement.classList.add('has-motion');
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+
+                entry.target.classList.add('is-revealed');
+                countUpStats(entry.target);
+                observer.unobserve(entry.target);
+            });
+        },
+        // threshold must stay 0: a ratio-based threshold is unreachable for
+        // elements taller than the viewport (a category section holding dozens
+        // of products never gets 12% of itself on screen), which would leave
+        // them stuck at opacity 0. The negative bottom margin still delays the
+        // reveal until the element has travelled a little way into view.
+        { rootMargin: '0px 0px -8% 0px', threshold: 0 },
+    );
+
+    document.querySelectorAll('[data-reveal]').forEach((element) => observer.observe(element));
+};
+
+ready(() => {
+    initMobileNavigation();
+    initAnchorScrolling();
+    initSavingsCalculator();
+    initMaintenanceInquiry();
+    initMotion();
+    initRepeaters();
+    initImagePreviews();
+    initConfirmations();
+    initContentForms();
 });

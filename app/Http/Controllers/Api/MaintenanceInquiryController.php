@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Content\SiteContentRepository;
 use App\Http\Controllers\Controller;
 use App\Mail\MaintenanceInquiryMail;
 use App\Models\MaintenanceAgreement;
@@ -9,17 +10,20 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 
 class MaintenanceInquiryController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, SiteContentRepository $content): JsonResponse
     {
+        $sectors = $content->section('services_page')['form_sectors'] ?? [];
+
         $validated = $request->validate([
             'company_name' => ['required', 'string', 'max:255'],
             'contact_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['required', 'string', 'max:50'],
-            'sector' => ['required', 'in:telecom,data_center,banks'],
+            'sector' => ['required', Rule::in(array_keys($sectors))],
             'fleet_size' => ['required', 'integer', 'min:1'],
             'requirements' => ['required', 'string', 'max:2000'],
             'message' => ['nullable', 'string', 'max:2000'],

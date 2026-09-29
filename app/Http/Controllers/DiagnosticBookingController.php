@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Content\SiteContentRepository;
 use App\Http\Requests\DiagnosticBookingRequest;
 use App\Mail\DiagnosticBookingMail;
 use App\Models\DiagnosticBooking;
-use App\Services\SiteContentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -13,14 +13,11 @@ use Illuminate\View\View;
 
 class DiagnosticBookingController extends Controller
 {
-    public function create(SiteContentService $siteContent): View
+    public function create(SiteContentRepository $content): View
     {
-        $content = $siteContent->all();
-
         return view('diagnostics.create', [
-            'settings' => $content['settings'],
-            'page' => $content['diagnostics_page'],
-            'dropOffPoints' => $content['drop_off_points'],
+            'page' => $content->section('diagnostics_page'),
+            'dropOffPoints' => $content->section('drop_off_points'),
             'activeNav' => 'diagnostics',
         ]);
     }
@@ -43,6 +40,6 @@ class DiagnosticBookingController extends Controller
 
         return redirect()
             ->route('diagnostics.create')
-            ->with('status', 'Kërkesa u dërgua me sukses. Ekipi teknik do t\'ju kontaktojë brenda 24 orëve.');
+            ->with('status', site('diagnostics_page', 'success_message', 'Kërkesa u dërgua me sukses.'));
     }
 }
