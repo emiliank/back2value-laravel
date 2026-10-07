@@ -28,7 +28,7 @@
                 @endforeach
             </div>
 
-            <div class="stats-grid" aria-label="Treguesit e qëndrueshmërisë">
+            <div class="stats-grid" aria-label="{{ __('site.sustainability_metrics') }}">
                 @foreach ($page['metrics'] as $metric)
                     <div class="stat-card">
                         <strong>{{ $metric['value'] }}</strong>
@@ -56,8 +56,6 @@
             </div>
         </div>
     </section>
-
-    <x-savings-calculator />
 
     <x-cta-band
         :title="$page['cta_title']"

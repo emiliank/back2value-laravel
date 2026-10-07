@@ -13,7 +13,7 @@ class VehicleFitmentServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new VehicleFitmentService();
+        $this->service = new VehicleFitmentService;
     }
 
     public function test_is_active_detects_any_vehicle_parameter(): void

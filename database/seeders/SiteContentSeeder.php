@@ -8,15 +8,18 @@ use Illuminate\Database\Seeder;
 class SiteContentSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Seed the shipped copy for every published locale, so the database holds
+     * the same content the application falls back to.
      */
     public function run(): void
     {
-        foreach (config('site') as $section => $payload) {
-            SiteContent::query()->firstOrCreate(
-                ['section' => $section],
-                ['payload' => $payload],
-            );
+        foreach ((array) config('locales.available', []) as $locale => $meta) {
+            foreach ((array) config('site.'.$locale, []) as $section => $payload) {
+                SiteContent::query()->firstOrCreate(
+                    ['section' => $section, 'locale' => $locale],
+                    ['payload' => $payload],
+                );
+            }
         }
     }
 }

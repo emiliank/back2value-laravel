@@ -36,6 +36,105 @@ const initMobileNavigation = () => {
     });
 };
 
+const initPartnerMarquees = () => {
+    document.querySelectorAll('[data-partner-marquee]').forEach((marquee) => {
+        const viewport = marquee.querySelector('[data-partner-marquee-viewport]');
+        const track = marquee.querySelector('[data-partner-marquee-track]');
+        const group = marquee.querySelector('[data-partner-marquee-group]');
+
+        if (!viewport || !track || !group) return;
+
+        let resizeTimer;
+
+        const build = () => {
+            track.querySelectorAll('[data-partner-marquee-group]').forEach((duplicate) => {
+                if (duplicate !== group) {
+                    duplicate.remove();
+                }
+            });
+
+            const groupWidth = group.offsetWidth;
+
+            if (!groupWidth) return;
+
+            const copies = Math.max(2, Math.ceil((viewport.clientWidth + groupWidth) / groupWidth));
+
+            for (let index = 1; index < copies; index += 1) {
+                const duplicate = group.cloneNode(true);
+
+                duplicate.setAttribute('aria-hidden', 'true');
+                duplicate.querySelectorAll('a').forEach((link) => link.setAttribute('tabindex', '-1'));
+                track.appendChild(duplicate);
+            }
+
+            const duration = Math.min(45, Math.max(10, groupWidth / 30));
+
+            track.style.setProperty('--marquee-shift', `${groupWidth}px`);
+            track.style.setProperty('--marquee-duration', `${duration}s`);
+        };
+
+        const scheduleBuild = () => {
+            window.clearTimeout(resizeTimer);
+            resizeTimer = window.setTimeout(build, 200);
+        };
+
+        build();
+        window.addEventListener('resize', scheduleBuild, { passive: true });
+    });
+};
+
+const initPartnerLogoBackgrounds = () => {
+    document.querySelectorAll('img[data-logo-background="black"], img[data-logo-background="white"]').forEach((image) => {
+        const removeBackground = () => {
+            if (image.dataset.backgroundProcessed || !image.naturalWidth || !image.naturalHeight) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = image.naturalWidth;
+            canvas.height = image.naturalHeight;
+
+            const context = canvas.getContext('2d', { willReadFrequently: true });
+
+            if (!context) return;
+
+            try {
+                context.drawImage(image, 0, 0);
+
+                const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+                const backgroundValue = image.dataset.logoBackground === 'white' ? 255 : 0;
+                const transparentThreshold = 28;
+                const featherThreshold = 76;
+
+                for (let index = 0; index < data.length; index += 4) {
+                    const distance = Math.max(
+                        Math.abs(data[index] - backgroundValue),
+                        Math.abs(data[index + 1] - backgroundValue),
+                        Math.abs(data[index + 2] - backgroundValue),
+                    );
+
+                    if (distance <= transparentThreshold) {
+                        data[index + 3] = 0;
+                    } else if (distance < featherThreshold) {
+                        data[index + 3] = Math.round(data[index + 3] * (distance - transparentThreshold) / (featherThreshold - transparentThreshold));
+                    }
+                }
+
+                context.putImageData(new ImageData(data, canvas.width, canvas.height), 0, 0);
+                image.dataset.backgroundProcessed = 'true';
+                image.classList.add('partner-card__logo--processed');
+                image.src = canvas.toDataURL('image/png');
+            } catch {
+                image.dataset.backgroundProcessingFailed = 'true';
+            }
+        };
+
+        image.addEventListener('load', removeBackground);
+
+        if (image.complete) {
+            removeBackground();
+        }
+    });
+};
+
 const initAnchorScrolling = () => {
     document.querySelectorAll('a[href^="#"]').forEach((link) => {
         link.addEventListener('click', (event) => {
@@ -178,7 +277,7 @@ const refreshMoveButtons = (list) => {
         return;
     }
 
-    const cards = Array.from(list.querySelectorAll('[data-repeat-card]'));
+    const cards = Array.from(list.querySelectorAll('[data-repeat-card]')).filter((card) => !card.hidden);
 
     cards.forEach((card, index) => {
         const up = card.querySelector('[data-move-row="up"]');
@@ -213,22 +312,31 @@ const initRepeaters = () => {
         });
     });
 
-    document.querySelectorAll('[data-remove-row]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const card = button.closest('[data-repeat-card]');
-            const list = button.closest('[data-repeat-list]');
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-remove-row]');
 
-            card?.remove();
+        if (!button) return;
 
-            if (list && list.querySelectorAll('[data-repeat-card]').length === 0) {
-                list.insertAdjacentHTML(
-                    'beforeend',
-                    '<p class="admin-repeater__empty">Nuk ka ende rreshta. Shtoni rreshtin e parë me butonin sipër.</p>',
-                );
-            }
+        const card = button.closest('[data-repeat-card]');
+        const list = button.closest('[data-repeat-list]');
+        const repeater = button.closest('[data-repeater]');
+        const deletion = card?.querySelector('input[name$="[remove]"]');
+        const deletionBin = repeater?.querySelector('[data-repeat-deletions]');
 
-            refreshMoveButtons(list);
-        });
+        if (!card || !list || !deletion || !deletionBin) return;
+
+        deletion.value = '1';
+        deletionBin.append(deletion);
+        card.remove();
+
+        if (list.querySelectorAll('[data-repeat-card]').length === 0) {
+            list.insertAdjacentHTML(
+                'beforeend',
+                '<p class="admin-repeater__empty">Nuk ka ende rreshta. Shtoni rreshtin e parë me butonin sipër.</p>',
+            );
+        }
+
+        refreshMoveButtons(list);
     });
 
     document.addEventListener('click', (event) => {
@@ -451,6 +559,8 @@ const initMotion = () => {
 
 ready(() => {
     initMobileNavigation();
+    initPartnerMarquees();
+    initPartnerLogoBackgrounds();
     initAnchorScrolling();
     initSavingsCalculator();
     initMaintenanceInquiry();

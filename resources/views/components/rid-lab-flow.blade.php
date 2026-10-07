@@ -1,8 +1,8 @@
-@props(['data' => [], 'siteLogo' => null])
+@props(['data' => []])
 
 @php
     $steps = $data['lab_steps'] ?? [];
-    $siteLogoUrl = site_image($siteLogo);
+    $siteLogoUrl = site_image(site_logo());
 @endphp
 
 @if ($steps !== [])

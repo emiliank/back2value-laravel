@@ -126,11 +126,34 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $this->get('/')
+        $this->get('/sq/')
             ->assertOk()
             ->assertSee('Bateri për çdo biznes')
             ->assertSee('+355 68 123 4567')
             ->assertSee('#15803d');
+    }
+
+    public function test_admin_can_save_navigation_changes_when_another_text_field_is_empty(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $navigation = config('site.sq.navigation');
+        $navigation['header_items'][0]['label'] = 'Bateritë tona';
+        $navigation['header_cta_primary'] = '';
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'navigation']), [
+                'navigation' => $navigation,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $saved = SiteContent::query()->where('section', 'navigation')->where('locale', 'sq')->value('payload');
+
+        $this->assertSame('Bateritë tona', $saved['header_items'][0]['label']);
+        $this->assertNull($saved['header_cta_primary']);
+        $this->get('/sq/')->assertSee('Bateritë tona');
     }
 
     public function test_admin_can_save_with_browser_style_dotted_form_keys(): void
@@ -153,7 +176,7 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $this->get('/')
+        $this->get('/sq/')
             ->assertOk()
             ->assertSee('Bateri nga browseri')
             ->assertSee('+355 68 000 1111');
@@ -187,29 +210,21 @@ class CmsDashboardTest extends TestCase
         $this->assertStringNotContainsString('name="settings.hero_title"', $html);
     }
 
-    public function test_multi_line_validation_errors_render_without_a_server_error(): void
+    public function test_admin_can_save_blank_multi_line_content(): void
     {
         $admin = User::factory()->create([
             'email' => 'admin@example.test',
         ]);
-
-        // Multi-line fields are validated per line, so the error bag holds
-        // implicit keys and get() returns an array rather than a message.
-        $response = $this->actingAs($admin)
-            ->from(route('admin.content.edit', ['page' => 'settings']))
-            ->post(route('admin.content.update', ['page' => 'settings']), [
-                '_method' => 'PUT',
-                'settings' => $this->siteSettings([
-                    'products_description' => '',
-                ]),
-            ]);
-
-        $response->assertRedirect(route('admin.content.edit', ['page' => 'settings']));
-        $response->assertSessionHasErrors();
+        $settings = $this->siteSettings(['products_description' => '']);
 
         $this->actingAs($admin)
-            ->get(route('admin.content.edit', ['page' => 'settings']))
-            ->assertOk();
+            ->put(route('admin.content.update', ['page' => 'settings']), ['settings' => $settings])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $saved = SiteContent::query()->where('section', 'settings')->where('locale', 'sq')->value('payload');
+
+        $this->assertNull($saved['products_description']);
     }
 
     public function test_admin_can_upload_and_render_a_custom_logo(): void
@@ -229,7 +244,7 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $this->get('/')
+        $this->get('/sq/')
             ->assertOk()
             ->assertSee('Back2Value logo', false)
             ->assertSee('/storage/', false);
@@ -238,6 +253,259 @@ class CmsDashboardTest extends TestCase
             ->assertOk()
             ->assertSee('Back2Value logo', false)
             ->assertSee('/storage/', false);
+    }
+
+    public function test_admin_can_upload_a_partner_logo(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $partners = config('site.sq.partners');
+        $partners['items'][0]['logo'] = UploadedFile::fake()->image('rid-partner.png', 480, 240);
+        $partners['items'][0]['logo_alt'] = 'RID Batterie logo';
+        $partners['items'][0]['url'] = 'https://partner.example.test/about';
+        $partners['items'][0]['logo_background'] = 'white';
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'homepage']), ['partners' => $partners])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $saved = SiteContent::query()->where('section', 'partners')->where('locale', 'sq')->value('payload');
+
+        $this->assertSame('RID Batterie logo', $saved['items'][0]['logo_alt']);
+        $this->assertSame('https://partner.example.test/about', $saved['items'][0]['url']);
+        $this->assertSame('white', $saved['items'][0]['logo_background']);
+        Storage::disk('public')->assertExists($saved['items'][0]['logo']);
+
+        $this->get('/sq/')
+            ->assertOk()
+            ->assertSee('data-partner-marquee', false)
+            ->assertSee('RID Batterie logo', false)
+            ->assertSee('href="https://partner.example.test/about"', false)
+            ->assertSee('partner-card__logo--white', false)
+            ->assertSee(Storage::disk('public')->url($saved['items'][0]['logo']), false);
+    }
+
+    public function test_partner_logo_defaults_to_black_background_blending(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $partners = config('site.sq.partners');
+        $partners['items'][0]['logo'] = UploadedFile::fake()->image('partner.png', 480, 240);
+        $partners['items'][0]['logo_background'] = null;
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'homepage']), ['partners' => $partners])
+            ->assertSessionHasNoErrors();
+
+        $this->get('/sq/')
+            ->assertOk()
+            ->assertSee('partner-card__logo--black', false);
+    }
+
+    public function test_partner_marquee_shows_only_partners_that_have_a_logo(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $partners = config('site.sq.partners');
+        $partners['items'][0]['logo'] = UploadedFile::fake()->image('partner.png', 480, 240);
+        $partners['items'][1]['logo'] = null;
+        $partners['items'][1]['logo_remove'] = '1';
+        $withoutLogo = $partners['items'][1]['name'];
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'homepage']), ['partners' => $partners])
+            ->assertSessionHasNoErrors();
+
+        $response = $this->get('/sq/')
+            ->assertOk()
+            ->assertSee('data-partner-marquee', false)
+            ->assertSee('data-partner-marquee-group', false)
+            ->assertDontSee($withoutLogo);
+    }
+
+    public function test_admin_can_remove_a_partner_logo_from_the_english_editor(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $partners = config('site.en.partners');
+        $partners['items'][0]['logo'] = UploadedFile::fake()->image('partner.png', 480, 240);
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'homepage', 'locale' => 'en']), ['partners' => $partners])
+            ->assertSessionHasNoErrors();
+
+        $saved = SiteContent::query()->where('section', 'partners')->where('locale', 'en')->value('payload');
+        $logoPath = $saved['items'][0]['logo'];
+        Storage::disk('public')->assertExists($logoPath);
+
+        $browserRows = [];
+
+        foreach ($saved['items'] as $index => $item) {
+            $browserRows['item-'.$index] = array_merge($item, [
+                'remove' => '0',
+                'logo_path' => $item['logo'],
+            ]);
+        }
+        $browserRows['item-0']['logo_remove'] = '1';
+
+        $html = $this->get(route('admin.content.edit', ['page' => 'homepage', 'locale' => 'en']))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString('name="partners[items][item-0][logo_remove]"', $html);
+
+        $this->put(route('admin.content.update', ['page' => 'homepage', 'locale' => 'en']), [
+            'partners' => array_merge($saved, ['items' => $browserRows]),
+        ])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $after = SiteContent::query()->where('section', 'partners')->where('locale', 'en')->value('payload');
+
+        $this->assertNull($after['items'][0]['logo']);
+        Storage::disk('public')->assertMissing($logoPath);
+    }
+
+    public function test_admin_can_remove_a_partner_row_without_adding_another(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $partners = config('site.en.partners');
+        $removedName = $partners['items'][0]['name'];
+        $remainingRows = [];
+
+        foreach ($partners['items'] as $index => $item) {
+            $remainingRows['item-'.$index] = array_merge($item, [
+                'remove' => $index === 0 ? '1' : '0',
+            ]);
+        }
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'homepage', 'locale' => 'en']), [
+                'partners' => array_merge($partners, ['items' => $remainingRows]),
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $saved = SiteContent::query()->where('section', 'partners')->where('locale', 'en')->value('payload');
+
+        $this->assertCount(count($partners['items']) - 1, $saved['items']);
+        $this->assertNotSame($removedName, $saved['items'][0]['name']);
+    }
+
+    public function test_partially_updating_partner_rows_preserves_existing_rows(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $partners = config('site.sq.partners');
+        $partners['items'][0]['logo'] = UploadedFile::fake()->image('partner-a.png', 480, 240);
+        $partners['items'][1]['logo'] = UploadedFile::fake()->image('partner-b.png', 480, 240);
+        $partners['items'][2]['logo'] = UploadedFile::fake()->image('partner-c.png', 480, 240);
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'homepage']), ['partners' => $partners])
+            ->assertSessionHasNoErrors();
+
+        $saved = SiteContent::query()->where('section', 'partners')->where('locale', 'sq')->value('payload');
+        $partial = [
+            'eyebrow' => $saved['eyebrow'],
+            'title' => $saved['title'],
+            'description' => $saved['description'],
+            'items' => [
+                'item-0' => [
+                    'name' => 'Updated RID partner',
+                    'country' => $saved['items'][0]['country'],
+                    'description' => $saved['items'][0]['description'],
+                    'logo' => null,
+                    'logo_path' => $saved['items'][0]['logo'],
+                    'logo_alt' => $saved['items'][0]['logo_alt'] ?? null,
+                    'url' => $saved['items'][0]['url'] ?? null,
+                    'logo_background' => $saved['items'][0]['logo_background'] ?? 'black',
+                    'remove' => '0',
+                ],
+            ],
+        ];
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'homepage']), ['partners' => $partial])
+            ->assertSessionHasNoErrors();
+
+        $after = SiteContent::query()->where('section', 'partners')->where('locale', 'sq')->value('payload');
+
+        $this->assertCount(count($saved['items']), $after['items']);
+        $this->assertSame('Updated RID partner', $after['items'][0]['name']);
+        $this->assertSame($saved['items'][1]['name'], $after['items'][1]['name']);
+        $this->assertSame($saved['items'][2]['name'], $after['items'][2]['name']);
+    }
+
+    public function test_admin_cannot_save_a_partner_link_with_a_non_http_scheme(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $partners = config('site.sq.partners');
+        $partners['items'][0]['url'] = 'javascript:alert(1)';
+
+        $this->actingAs($admin)
+            ->from(route('admin.content.edit', ['page' => 'homepage']))
+            ->put(route('admin.content.update', ['page' => 'homepage']), ['partners' => $partners])
+            ->assertSessionHasErrors('partners.items.0.url');
+    }
+
+    public function test_saving_homepage_preserves_process_outcome_keys(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $process = config('site.sq.circular_process');
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'homepage']), ['circular_process' => $process])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $saved = SiteContent::query()->where('section', 'circular_process')->where('locale', 'sq')->value('payload');
+
+        $this->assertSame('resale', data_get($saved, 'outcomes.0.key'));
+        $this->get('/sq/')->assertOk();
+    }
+
+    public function test_homepage_renders_saved_process_outcomes_without_keys(): void
+    {
+        $content = SiteContent::query()->where('section', 'circular_process')->where('locale', 'sq')->firstOrFail();
+        $payload = $content->payload;
+
+        foreach ($payload['outcomes'] as &$outcome) {
+            unset($outcome['key']);
+        }
+        unset($outcome);
+
+        $content->payload = $payload;
+        $content->save();
+
+        $this->get('/sq/')
+            ->assertOk()
+            ->assertSee('process-outcome--resale', false)
+            ->assertSee('process-outcome--recycling', false);
     }
 
     public function test_settings_reject_invalid_accent_colors(): void
@@ -271,6 +539,19 @@ class CmsDashboardTest extends TestCase
             ->assertSee('data-add-row="template-', false);
     }
 
+    public function test_nested_navigation_repeater_uses_php_safe_field_names(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.content.edit', ['page' => 'navigation']))
+            ->assertOk()
+            ->assertSee('name="navigation[header_items][item-0][label]"', false)
+            ->assertDontSee('name="navigation.header_items[item-0][label]"', false);
+    }
+
     public function test_admin_can_add_and_remove_a_product(): void
     {
         $admin = User::factory()->create([
@@ -279,7 +560,7 @@ class CmsDashboardTest extends TestCase
 
         $rows = [];
 
-        foreach (config('site.products') as $index => $product) {
+        foreach (config('site.sq.products') as $index => $product) {
             $row = $product;
             $row['features'] = implode("\n", $row['features']);
             $rows['item-'.$index] = $row;
@@ -301,7 +582,7 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $stored = SiteContent::query()->where('section', 'products')->value('payload');
+        $stored = SiteContent::query()->where('section', 'products')->where('locale', 'sq')->value('payload');
 
         $this->assertCount(3, $stored);
         $this->assertSame('Bateri e re nga admini', $stored[2]['title']);
@@ -321,13 +602,14 @@ class CmsDashboardTest extends TestCase
             ])
             ->assertSessionHasNoErrors();
 
-        $this->assertDatabaseHas('site_contents', ['section' => 'settings']);
+        $this->assertDatabaseHas('site_contents', ['section' => 'settings', 'locale' => 'sq']);
 
         $this->post(route('admin.content.reset', ['page' => 'settings']))
             ->assertRedirect(route('admin.content.edit', ['page' => 'settings']))
             ->assertSessionHas('status');
 
-        $this->assertDatabaseMissing('site_contents', ['section' => 'settings']);
+        $this->assertDatabaseMissing('site_contents', ['section' => 'settings', 'locale' => 'sq']);
+        $this->assertDatabaseHas('site_contents', ['section' => 'settings', 'locale' => 'en']);
     }
 
     public function test_admin_can_add_remove_and_upload_product_images(): void
@@ -337,7 +619,7 @@ class CmsDashboardTest extends TestCase
         $admin = User::factory()->create([
             'email' => 'admin@example.test',
         ]);
-        $products = config('site.products');
+        $products = config('site.sq.products');
         unset($products[1]);
 
         foreach ($products as &$product) {
@@ -364,14 +646,14 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $storedProducts = SiteContent::query()->where('section', 'products')->firstOrFail()->payload;
+        $storedProducts = SiteContent::query()->where('section', 'products')->where('locale', 'sq')->firstOrFail()->payload;
         $this->assertCount(2, $storedProducts);
         $this->assertSame('custom-product', $storedProducts[1]['key']);
         $this->assertSame(['Karakteristikë e parë', 'Karakteristikë e dytë'], $storedProducts[1]['features']);
         Storage::disk('public')->assertExists($storedProducts[1]['image']);
         $this->assertSame('Bateri e re për industri', $storedProducts[1]['title']);
 
-        $this->get('/')
+        $this->get('/sq/')
             ->assertOk()
             ->assertDontSee('Bateri e re për industri')
             ->assertDontSee('Bateri Startimi (Flota &amp; Kamionë)');
@@ -382,7 +664,7 @@ class CmsDashboardTest extends TestCase
         $admin = User::factory()->create([
             'email' => 'admin@example.test',
         ]);
-        $services = config('site.services');
+        $services = config('site.sq.services');
 
         foreach ($services as $index => $service) {
             $services[$index]['remove'] = '1';
@@ -395,17 +677,36 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasErrors('services');
     }
 
+    public function test_admin_cannot_remove_every_service_from_the_browser_repeater(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $existing = SiteContent::query()->where('section', 'services')->where('locale', 'sq')->value('payload');
+
+        $this->actingAs($admin)
+            ->from(route('admin.content.edit', ['page' => 'services']))
+            ->put(route('admin.content.update', ['page' => 'services']), [
+                'services' => ['item-0' => ['remove' => '1']],
+            ])
+            ->assertRedirect(route('admin.content.edit', ['page' => 'services']))
+            ->assertSessionHasErrors('services');
+
+        $this->assertSame($existing, SiteContent::query()->where('section', 'services')->where('locale', 'sq')->value('payload'));
+    }
+
     public function test_admin_can_update_services_about_content_and_statistics(): void
     {
         $admin = User::factory()->create([
             'email' => 'admin@example.test',
         ]);
-        $services = config('site.services');
-        $about = config('site.about');
-        $stats = config('site.stats');
+        $services = config('site.sq.services');
+        $about = config('site.sq.about');
+        $stats = config('site.sq.stats');
 
         $services[0]['title'] = 'Kontroll i baterisë';
         $about['title'] = 'Pse të na zgjidhni?';
+        $about['faqs'][0]['question'] = 'Si kontaktoj Back2Value?';
         $stats['items'][0]['value'] = '3yr';
 
         $this->actingAs($admin)
@@ -416,16 +717,20 @@ class CmsDashboardTest extends TestCase
         $this->put(route('admin.content.update', ['page' => 'about']), [
             'about' => $about,
             'stats' => $stats,
-            'trust' => config('site.trust'),
+            'trust' => config('site.sq.trust'),
         ])
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $this->get('/')
+        $this->get('/sq/')
             ->assertOk()
             ->assertSee('Kontroll i baterisë')
             ->assertSee('Pse të na zgjidhni?')
             ->assertSee('3yr');
+
+        $this->get('/sq/resources')
+            ->assertOk()
+            ->assertSee('Si kontaktoj Back2Value?');
     }
 
     public function test_admin_can_edit_the_trust_band_items(): void
@@ -434,14 +739,14 @@ class CmsDashboardTest extends TestCase
             'email' => 'admin@example.test',
         ]);
 
-        $trust = config('site.trust');
+        $trust = config('site.sq.trust');
         $trust['items'][0]['text'] = 'Origjinale nga Gjermania';
 
         $this->actingAs($admin)
             ->put(route('admin.content.update', ['page' => 'about']), ['trust' => $trust])
             ->assertSessionHasNoErrors();
 
-        $this->get('/')->assertOk()->assertSee('Origjinale nga Gjermania');
+        $this->get('/sq/')->assertOk()->assertSee('Origjinale nga Gjermania');
     }
 
     public function test_admin_cannot_change_site_content_sections_outside_the_allow_list(): void
@@ -476,6 +781,6 @@ class CmsDashboardTest extends TestCase
      */
     private function siteSettings(array $overrides = []): array
     {
-        return array_merge(config('site.settings'), $overrides);
+        return array_merge(config('site.sq.settings'), $overrides);
     }
 }

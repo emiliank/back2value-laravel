@@ -27,7 +27,7 @@ class DiagnosticControllerTest extends TestCase
             'is_available' => true,
         ]);
 
-        $response = $this->postJson('/diagnostics', [
+        $response = $this->postJson(route('diagnostics.store', ['locale' => 'sq']), [
             'battery_id' => $battery->id,
             'user_id' => $user->id,
             'initial_voltage' => 12.8,

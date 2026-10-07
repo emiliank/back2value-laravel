@@ -15,7 +15,7 @@ class LandingPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $response = $this->get('/');
+        $response = $this->get('/sq/');
 
         $response->assertStatus(200);
         $response->assertSee('Bateri gjermane. Garanci reale. Shërbim vendor.');
@@ -28,15 +28,13 @@ class LandingPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $response = $this->get('/');
+        $response = $this->get('/sq/');
 
         $response->assertOk()
             ->assertSee('Rikthejmë 50–100% të kapacitetit origjinal')
             ->assertSee('Kapacitet i rikthyer')
             ->assertSee('Rezervo Diagnostikim')
-            ->assertSee('RID Battery GmbH')
-            ->assertSee('Enterprise Europe Network Albania')
-            ->assertSee('Nehemiah Gateway Albania')
+            ->assertSee('Të mbështetur nga partnerë ndërkombëtarë')
             ->assertSee(route('diagnostics.create'), false)
             ->assertSee(route('sustainability.index'), false)
             ->assertSee(route('resources.index'), false)
@@ -47,7 +45,7 @@ class LandingPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $response = $this->get('/');
+        $response = $this->get('/sq/');
 
         $response->assertOk()
             ->assertSee('Back2Value operates in line with')
@@ -62,7 +60,7 @@ class LandingPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $response = $this->get('/');
+        $response = $this->get('/sq/');
 
         $response->assertOk()
             ->assertSee('images/hero-illustration.svg', false)
@@ -75,7 +73,7 @@ class LandingPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $response = $this->get('/');
+        $response = $this->get('/sq/');
 
         $response->assertOk()
             ->assertSee('id="procesi"', false)
@@ -86,9 +84,8 @@ class LandingPageTest extends TestCase
             ->assertSee('Aktivizimi')
             ->assertSee('Rishitje')
             ->assertSee('Riciklim')
-            ->assertSee('Zero mbetje në landfill')
+            ->assertDontSee('Zero mbetje në landfill')
             ->assertSee('process-flow', false)
-            ->assertSee(route('sustainability.index'), false)
             ->assertDontSee('€');
     }
 
@@ -109,7 +106,7 @@ class LandingPageTest extends TestCase
             'is_available' => true,
         ]);
 
-        $homeResponse = $this->get('/');
+        $homeResponse = $this->get('/sq/');
 
         $homeResponse->assertStatus(200);
         // Products and prices must not be shown on the home page
@@ -117,7 +114,7 @@ class LandingPageTest extends TestCase
         $homeResponse->assertDontSee('€');
 
         // Products should be displayed on the dedicated products catalog page
-        $productsResponse = $this->get('/products');
+        $productsResponse = $this->get('/sq/products');
         $productsResponse->assertStatus(200);
         $productsResponse->assertSee('RID Series OPzS');
         $productsResponse->assertSee('RID 6 OPzS 600');

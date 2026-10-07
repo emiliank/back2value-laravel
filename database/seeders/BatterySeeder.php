@@ -8022,7 +8022,7 @@ class BatterySeeder extends Seeder
             358 => [
                 'serial_number' => 'RID-DIAG-RIDBRG20BATTERYREGENERATOR',
                 'brand' => 'RID',
-                'category' => 'Batteries Diagnostics',
+                'category' => 'Battery Diagnostic Service',
                 'model' => 'RID BRG-20 BATTERY REGENERATOR',
                 'capacity_ah' => 20,
                 'voltage' => '1V-20V/35A',
@@ -8043,7 +8043,7 @@ class BatterySeeder extends Seeder
             359 => [
                 'serial_number' => 'RID-DIAG-RIDBRG35BATTERYREGENERATOR',
                 'brand' => 'RID',
-                'category' => 'Batteries Diagnostics',
+                'category' => 'Battery Diagnostic Service',
                 'model' => 'RID BRG-35 BATTERY REGENERATOR',
                 'capacity_ah' => 35,
                 'voltage' => '2V-35V/45A',
@@ -8064,7 +8064,7 @@ class BatterySeeder extends Seeder
             360 => [
                 'serial_number' => 'RID-DIAG-RIDBRG60BATTERYREGENERATOR',
                 'brand' => 'RID',
-                'category' => 'Batteries Diagnostics',
+                'category' => 'Battery Diagnostic Service',
                 'model' => 'RID BRG-60 BATTERY REGENERATOR',
                 'capacity_ah' => 60,
                 'voltage' => '3V-65V/15A',
@@ -8085,7 +8085,7 @@ class BatterySeeder extends Seeder
             361 => [
                 'serial_number' => 'RID-DIAG-RIDBMG30BATTERYTESTER',
                 'brand' => 'RID',
-                'category' => 'Batteries Diagnostics',
+                'category' => 'Battery Diagnostic Service',
                 'model' => 'RID BMG-30 BATTERY TESTER',
                 'capacity_ah' => 30,
                 'voltage' => '0,1V-30V',
@@ -8106,7 +8106,7 @@ class BatterySeeder extends Seeder
             362 => [
                 'serial_number' => 'RID-DIAG-RIDBATTERYLOGGER',
                 'brand' => 'RID',
-                'category' => 'Batteries Diagnostics',
+                'category' => 'Battery Diagnostic Service',
                 'model' => 'RID BATTERY LOGGER',
                 'capacity_ah' => 95,
                 'voltage' => '7V-95V',
@@ -8116,7 +8116,7 @@ class BatterySeeder extends Seeder
                 'purchase_price' => 800.0,
                 'sale_price' => 1400.0,
                 'warranty_months' => 24,
-                'is_available' => true,
+                'is_available' => false,
                 'description' => 'Pajisje profesionale për matjen e rezistencës së brendshme, testimin dhe rigjenerimin e të gjitha llojeve të baterive.',
                 'specs' => [
                     'voltage_range' => '7V-95V',

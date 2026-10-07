@@ -1,0 +1,21 @@
+<svg width="760" height="360" viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Enterprise Europe Network logo">
+  <rect width="760" height="360" fill="#000"/>
+
+  <g fill="#f9c600">
+    <g transform="translate(38 62)">
+      <path d="M19 0 L30 24 L56 24 L36 39 L45 65 L19 49 L-8 65 L1 39 L-19 24 L7 24 Z"/>
+      <path d="M92 0 L103 24 L129 24 L109 39 L118 65 L92 49 L66 65 L75 39 L55 24 L81 24 Z"/>
+      <path d="M165 0 L176 24 L202 24 L182 39 L191 65 L165 49 L139 65 L148 39 L128 24 L154 24 Z"/>
+      <path d="M238 0 L249 24 L275 24 L255 39 L264 65 L238 49 L212 65 L221 39 L201 24 L227 24 Z"/>
+      <path d="M311 0 L322 24 L348 24 L328 39 L337 65 L311 49 L285 65 L294 39 L274 24 L300 24 Z"/>
+      <path d="M384 0 L395 24 L421 24 L401 39 L410 65 L384 49 L358 65 L367 39 L347 24 L373 24 Z"/>
+      <path d="M457 0 L468 24 L494 24 L474 39 L483 65 L457 49 L431 65 L440 39 L420 24 L446 24 Z"/>
+    </g>
+  </g>
+
+  <g fill="#1d4ea3" font-family="Arial, Helvetica, sans-serif" font-weight="900">
+    <text x="58" y="156" font-size="56">enterprise</text>
+    <text x="58" y="216" font-size="56">europe</text>
+    <text x="58" y="276" font-size="56">network</text>
+  </g>
+</svg>

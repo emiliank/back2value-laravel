@@ -6,7 +6,9 @@
 @section('content')
     <x-page-hero :eyebrow="$page['eyebrow']" :title="$page['title']" :description="$page['description']">
         <a class="primary-cta" href="{{ site_link($page['hero_cta_primary_target'] ?? 'diagnostics') }}">{{ $page['hero_cta_primary'] ?? 'Rezervo Diagnostikim' }}</a>
-        <a class="secondary-cta" href="{{ site_link($page['hero_cta_secondary_target'] ?? 'calculator') }}">{{ $page['hero_cta_secondary'] ?? 'Kalkulator kursimi' }}</a>
+        @if (filled($page['hero_cta_secondary'] ?? null) && ($page['hero_cta_secondary_target'] ?? null) !== 'calculator')
+            <a class="secondary-cta" href="{{ site_link($page['hero_cta_secondary_target']) }}">{{ $page['hero_cta_secondary'] }}</a>
+        @endif
     </x-page-hero>
 
     <section class="page-section">
@@ -37,8 +39,6 @@
             </div>
         </div>
     </section>
-
-    <x-savings-calculator />
 
     <x-drop-off-points :section="$dropOffPoints" />
 

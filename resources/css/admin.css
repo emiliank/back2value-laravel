@@ -267,6 +267,41 @@
     letter-spacing: 0.14em;
 }
 
+.admin-locale-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 24px;
+    padding: 5px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.admin-locale-tabs a {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    border-radius: 8px;
+    color: #5b6472;
+    font-size: 0.88rem;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.admin-locale-tabs a:hover {
+    background: #f1f5f9;
+    color: #172136;
+}
+
+.admin-locale-tabs a.is-active {
+    background: #0d9e73;
+    color: #fff;
+}
+
 .admin-button {
     display: inline-flex;
     min-height: 43px;

@@ -14,7 +14,7 @@ class RegenerationPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/regeneration')
+        $this->get('/sq/regeneration')
             ->assertOk()
             ->assertSee('RID Tester & RID Rigenerator')
             ->assertSee('RID BMG-30 Battery Tester')
@@ -32,7 +32,7 @@ class RegenerationPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/regeneration')
+        $this->get('/sq/regeneration')
             ->assertOk()
             ->assertSee('Si funksionon laboratori ynë i baterive:')
             ->assertSee('1. Pranimi')
@@ -51,7 +51,7 @@ class RegenerationPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/')
+        $this->get('/sq/')
             ->assertOk()
             ->assertSee('RID Tester & RID Rigenerator')
             ->assertSee('RID BMG-30 Battery Tester')
@@ -64,11 +64,11 @@ class RegenerationPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/products')
+        $this->get('/sq/products')
             ->assertOk()
             ->assertSee(route('regeneration.index'), false);
 
-        $this->get('/services')
+        $this->get('/sq/services')
             ->assertOk()
             ->assertSee(route('regeneration.index'), false)
             ->assertSee('RID Tester & RID Rigenerator');

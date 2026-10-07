@@ -54,7 +54,7 @@
         </div>
     @endif
 
-    <section class="trust-band" aria-label="Përfitimet kryesore">
+    <section class="trust-band" aria-label="{{ __('site.key_benefits') }}">
         <div class="trust-band__inner">
             @foreach ($trust['items'] as $item)
                 <div class="trust-item">
@@ -182,7 +182,7 @@
 
             <ol class="process-flow">
                 @foreach ($circularProcess['steps'] as $step)
-                    <li class="process-step">
+                    <li @class(['process-step', 'process-step--not-offered' => ($step['key'] ?? null) === 'activation'])>
                         <span class="process-step__node">
                             <x-section-icon :name="$step['icon']" class="process-step__icon" />
                         </span>
@@ -203,7 +203,20 @@
 
             <div class="process-outcomes">
                 @foreach ($circularProcess['outcomes'] as $outcome)
-                    <article class="process-outcome process-outcome--{{ $outcome['key'] }}">
+                    @php
+                        $defaultOutcomeKey = data_get(
+                            config('site.'.app()->getLocale().'.circular_process.outcomes', []),
+                            $loop->index.'.key',
+                        );
+                        $outcomeKey = filled($outcome['key'] ?? null)
+                            ? $outcome['key']
+                            : ($defaultOutcomeKey ?? ($outcome['title'] ?? 'outcome-'.$loop->iteration));
+                    @endphp
+                    <article @class([
+                        'process-outcome',
+                        'process-outcome--not-offered' => ($outcomeKey === 'recycling'),
+                        'process-outcome--'.\Illuminate\Support\Str::slug($outcomeKey),
+                    ])>
                         <x-section-icon :name="$outcome['icon']" class="process-outcome__icon" />
                         <div>
                             <h3>{{ $outcome['title'] }}</h3>
@@ -212,12 +225,6 @@
                     </article>
                 @endforeach
 
-                <aside class="process-note">
-                    <span class="eyebrow">{{ $circularProcess['note_eyebrow'] }}</span>
-                    <strong>{{ $circularProcess['note_title'] }}</strong>
-                    <p>{{ $circularProcess['note_description'] }}</p>
-                    <a class="secondary-cta" href="{{ site_link($circularProcess['note_cta_target'] ?? 'sustainability') }}">{{ $circularProcess['note_cta'] }}</a>
-                </aside>
             </div>
         </div>
     </section>
@@ -250,7 +257,7 @@
                 @endforeach
             </div>
 
-            <div class="stats-grid" aria-label="Të dhëna kryesore">
+            <div class="stats-grid" aria-label="{{ __('site.key_figures') }}">
                 @foreach ($stats as $stat)
                     <div class="stat-card">
                         <strong>{{ $stat['value'] }}</strong>
@@ -269,15 +276,53 @@
                 <p>{{ $partners['description'] }}</p>
             </div>
 
-            <div class="partner-grid">
-                @foreach ($partners['items'] as $partner)
-                    <article class="partner-card">
-                        <span class="partner-card__country">{{ $partner['country'] }}</span>
-                        <strong>{{ $partner['name'] }}</strong>
-                        <p>{{ $partner['description'] }}</p>
-                    </article>
-                @endforeach
-            </div>
+            @php
+                $partnerLogos = array_values(array_filter(
+                    $partners['items'],
+                    static fn (array $partner): bool => filled(site_image($partner['logo'] ?? null)),
+                ));
+            @endphp
+
+            @if (filled($partnerLogos))
+                <div class="partner-marquee" data-partner-marquee>
+                    <div
+                        class="partner-marquee__viewport"
+                        data-partner-marquee-viewport
+                        role="region"
+                        aria-label="{{ $partners['title'] }}"
+                    >
+                        <div class="partner-marquee__track" data-partner-marquee-track>
+                            <div class="partner-marquee__group" data-partner-marquee-group>
+                                @foreach ($partnerLogos as $partner)
+                                    @php
+                                        $partnerUrl = $partner['url'] ?? null;
+                                        $logoBlendClass = match ($partner['logo_background'] ?? 'black') {
+                                            'white' => 'partner-card__logo--white',
+                                            'black' => 'partner-card__logo--black',
+                                            default => 'partner-card__logo--transparent',
+                                        };
+                                    @endphp
+                                    <article class="partner-card partner-card--logo">
+                                        @if (filled($partnerUrl))
+                                            <a class="partner-card__logo-link" href="{{ $partnerUrl }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $partner['name'] }}">
+                                        @endif
+                                        <img
+                                            class="partner-card__logo {{ $logoBlendClass }}"
+                                            src="{{ site_image($partner['logo']) }}"
+                                            alt="{{ ($partner['logo_alt'] ?? null) ?: $partner['name'] }}"
+                                            data-logo-background="{{ $partner['logo_background'] ?? 'black' }}"
+                                            loading="lazy"
+                                        >
+                                        @if (filled($partnerUrl))
+                                            </a>
+                                        @endif
+                                    </article>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 

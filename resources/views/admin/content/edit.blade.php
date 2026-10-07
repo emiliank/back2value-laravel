@@ -9,12 +9,25 @@
         </div>
         <form method="POST" action="{{ route('admin.content.reset', ['page' => $slug]) }}" class="admin-inline-form">
             @csrf
+            <input type="hidden" name="locale" value="{{ $locale }}">
             <button class="admin-button admin-button--secondary" type="submit" data-confirm="Ktheni të gjithë fushat e kësaj faqeje te vlerat fillestare?">
                 <span class="admin-inline-icon">@include('admin.partials.icon', ['name' => 'refresh'])</span>
                 Kthe te default
             </button>
         </form>
     </section>
+
+    <nav class="admin-locale-tabs" aria-label="Gjuha e përmbajtjes">
+        @foreach ($locales as $code => $meta)
+            <a
+                href="{{ route('admin.content.edit', ['page' => $slug, 'locale' => $code]) }}"
+                @class(['is-active' => $code === $locale])
+            >
+                <span aria-hidden="true">{{ $meta['flag'] ?? '' }}</span>
+                {{ $meta['native'] ?? strtoupper($code) }}
+            </a>
+        @endforeach
+    </nav>
 
     <form
         method="POST"
@@ -25,6 +38,7 @@
     >
         @csrf
         @method('PUT')
+        <input type="hidden" name="locale" value="{{ $locale }}">
 
         @foreach ($page['sections'] as $sectionKey)
             @php($section = $sectionDefinitions[$sectionKey])

@@ -70,9 +70,8 @@ final class ContentSchema
             'regeneration' => 'Rigjenerimi',
             'solutions' => 'Zgjidhjet',
             'sustainability' => 'Qëndrueshmëria',
-            'resources' => 'Burimet',
+            'resources' => 'Rreth nesh',
             'diagnostics' => 'Rezervo diagnostikim',
-            'calculator' => 'Kalkulatori i kursimit',
             'contact' => 'Kontakt (kyefa kryesore)',
         ];
     }
@@ -144,7 +143,7 @@ final class ContentSchema
                 'icon' => 'document',
                 'group' => 'Faqet e brendshme',
                 'description' => 'Hero, shërbimet e detajuara, kontratat SLA dhe pikat e grumbullimit.',
-                'sections' => ['services_page', 'calculator', 'drop_off_points'],
+                'sections' => ['services_page', 'drop_off_points'],
             ],
             'about' => [
                 'label' => 'Për Back2Value',
@@ -423,7 +422,8 @@ final class ContentSchema
                         self::repeater('steps', 'Hapat e procesit', [self::t('title', 'Titulli', max: 80),
                             self::select('icon', 'Ikona', self::icons()),
                             self::area('description', 'Përshkrimi', max: 400, rows: 3), ], min: 1, maxItems: 8, titleField: 'title', addLabel: 'Shto hap', wide: true),
-                        self::repeater('outcomes', 'Rezultatet', [self::t('title', 'Titulli', max: 80),
+                        self::repeater('outcomes', 'Rezultatet', [self::t('key', 'Identifikuesi CSS', max: 60, optional: true),
+                            self::t('title', 'Titulli', max: 80),
                             self::select('icon', 'Ikona', self::icons()),
                             self::area('description', 'Përshkrimi', max: 400, rows: 3), ], min: 1, maxItems: 6, titleField: 'title', addLabel: 'Shto rezultat', wide: true),
                         self::t('note_eyebrow', 'Etiketa e shënimit', max: 80),
@@ -448,7 +448,15 @@ final class ContentSchema
                         self::area('description', 'Përshkrimi', max: 350, rows: 2, wide: true),
                         self::repeater('items', 'Partnerët', [self::t('name', 'Emri', max: 120),
                             self::t('country', 'Vendi', max: 60),
-                            self::area('description', 'Përshkrimi', max: 300, rows: 3), ], min: 1, maxItems: 12, titleField: 'name', addLabel: 'Shto partner', wide: true),
+                            self::area('description', 'Përshkrimi', max: 300, rows: 3),
+                            self::image('logo', 'Logoja e partnerit', hint: 'Ngarkoni logon si PNG, JPG, WebP ose SVG.'),
+                            self::t('logo_alt', 'Teksti alternativ i logos', max: 160, optional: true),
+                            self::url('url', 'Lidhja e partnerit', max: 400, optional: true),
+                            self::select('logo_background', 'Sfondi i logos', [
+                                'black' => 'I zi',
+                                'white' => 'I bardhë',
+                                'transparent' => 'Pa përzierje (PNG/SVG transparent)',
+                            ], hint: 'Përzieni sfondin e logos me faqen; zgjidhni ngjyrën që ka imazhi.', optional: false), ], min: 1, maxItems: 12, titleField: 'name', addLabel: 'Shto partner', wide: true),
                     ],
                 ]],
             ],
@@ -523,6 +531,10 @@ final class ContentSchema
                             self::select('icon', 'Ikona', self::icons()),
                             self::area('description', 'Përshkrimi', max: 800, rows: 4, wide: true),
                             self::t('label', 'Emri poshtë kartës', max: 120, optional: true), ], min: 1, maxItems: 6, titleField: 'title', addLabel: 'Shto pikë', wide: true),
+                        self::repeater('faqs', 'Pyetje të shpeshta', [
+                            self::t('question', 'Pyetja', max: 200),
+                            self::area('answer', 'Përgjigjja', max: 900, rows: 4, wide: true),
+                        ], min: 0, maxItems: 12, titleField: 'question', addLabel: 'Shto pyetje', wide: true),
                     ],
                 ]],
             ],
@@ -743,40 +755,6 @@ final class ContentSchema
                     ],
                     self::ctaGroup(),
                 ],
-            ],
-
-            'calculator' => [
-                'title' => 'Kalkulatori i kursimit',
-                'kicker' => 'FAQT E BRENDSHME',
-                'description' => 'Tekstet dhe faktorët e kalkulatorit.',
-                'shape' => 'group',
-                'groups' => [[
-                    'label' => 'TEKSTET DHE FAKTORËT',
-                    'fields' => [
-                        self::t('eyebrow', 'Etiketa', max: 80),
-                        self::t('title', 'Titulli', max: 120),
-                        self::area('description', 'Përshkrimi', max: 350, rows: 2, wide: true),
-                        self::t('count_label', 'Fusha: numri i baterive', max: 60),
-                        self::t('weight_label', 'Fusha: pesha mesatare', max: 80),
-                        self::num('count_default', 'Numri i parazgjedhur', max: 5000),
-                        self::num('weight_default', 'Pesha e parazgjedhur (kg)', max: 3000),
-                        self::t('capacity_value', 'Rezultati: kapaciteti', max: 30),
-                        self::t('capacity_label', 'Etiketa e kapacitetit', max: 80),
-                        self::t('cost_value', 'Rezultati: kostoja', max: 30),
-                        self::t('cost_label', 'Etiketa e kostos', max: 80),
-                        self::t('lead_label', 'Rezultati: plumbi', max: 80),
-                        self::t('lead_unit', 'Njësia e plumbit', max: 10),
-                        self::t('co2_label', 'Rezultati: CO2', max: 80),
-                        self::t('co2_unit', 'Njësia e CO2', max: 10),
-                        self::area('note', 'Shënimi nën rezultate', max: 600, rows: 3, wide: true),
-                        self::t('primary_label', 'Butoni kryesor', max: 60),
-                        self::select('primary_target', 'Ku dërgon', self::linkTargets()),
-                        self::t('secondary_label', 'Butoni dytë', max: 60),
-                        self::select('secondary_target', 'Ku dërgon', self::linkTargets()),
-                        self::num('lead_share_percent', 'Përqindja e plumbit në peshë (%)', max: 100, hint: 'Pjesa e peshës që përbëhet nga plumbi.'),
-                        self::num('co2_per_kg', 'kg CO2 për kilogram plumbi', max: 100),
-                    ],
-                ]],
             ],
 
             'drop_off_points' => [
@@ -1232,14 +1210,14 @@ final class ContentSchema
      */
     public static function rules(array $field): array
     {
-        $presence = $field['required'] ?? false ? 'required' : 'nullable';
+        $presence = 'nullable';
 
         return match ($field['type']) {
             'number' => array_filter([$presence, 'integer', 'min:0', 'max:'.max($field['max'], 1)]),
             'checkbox' => ['nullable', 'boolean'],
             'select' => array_filter([$presence, 'string', 'max:'.$field['max'], Rule::in(array_keys($field['options'] ?? []))]),
             'color' => array_filter([$presence, 'string', 'regex:/\A#[0-9a-fA-F]{6}\z/']),
-            'url' => array_filter([$presence, 'string', 'max:'.$field['max'], 'url']),
+            'url' => array_filter([$presence, 'string', 'max:'.$field['max'], 'url', 'starts_with:http://,https://']),
             'list', 'pairs' => [$presence, 'string', 'max:'.$field['max']],
             'image' => array_filter([$presence, 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120']),
             default => array_filter([$presence, 'string', 'max:'.$field['max']]),

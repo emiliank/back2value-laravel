@@ -14,7 +14,7 @@ class ExampleTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $response = $this->get('/');
+        $response = $this->get('/sq/');
 
         $response->assertStatus(200);
     }

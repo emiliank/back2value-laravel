@@ -1,5 +1,5 @@
 @php
-    $brandLogo = site_image(site('settings', 'logo_image'));
+    $brandLogo = site_image(site_logo());
 @endphp
 
 <span class="brand-box admin-brand__logo{{ $brandLogo ? ' brand-box--image' : '' }}" aria-hidden="true">

@@ -23,7 +23,7 @@ class ProductPageTest extends TestCase
             'warranty_months' => 24,
         ]);
 
-        $response = $this->get('/products');
+        $response = $this->get('/sq/products');
 
         $response->assertOk()
             ->assertSee('Solar')
@@ -35,7 +35,7 @@ class ProductPageTest extends TestCase
     {
         $this->seed(BatterySeeder::class);
 
-        $response = $this->get('/products');
+        $response = $this->get('/sq/products');
 
         $response->assertOk()
             ->assertSee('RID Series OPzS')
@@ -49,7 +49,7 @@ class ProductPageTest extends TestCase
             ->assertSee('Hoppecke Series FNC (NiCd)')
             ->assertSee('Socomec UPS')
             ->assertSee('RID Power Cell (Storage)')
-            ->assertSee('Batteries Diagnostics')
+            ->assertDontSee('Batteries Diagnostics')
             ->assertSee('Çmimi me kërkesë')
             // Verify no prices or currency symbols are exposed
             ->assertDontSee('€')
@@ -62,11 +62,11 @@ class ProductPageTest extends TestCase
     {
         $this->seed(BatterySeeder::class);
 
-        $response = $this->get('/products');
+        $response = $this->get('/sq/products');
 
         $response->assertOk()
-            ->assertSee('Batteries Diagnostics')
-            ->assertSee('RID BATTERY LOGGER')
+            ->assertDontSee('Batteries Diagnostics')
+            ->assertDontSee('RID BATTERY LOGGER')
             ->assertDontSee('RID BMG-30 BATTERY TESTER')
             ->assertDontSee('RID BRG-20 BATTERY REGENERATOR')
             ->assertDontSee('RID BRG-35 BATTERY REGENERATOR')
@@ -77,7 +77,7 @@ class ProductPageTest extends TestCase
     {
         $this->seed(BatterySeeder::class);
 
-        $response = $this->get('/products?category='.urlencode('RID Series OPzS'));
+        $response = $this->get('/sq/products?category='.urlencode('RID Series OPzS'));
 
         $response->assertOk()
             ->assertSee('RID 4 OPzS 200')
@@ -89,7 +89,7 @@ class ProductPageTest extends TestCase
     {
         $this->seed(BatterySeeder::class);
 
-        $response = $this->get('/products?q=Forklifts');
+        $response = $this->get('/sq/products?q=Forklifts');
 
         $response->assertOk()
             ->assertSee('RID Motive Power (Forklifts)')
@@ -102,13 +102,13 @@ class ProductPageTest extends TestCase
     {
         $this->seed(BatterySeeder::class);
 
-        $industrial = $this->get('/products?application=industrial');
+        $industrial = $this->get('/sq/products?application=industrial');
         $industrial->assertOk()
             ->assertSee('RID 5 PzS - 250 L')
             ->assertDontSee('Socomec Masterys Emergency UPS')
             ->assertDontSee('€');
 
-        $backupPower = $this->get('/products?application=backup_power');
+        $backupPower = $this->get('/sq/products?application=backup_power');
         $backupPower->assertOk()
             ->assertSee('Socomec Masterys Emergency UPS')
             ->assertDontSee('RID 5 PzS - 250 L')
@@ -119,10 +119,10 @@ class ProductPageTest extends TestCase
     {
         $this->seed(BatterySeeder::class);
 
-        $response = $this->get('/products');
+        $response = $this->get('/sq/products');
 
         $response->assertOk()
-            ->assertSee(config('site.catalog_page.applications_label'))
+            ->assertSee(config('site.sq.catalog_page.applications_label'))
             ->assertSee('Industriale & Pirunë')
             ->assertSee('Backup Power & UPS')
             ->assertSee('Solar & Energji e Rinovueshme')
@@ -132,10 +132,10 @@ class ProductPageTest extends TestCase
 
     public function test_products_page_shows_the_detailed_vehicle_finder_form(): void
     {
-        $response = $this->get('/products');
+        $response = $this->get('/sq/products');
 
         $response->assertOk()
-            ->assertSee(config('site.catalog_page.finder_title'))
+            ->assertSee(config('site.sq.catalog_page.finder_title'))
             ->assertSee('name="v_type"', false)
             ->assertSee('name="v_make"', false)
             ->assertSee('name="v_model"', false)
@@ -145,7 +145,7 @@ class ProductPageTest extends TestCase
             ->assertSee('name="v_capacity"', false)
             ->assertSee('name="vin"', false)
             ->assertSee('name="v_notes"', false)
-            ->assertSee(config('site.catalog_page.finder_submit'), false)
+            ->assertSee(config('site.sq.catalog_page.finder_submit'), false)
             ->assertDontSee('€');
     }
 
@@ -153,7 +153,7 @@ class ProductPageTest extends TestCase
     {
         $this->seed(BatterySeeder::class);
 
-        $response = $this->get('/products?v_type=car&v_make=Volkswagen&v_model=Golf&v_year=2015&v_fuel=petrol&v_startstop=yes');
+        $response = $this->get('/sq/products?v_type=car&v_make=Volkswagen&v_model=Golf&v_year=2015&v_fuel=petrol&v_startstop=yes');
 
         $response->assertOk()
             ->assertSee('Kërkim mjeti', false)
@@ -169,7 +169,7 @@ class ProductPageTest extends TestCase
     {
         $this->seed(BatterySeeder::class);
 
-        $response = $this->get('/products?v_type=truck&v_fuel=diesel&v_startstop=no');
+        $response = $this->get('/sq/products?v_type=truck&v_fuel=diesel&v_startstop=no');
 
         $response->assertOk()
             ->assertSee('Bateri Heavy-Duty (standard)', false)
@@ -181,35 +181,36 @@ class ProductPageTest extends TestCase
 
     public function test_vehicle_finder_shows_vin_validation_error(): void
     {
-        $response = $this->get('/products?vin=12345');
+        $response = $this->get('/sq/products?vin=12345');
 
         $response->assertOk()
             ->assertSee('VIN-i duhet të ketë saktësisht 17 karaktere.', false)
-            ->assertDontSee(config('site.catalog_page.vin_valid_text'), false);
+            ->assertDontSee(config('site.sq.catalog_page.vin_valid_text'), false);
     }
 
     public function test_vehicle_finder_decodes_valid_vin_region_and_model_year(): void
     {
-        $response = $this->get('/products?vin=WVWZZZ1KZAW000001&v_year=2010');
+        $response = $this->get('/sq/products?vin=WVWZZZ1KZAW000001&v_year=2010');
 
         $response->assertOk()
-            ->assertSee(config('site.catalog_page.vin_valid_text'), false)
+            ->assertSee(config('site.sq.catalog_page.vin_valid_text'), false)
             ->assertSee('Evropë', false)
-            ->assertSee(config('site.catalog_page.vin_match_text'), false)
-            ->assertSee(config('site.catalog_page.vin_confirm_label'), false);
+            ->assertSee(config('site.sq.catalog_page.vin_match_text'), false)
+            ->assertSee(config('site.sq.catalog_page.vin_confirm_label'), false);
     }
 
     public function test_products_page_shows_catalog_imagery(): void
     {
         $this->seed(BatterySeeder::class);
 
-        $response = $this->get('/products');
+        $response = $this->get('/sq/products');
 
         $response->assertOk()
             ->assertSee('images/battery-start.jpg', false)
             ->assertSee('images/battery-ups.jpg', false)
             ->assertSee('images/battery-pzs.jpg', false)
-            ->assertSee('images/battery-generic.svg', false)
+            ->assertDontSee('images/battery-generic.svg', false)
+            ->assertDontSee('Battery Diagnostic Service', false)
             ->assertSee('property="og:image"', false)
             ->assertDontSee('€');
     }

@@ -83,7 +83,7 @@
                         <span class="admin-badge {{ ($customised[$sectionKey] ?? false) ? 'admin-badge--green' : '' }}">
                             {{ ($customised[$sectionKey] ?? false) ? 'E personalizuar' : 'Default' }}
                         </span>
-                        <a class="admin-button admin-button--secondary" href="{{ route('admin.content.edit', ['page' => $pageOfSection[$sectionKey]]) }}">
+                        <a class="admin-button admin-button--secondary" href="{{ route('admin.content.edit', ['page' => $pageOfSection[$sectionKey] ?? 'settings']) }}">
                             Edito
                         </a>
                     </div>

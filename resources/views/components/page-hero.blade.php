@@ -2,7 +2,7 @@
 
 <section class="page-hero">
     <div class="section-shell">
-        <nav class="breadcrumb" aria-label="Rruga e faqes">
+        <nav class="breadcrumb" aria-label="{{ __('site.breadcrumb') }}">
             <a href="{{ route('home') }}">{{ $navigation['breadcrumb_home'] ?? 'Kryefaqja' }}</a>
             <span aria-hidden="true">/</span>
             <span>{{ $eyebrow }}</span>

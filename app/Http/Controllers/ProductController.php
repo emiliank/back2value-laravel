@@ -183,7 +183,7 @@ class ProductController extends Controller
         ];
 
         $rules = [
-            ['Diagnostics', ['image' => 'images/battery-generic.svg', 'alt' => 'Pajisje diagnostike për teste baterish']],
+            ['Battery Diagnostic Service', ['image' => 'images/battery-generic.svg', 'alt' => 'Shërbim diagnostikimi baterish me pajisje profesionale RID']],
             ['ST Series', ['image' => 'images/battery-start.jpg', 'alt' => 'Bateri startimi RID-Batterie për automjete dhe kamionë']],
             ['Xtreme', $ups],
             ['OPzV', $ups],

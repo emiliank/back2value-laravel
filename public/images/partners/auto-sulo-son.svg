@@ -1,0 +1,42 @@
+<svg width="760" height="260" viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Auto Sulo and Son logo">
+  <rect width="760" height="260" fill="#080808"/>
+
+  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-weight="900">
+    <text x="58" y="110" font-size="82">AUTO</text>
+    <text x="58" y="188" font-size="82" fill="#ef1d2f">SULO</text>
+    <text x="320" y="188" font-size="82">&amp;SON</text>
+  </g>
+
+  <g transform="translate(570 18) scale(1.08)">
+    <rect width="150" height="150" fill="#ffffff"/>
+    <g fill="#000000">
+      <rect x="0" y="0" width="30" height="30"/>
+      <rect x="60" y="0" width="30" height="30"/>
+      <rect x="120" y="0" width="30" height="30"/>
+      <rect x="30" y="30" width="30" height="30"/>
+      <rect x="90" y="30" width="30" height="30"/>
+      <rect x="0" y="60" width="30" height="30"/>
+      <rect x="60" y="60" width="30" height="30"/>
+      <rect x="120" y="60" width="30" height="30"/>
+      <rect x="30" y="90" width="30" height="30"/>
+      <rect x="90" y="90" width="30" height="30"/>
+      <rect x="0" y="120" width="30" height="30"/>
+      <rect x="60" y="120" width="30" height="30"/>
+      <rect x="120" y="120" width="30" height="30"/>
+    </g>
+    <g fill="#ffffff">
+      <rect x="30" y="0" width="30" height="30"/>
+      <rect x="90" y="0" width="30" height="30"/>
+      <rect x="0" y="30" width="30" height="30"/>
+      <rect x="60" y="30" width="30" height="30"/>
+      <rect x="120" y="30" width="30" height="30"/>
+      <rect x="30" y="60" width="30" height="30"/>
+      <rect x="90" y="60" width="30" height="30"/>
+      <rect x="0" y="90" width="30" height="30"/>
+      <rect x="60" y="90" width="30" height="30"/>
+      <rect x="120" y="90" width="30" height="30"/>
+      <rect x="30" y="120" width="30" height="30"/>
+      <rect x="90" y="120" width="30" height="30"/>
+    </g>
+  </g>
+</svg>

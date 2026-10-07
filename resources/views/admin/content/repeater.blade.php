@@ -1,5 +1,6 @@
 @php
     $rows = is_array($rows) ? $rows : [];
+    $formName = $inputName ?? $name;
     $templateId = 'template-'.md5($name);
     $titleField = $field['title_field'] ?? 'title';
     $blankErrors = new \Illuminate\Support\ViewErrorBag;
@@ -44,17 +45,18 @@
                     </div>
                 </div>
 
-                <input type="hidden" name="{{ $name }}[{{ $rowKey }}][remove]" value="0">
+                <input type="hidden" name="{{ $formName }}[{{ $rowKey }}][remove]" value="0">
 
                 <div class="admin-form-grid">
                     @foreach ($field['fields'] as $item)
                         @php
                             $itemKey = $item['key'];
-                            $itemName = $name.'['.$rowKey.']['.$itemKey.']';
-                            $itemValue = old($name.'.'.$rowKey.'.'.$itemKey, is_array($row) ? ($row[$itemKey] ?? null) : null);
+                            $itemName = $formName.'['.$rowKey.']['.$itemKey.']';
+                            $itemPath = $name.'.'.$rowKey.'.'.$itemKey;
+                            $itemValue = old($itemPath, is_array($row) ? ($row[$itemKey] ?? null) : null);
                         @endphp
 
-                        @include('admin.content.field', ['name' => $itemName, 'field' => $item, 'value' => $itemValue, 'errors' => $errors])
+                        @include('admin.content.field', ['name' => $itemPath, 'inputName' => $itemName, 'field' => $item, 'value' => $itemValue, 'errors' => $errors])
                     @endforeach
                 </div>
             </article>
@@ -62,6 +64,8 @@
             <p class="admin-repeater__empty">Nuk ka ende rreshta. Shtoni rreshtin e parë me butonin sipër.</p>
         @endforelse
     </div>
+
+    <div data-repeat-deletions hidden></div>
 
     <template id="{{ $templateId }}">
         <article class="admin-panel admin-repeat-card" data-repeat-card>
@@ -81,13 +85,16 @@
                 </div>
             </div>
 
-            <input type="hidden" name="{{ $name }}[__KEY__][remove]" value="0">
+            <input type="hidden" name="{{ $formName }}[__KEY__][remove]" value="0">
 
             <div class="admin-form-grid">
                 @foreach ($field['fields'] as $item)
-                    @php($newItemName = $name.'[__KEY__]['.$item['key'].']')
+                    @php
+                        $newItemName = $formName.'[__KEY__]['.$item['key'].']';
+                        $newItemPath = $name.'.__KEY__.'.$item['key'];
+                    @endphp
 
-                    @include('admin.content.field', ['name' => $newItemName, 'field' => $item, 'value' => null, 'errors' => $blankErrors])
+                    @include('admin.content.field', ['name' => $newItemPath, 'inputName' => $newItemName, 'field' => $item, 'value' => null, 'errors' => $blankErrors])
                 @endforeach
             </div>
         </article>

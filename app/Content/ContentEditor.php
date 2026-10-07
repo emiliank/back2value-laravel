@@ -64,12 +64,12 @@ class ContentEditor
      * @param  list<string>  $sectionKeys
      * @return array<string, mixed>
      */
-    public function current(array $sectionKeys): array
+    public function current(array $sectionKeys, ?string $locale = null): array
     {
         $current = [];
 
         foreach ($sectionKeys as $key) {
-            $current[$key] = $this->repository->section($key);
+            $current[$key] = $this->repository->section($key, [], $locale);
         }
 
         return $current;
@@ -83,13 +83,13 @@ class ContentEditor
      * @param  array<string, mixed>  $files
      * @return array<string, array<string, mixed>>
      */
-    public function save(array $sectionKeys, array $input, array $files): array
+    public function save(array $sectionKeys, array $input, array $files, ?string $locale = null): array
     {
         abort_if($sectionKeys === [], 404);
 
         // Browsers may submit name="section.group.field", and PHP keeps those
         // keys flat instead of nesting them. Undot so both shapes are recognised.
-        $input = Arr::undot($input);
+        $input = Arr::undot($this->mergeFilesIntoInput($input, $files));
 
         $sectionKeys = array_values(array_filter(
             $sectionKeys,
@@ -100,15 +100,15 @@ class ContentEditor
             return [];
         }
 
-        $current = $this->current($sectionKeys);
+        $current = $this->current($sectionKeys, $locale);
 
-        $input = $this->withoutRemovedRows($input);
+        $validationInput = $this->withoutRemovedRows($input);
 
         $this->uploads = Arr::dot($files);
 
         try {
             $validated = validator(
-                $input,
+                $validationInput,
                 $this->rules($sectionKeys, $current),
                 $this->messages($sectionKeys),
                 $this->attributes($sectionKeys),
@@ -116,6 +116,8 @@ class ContentEditor
         } finally {
             $this->uploads = [];
         }
+
+        $validated = $this->preserveRemovedRows($validated, $input);
 
         $payloads = [];
 
@@ -125,7 +127,7 @@ class ContentEditor
 
         foreach ($payloads as $key => $payload) {
             $this->deleteOrphans($current[$key], $payload);
-            $this->repository->save($key, $payload);
+            $this->repository->save($key, $payload, $locale);
         }
 
         return $payloads;
@@ -160,6 +162,58 @@ class ContentEditor
     }
 
     /**
+     * Restore only removal markers after validation so repeater builders can
+     * distinguish deleted rows from partial updates that omit rows.
+     *
+     * @param  array<string, mixed>  $validated
+     * @param  array<string, mixed>  $input
+     * @return array<string, mixed>
+     */
+    private function preserveRemovedRows(array $validated, array $input): array
+    {
+        foreach ($input as $key => $value) {
+            if (! is_array($value)) {
+                continue;
+            }
+
+            if ($this->isRemovedRow($value)) {
+                $validated[$key] = ['remove' => true];
+
+                continue;
+            }
+
+            $validated[$key] = $this->preserveRemovedRows(
+                is_array($validated[$key] ?? null) ? $validated[$key] : [],
+                $value,
+            );
+        }
+
+        return $validated;
+    }
+
+    /**
+     * @param  array<string, mixed>  $input
+     * @param  array<string, mixed>  $files
+     * @return array<string, mixed>
+     */
+    private function mergeFilesIntoInput(array $input, array $files): array
+    {
+        foreach ($files as $key => $file) {
+            if (is_array($file) && is_array($input[$key] ?? null)) {
+                $input[$key] = $this->mergeFilesIntoInput($input[$key], $file);
+
+                continue;
+            }
+
+            if ($file instanceof UploadedFile) {
+                $input[$key] = $file;
+            }
+        }
+
+        return $input;
+    }
+
+    /**
      * Determine whether a field received an upload, honouring `*` wildcards
      * used by repeater field names.
      */
@@ -167,8 +221,16 @@ class ContentEditor
     {
         $pattern = '/^'.str_replace('\*', '[^.]+', preg_quote($name, '/')).'$/';
 
-        foreach (array_keys($this->uploads) as $upload) {
-            if (preg_match($pattern, $upload) === 1) {
+        foreach ($this->uploads as $uploadKey => $upload) {
+            if (preg_match($pattern, $uploadKey) !== 1) {
+                continue;
+            }
+
+            if ($upload instanceof UploadedFile && $upload->getError() === UPLOAD_ERR_OK && $upload->getClientOriginalName() !== '') {
+                return true;
+            }
+
+            if (is_array($upload) && collect($upload)->flatten(1)->contains(fn (mixed $value): bool => $value instanceof UploadedFile && $value->getError() === UPLOAD_ERR_OK && $value->getClientOriginalName() !== '')) {
                 return true;
             }
         }
@@ -187,9 +249,9 @@ class ContentEditor
     /**
      * Delete a section so the shipped defaults apply again.
      */
-    public function reset(string $section): void
+    public function reset(string $section, ?string $locale = null): void
     {
-        $this->repository->reset($section);
+        $this->repository->reset($section, $locale);
     }
 
     // -----------------------------------------------------------------
@@ -338,7 +400,8 @@ class ContentEditor
                     'array',
                     'min:'.$field['min'],
                     'max:'.$field['max_items'],
-                ] + $this->rowRules($name.'.*', $field['fields'], array_keys((array) ($current[$field['key']] ?? [])), $field['keyed']);
+                ];
+                $rules += $this->rowRules($name.'.*', $field['fields'], array_keys((array) ($current[$field['key']] ?? [])), $field['keyed']);
 
                 continue;
             }
@@ -376,8 +439,33 @@ class ContentEditor
     private function singleRules(array $field, string $name): array
     {
         if ($field['type'] === 'image') {
+            if (str_contains($name, '*')) {
+                $rules = [
+                    $name => ['nullable', 'string', 'max:255'],
+                    $name.'_path' => ['nullable', 'string', 'max:255'],
+                    $name.'_remove' => ['nullable', 'boolean'],
+                ];
+                $pattern = '/^'.str_replace('\\*', '[^.]+', preg_quote($name, '/')).'$/';
+
+                foreach ($this->uploads as $uploadName => $upload) {
+                    if (preg_match($pattern, $uploadName) !== 1 || ! $upload instanceof UploadedFile) {
+                        continue;
+                    }
+
+                    $rules[$uploadName] = array_filter([$field['required'] ? 'required' : 'nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120']);
+                    $rules[$uploadName.'_path'] = ['nullable', 'string', 'max:255'];
+                    $rules[$uploadName.'_remove'] = ['nullable', 'boolean'];
+                }
+
+                return $rules;
+            }
+
             if (! $this->hasUpload($name)) {
-                return [$name => ['nullable', 'string', 'max:255']];
+                return [
+                    $name => ['nullable', 'string', 'max:255'],
+                    $name.'_path' => ['nullable', 'string', 'max:255'],
+                    $name.'_remove' => ['nullable', 'boolean'],
+                ];
             }
 
             return [
@@ -464,21 +552,60 @@ class ContentEditor
     private function buildRepeater(array $fields, array $submitted, array $current, string $name, array $files, bool $keyed = false): array
     {
         $previous = $this->indexRows($current, (bool) ($keyed ? true : false));
-        $rows = [];
-        $used = [];
+        $removedKeys = [];
+        $existingSubmitted = [];
+        $newSubmitted = [];
 
         foreach ($submitted as $rowKey => $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            if (filter_var($row['remove'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+                $removedKey = $this->existingRowKey((string) $rowKey, $row, $previous);
+
+                if ($removedKey !== null) {
+                    $removedKeys[] = $removedKey;
+                }
+
+                continue;
+            }
+
+            if ($this->existingRowKey((string) $rowKey, $row, $previous) === null) {
+                $newSubmitted[$rowKey] = $row;
+            } else {
+                $existingSubmitted[$rowKey] = $row;
+            }
+        }
+
+        $remaining = $previous;
+
+        foreach ($removedKeys as $removedKey) {
+            unset($remaining[$removedKey]);
+        }
+
+        $hasNewRows = $newSubmitted !== [];
+        $orderedSubmitted = $hasNewRows ? $existingSubmitted + $newSubmitted : $submitted;
+        $rows = $hasNewRows ? [] : $remaining;
+
+        $used = array_keys($rows);
+
+        foreach ($orderedSubmitted as $rowKey => $row) {
             if (! is_array($row) || filter_var($row['remove'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                 continue;
             }
 
-            $key = $this->rowKey((string) $rowKey, $row['key'] ?? null, $used);
+            $existingKey = $this->existingRowKey((string) $rowKey, $row, $previous);
+
+            $key = $existingKey ?? $this->rowKey((string) $rowKey, $row['key'] ?? null, $used);
             $existing = $previous[$key] ?? [];
             $built = [];
 
             foreach ($fields as $field) {
                 $itemName = $name.'.'.$rowKey.'.'.$field['key'];
-                $itemValue = $row[$field['key']] ?? null;
+                $itemValue = array_key_exists($field['key'], $row)
+                    ? $row[$field['key']]
+                    : ($existing[$field['key']] ?? null);
 
                 $built[$field['key']] = match ($field['type']) {
                     'repeater' => $this->buildRepeater(
@@ -500,11 +627,34 @@ class ContentEditor
                 $built['key'] = $key;
                 $rows[$key] = $built;
             } else {
-                $rows[] = $built;
+                $rows[(string) $key] = $built;
             }
         }
 
-        return $rows;
+        return array_values($rows);
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @param  array<string, array<string, mixed>>  $previous
+     */
+    private function existingRowKey(string $rowKey, array $row, array $previous): ?string
+    {
+        if (array_key_exists($rowKey, $previous)) {
+            return $rowKey;
+        }
+
+        if (isset($row['key']) && is_string($row['key']) && array_key_exists($row['key'], $previous)) {
+            return $row['key'];
+        }
+
+        if (preg_match('/^(?:item-)?(\d+)$/', $rowKey, $matches) === 1) {
+            $previousKeys = array_keys($previous);
+
+            return $previousKeys[(int) $matches[1]] ?? null;
+        }
+
+        return null;
     }
 
     /**
@@ -556,13 +706,15 @@ class ContentEditor
      */
     private function resolveImage(string $name, array $source, array $files, ?string $current): ?string
     {
-        if (filter_var($source[$name.'_remove'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+        $field = Str::afterLast($name, '.');
+
+        if (filter_var(Arr::get($source, $name.'_remove') ?? ($source[$field.'_remove'] ?? false), FILTER_VALIDATE_BOOLEAN)) {
             $this->deleteStored($current);
 
             return null;
         }
 
-        $upload = Arr::get($files, $name);
+        $upload = Arr::get($source, $name) ?? ($source[$field] ?? null) ?? Arr::get($files, $name);
 
         if ($upload instanceof UploadedFile) {
             $this->deleteStored($current);
@@ -570,7 +722,7 @@ class ContentEditor
             return $upload->store(self::IMAGE_DIRECTORY, self::IMAGE_DISK);
         }
 
-        return $this->allowedPath($source[$name.'_path'] ?? $current);
+        return $this->allowedPath(Arr::get($source, $name.'_path') ?? ($source[$field.'_path'] ?? $current));
     }
 
     private function allowedPath(mixed $path): ?string
@@ -639,7 +791,8 @@ class ContentEditor
             'sustainability' => route('sustainability.index'),
             'resources' => route('resources.index'),
             'diagnostics' => route('diagnostics.create'),
-            'calculator' => '#kalkulator',
+            'calculator' => route('services.index'),
+            // The anchor id stays the same in every language.
             'contact' => route('home').'#kontakt',
             default => route('home'),
         };

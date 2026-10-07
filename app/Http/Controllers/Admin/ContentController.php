@@ -29,7 +29,7 @@ class ContentController extends Controller
         foreach ($sections as $key => $section) {
             $slug = collect($pages)->search(fn (array $candidate): bool => in_array($key, $candidate['sections'], true));
             $page = is_string($slug) ? $pages[$slug] : null;
-            $stored = SiteContent::query()->where('section', $key)->exists();
+            $stored = SiteContent::query()->where('section', $key)->where('locale', $this->locale())->exists();
 
             $editable[] = [
                 'page' => $page['label'] ?? $section['title'],
@@ -58,20 +58,24 @@ class ContentController extends Controller
      */
     public function editSettings(): RedirectResponse
     {
-        return redirect()->route('admin.content.edit', ['page' => 'settings']);
+        return redirect()->route('admin.content.edit', ['page' => 'settings', 'locale' => $this->locale(request())]);
     }
 
     public function edit(Request $request, string $page): View
     {
         $definition = $this->page($page);
         $sections = $definition['sections'];
-        $content = $this->editor->current($sections);
+
+        $locale = $request->route('locale') ?? $this->locale($request);
 
         return view('admin.content.edit', [
             'page' => $definition,
             'slug' => $page,
             'sectionDefinitions' => collect($sections)->mapWithKeys(fn (string $key): array => [$key => ContentSchema::section($key)])->all(),
-            'content' => $content,
+            'content' => $this->editor->current($sections, $locale),
+            'locales' => $this->repository->locales(),
+            'locale' => $locale,
+            'localeMeta' => $this->repository->locales()[$locale] ?? [],
         ]);
     }
 
@@ -79,30 +83,33 @@ class ContentController extends Controller
     {
         $definition = $this->page($page);
         $sections = $definition['sections'];
+        $locale = $request->route('locale') ?? $this->locale($request);
 
         $saved = $this->editor->save(
             $sections,
-            $request->except(['_token', '_method']),
+            $request->except(['_token', '_method', 'locale']),
             $request->allFiles(),
+            $locale,
         );
 
         return redirect()
-            ->route('admin.content.edit', ['page' => $page])
+            ->route('admin.content.edit', ['page' => $page, 'locale' => $locale])
             ->with('status', $saved === []
                 ? 'Nuk u gjetën fusha për t\'u ruajtur.'
                 : 'Përmbajtja u ruajt me sukses.');
     }
 
-    public function reset(string $page): RedirectResponse
+    public function reset(Request $request, string $page): RedirectResponse
     {
         $definition = $this->page($page);
+        $locale = $request->route('locale') ?? $this->locale($request);
 
         foreach ($definition['sections'] as $section) {
-            $this->editor->reset($section);
+            $this->editor->reset($section, $locale);
         }
 
         return redirect()
-            ->route('admin.content.edit', ['page' => $page])
+            ->route('admin.content.edit', ['page' => $page, 'locale' => $locale])
             ->with('status', 'Përmbajtja u kthye te vlerat fillestare.');
     }
 
@@ -116,5 +123,17 @@ class ContentController extends Controller
         abort_if($definition === null, 404);
 
         return $definition;
+    }
+
+    /**
+     * Locale whose content the editor is working on.
+     */
+    private function locale(Request $request): string
+    {
+        $requested = $request->route('locale') ?? $request->input('locale');
+
+        return $this->repository->isValidLocale($requested)
+            ? $requested
+            : $this->repository->defaultLocale();
     }
 }

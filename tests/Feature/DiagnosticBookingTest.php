@@ -39,7 +39,7 @@ class DiagnosticBookingTest extends TestCase
 
     public function test_diagnostics_page_renders_the_booking_form(): void
     {
-        $response = $this->get('/diagnostics');
+        $response = $this->get('/sq/diagnostics');
 
         $response->assertOk()
             ->assertSee('Rezervo një diagnostikim baterie')

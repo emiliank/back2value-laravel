@@ -14,7 +14,10 @@ class DashboardController extends Controller
 
     public function __invoke(): View
     {
-        $content = $this->repository->all();
+        $locale = (string) config('locales.default', 'sq');
+        $locales = (array) config('locales.available', []);
+
+        $content = $this->repository->all($locale);
         $pages = ContentSchema::pages();
         $sections = ContentSchema::sections();
 
@@ -29,10 +32,15 @@ class DashboardController extends Controller
             }
         }
 
+        $storedRows = SiteContent::query()
+            ->whereIn('locale', array_keys($locales))
+            ->get(['section', 'locale']);
+
         $customised = [];
 
         foreach (array_keys($sections) as $key) {
-            $customised[$key] = SiteContent::query()->where('section', $key)->exists();
+            // A section counts as customised once any language overrides it.
+            $customised[$key] = $storedRows->contains('section', $key);
         }
 
         return view('admin.dashboard', [
@@ -41,6 +49,8 @@ class DashboardController extends Controller
             'content' => $content,
             'customised' => $customised,
             'pageOfSection' => $pageOfSection,
+            'locales' => $locales,
+            'locale' => $locale,
             'totalPages' => count($pages),
             'totalSections' => count($sections),
             'totalCustomised' => count(array_filter($customised)),

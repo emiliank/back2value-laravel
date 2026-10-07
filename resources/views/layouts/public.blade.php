@@ -3,9 +3,10 @@
     $whatsappMessage = $settings['whatsapp_message'] ?? 'Përshëndetje! Po interesohem për një ofertë për bateri industriale.';
     $whatsappUrl = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode($whatsappMessage);
     $accentColor = preg_match('/\A#[0-9a-fA-F]{6}\z/', $settings['accent_color'] ?? '') ? $settings['accent_color'] : '#17b78b';
+    $locale = current_locale();
 @endphp
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="{{ str_replace('_', '-', $locale) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,8 +18,13 @@
         <meta property="og:description" content="@yield('meta_description', $settings['meta_description'] ?? '')">
         <meta property="og:image" content="{{ asset('images/back2value-logo.png') }}">
         <meta property="og:image:alt" content="{{ $navigation['brand_alt'] ?? 'Logo Back2Value' }}">
+        <meta property="og:locale" content="{{ str_replace('-', '_', available_locales()[$locale]['og_locale'] ?? $locale) }}">
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:image" content="{{ asset('images/back2value-logo.png') }}">
+        @foreach (available_locales() as $code => $meta)
+            <link rel="alternate" hreflang="{{ $meta['og_locale'] ?? $code }}" href="{{ locale_url($code) }}">
+        @endforeach
+        <link rel="alternate" hreflang="x-default" href="{{ locale_url((string) config('locales.default', 'sq')) }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>@yield('title', $settings['meta_title'] ?? 'Back2Value')</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])

@@ -1,0 +1,25 @@
+<svg width="760" height="260" viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Auto Servis Jazxhi logo">
+  <rect width="760" height="260" fill="#070707"/>
+
+  <path d="M18 92 L142 92 L92 212 L0 212 Z" fill="#d91d29"/>
+  <path d="M618 92 L742 92 L760 212 L668 212 Z" fill="#d91d29"/>
+
+  <circle cx="380" cy="126" r="104" fill="#df1c26"/>
+  <circle cx="380" cy="126" r="82" fill="#111111"/>
+
+  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-weight="900" text-anchor="middle">
+    <text x="380" y="92" font-size="28">AUTO</text>
+    <text x="380" y="128" font-size="28">SERVIS</text>
+    <text x="380" y="164" font-size="28">JAZXHI</text>
+    <text x="380" y="206" font-size="18">POGRADEC</text>
+  </g>
+
+  <g fill="#ffffff" stroke="#000" stroke-width="4">
+    <path d="M346 142 L366 142 L356 186 Z"/>
+    <path d="M388 142 L408 142 L398 186 Z"/>
+    <circle cx="356" cy="102" r="16"/>
+    <circle cx="398" cy="102" r="16"/>
+    <path d="M330 112 L284 135 L330 140 Z" fill="none" stroke="#ffffff" stroke-width="10"/>
+    <path d="M430 112 L476 135 L430 140 Z" fill="none" stroke="#ffffff" stroke-width="10"/>
+  </g>
+</svg>
