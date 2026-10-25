@@ -3,16 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Content\SiteContentRepository;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class SolutionsController extends Controller
 {
-    public function index(SiteContentRepository $content): View
+    public function index(SiteContentRepository $content): Response
     {
-        return view('solutions.index', [
-            'page' => $content->section('solutions'),
+        $page = $content->section('solutions');
+
+        return Inertia::render('Public/Solutions', [
+            'page' => $page,
             'applicationFilters' => $content->section('application_filters'),
             'activeNav' => 'solutions',
+            'title' => $page['meta_title'] ?? 'Zgjidhjet | Back2Value',
+            'description' => $page['meta_description'] ?? '',
         ]);
     }
 }

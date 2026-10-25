@@ -26,10 +26,11 @@ class BrandLogoLocaleTest extends TestCase
 
         app()->forgetInstance(SiteContentRepository::class);
 
-        $expected = '/storage/content/logo.png';
+        $albanianProps = $this->assertInertiaComponent($this->get('/sq'), 'Public/Home');
+        $englishProps = $this->assertInertiaComponent($this->get('/en'), 'Public/Home');
 
-        $this->get('/sq')->assertOk()->assertSee($expected, false);
-        $this->get('/en')->assertOk()->assertSee($expected, false);
+        $this->assertSame($albanianProps['site']['logo'], $englishProps['site']['logo']);
+        $this->assertStringEndsWith('/storage/content/logo.png', $albanianProps['site']['logo']);
     }
 
     public function test_removing_the_logo_in_one_language_keeps_it_on_the_other(): void
@@ -45,10 +46,12 @@ class BrandLogoLocaleTest extends TestCase
 
         app()->forgetInstance(SiteContentRepository::class);
 
-        $this->get('/en')->assertOk()->assertSee('/storage/content/logo.png', false);
+        $props = $this->assertInertiaComponent($this->get('/en'), 'Public/Home');
+
+        $this->assertStringEndsWith('/storage/content/logo.png', $props['site']['logo']);
     }
 
-    public function test_the_wordmark_is_used_when_no_logo_is_stored_anywhere(): void
+    public function test_no_custom_logo_is_shared_when_none_is_stored_anywhere(): void
     {
         $this->seed(SiteContentSeeder::class);
 
@@ -63,10 +66,12 @@ class BrandLogoLocaleTest extends TestCase
 
         app()->forgetInstance(SiteContentRepository::class);
 
-        $this->get('/en')->assertOk()->assertSee('site-brand-word', false);
+        $props = $this->assertInertiaComponent($this->get('/en'), 'Public/Home');
+
+        $this->assertNull($props['site']['logo']);
     }
 
-    public function test_the_logo_appears_on_the_footer_and_admin_panel_too(): void
+    public function test_the_logo_is_shared_with_public_and_admin_page_components(): void
     {
         $this->seed(SiteContentSeeder::class);
 
@@ -79,6 +84,10 @@ class BrandLogoLocaleTest extends TestCase
 
         app()->forgetInstance(SiteContentRepository::class);
 
-        $this->get('/en/regeneration')->assertOk()->assertSee('/storage/content/logo.png', false);
+        $publicProps = $this->assertInertiaComponent($this->get('/en/regeneration'), 'Public/Regeneration');
+        $adminProps = $this->assertInertiaComponent($this->get(route('admin.login')), 'Admin/Login');
+
+        $this->assertStringEndsWith('/storage/content/logo.png', $publicProps['site']['logo']);
+        $this->assertSame($publicProps['site']['logo'], $adminProps['site']['logo']);
     }
 }

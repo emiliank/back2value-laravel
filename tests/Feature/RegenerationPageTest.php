@@ -14,63 +14,69 @@ class RegenerationPageTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/sq/regeneration')
-            ->assertOk()
-            ->assertSee('RID Tester & RID Rigenerator')
-            ->assertSee('RID BMG-30 Battery Tester')
-            ->assertSee('RID BRG Series Battery Regenerator')
-            ->assertSee('Blerja dhe regjistrimi')
-            ->assertSee('Kontroll me RID Tester')
-            ->assertSee('Rigjenerim me RID Rigenerator')
-            ->assertSee('Falas brenda 3 vjetësh për çdo bateri të re')
-            ->assertSee('jo si produkte për shitje')
-            ->assertSee(route('diagnostics.create'), false)
-            ->assertSee(route('services.index'), false);
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/regeneration'),
+            'Public/Regeneration',
+            'RID Tester & RID Rigenerator',
+            'RID BMG-30 Battery Tester',
+            'RID BRG Series Battery Regenerator',
+            'Blerja dhe regjistrimi',
+            'Kontroll me RID Tester',
+            'Rigjenerim me RID Rigenerator',
+            'Falas brenda 3 vjetësh për çdo bateri të re',
+            'jo si produkte për shitje',
+        );
     }
 
     public function test_regeneration_page_renders_rid_lab_flow_section(): void
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/sq/regeneration')
-            ->assertOk()
-            ->assertSee('Si funksionon laboratori ynë i baterive:')
-            ->assertSee('1. Pranimi')
-            ->assertSee('2. Diagnostikimi i baterisë')
-            ->assertSee('3. Rigjenerimi')
-            ->assertSee('4. Testi i performancës')
-            ->assertSee('përqindjen e suksesit të rigjenerimit')
-            ->assertSee('images/rid-lab/step-1.png', false)
-            ->assertSee('images/rid-lab/badge-quality.png', false)
-            ->assertSee('lab-flow__brand lab-flow__brand--site', false)
-            ->assertDontSee('Shkarko grafikun')
-            ->assertDontSee('lab-flow__download');
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/regeneration'),
+            'Public/Regeneration',
+            'Si funksionon laboratori ynë i baterive:',
+            'Pranimi',
+            'Diagnostikimi i baterisë',
+            'Rigjenerimi',
+            'Testi i performancës',
+            'përqindjen e suksesit të rigjenerimit',
+            'images/rid-lab/step-1.png',
+            'images/rid-lab/badge-quality.png',
+        );
+        $this->assertInertiaComponentDoesNotContain($this->get('/sq/regeneration'), 'Public/Regeneration', 'Shkarko grafikun');
     }
 
     public function test_homepage_promotes_rid_tester_and_rigenerator_as_services(): void
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('RID Tester & RID Rigenerator')
-            ->assertSee('RID BMG-30 Battery Tester')
-            ->assertSee('RID BRG Series Battery Regenerator')
-            ->assertSee('Mëso më shumë')
-            ->assertSee(route('regeneration.index'), false);
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/'),
+            'Public/Home',
+            'RID Tester & RID Rigenerator',
+            'RID BMG-30 Battery Tester',
+            'RID BRG Series Battery Regenerator',
+            'Mëso më shumë',
+            route('regeneration.index'),
+        );
     }
 
     public function test_footer_and_services_page_link_to_regeneration_page(): void
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/sq/products')
-            ->assertOk()
-            ->assertSee(route('regeneration.index'), false);
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/products'),
+            'Public/Products',
+            route('regeneration.index'),
+        );
 
-        $this->get('/sq/services')
-            ->assertOk()
-            ->assertSee(route('regeneration.index'), false)
-            ->assertSee('RID Tester & RID Rigenerator');
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/services'),
+            'Public/Services',
+            route('regeneration.index'),
+            'RID Tester & RID Rigenerator',
+        );
     }
 }

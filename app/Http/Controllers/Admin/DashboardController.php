@@ -6,13 +6,14 @@ use App\Content\ContentSchema;
 use App\Content\SiteContentRepository;
 use App\Http\Controllers\Controller;
 use App\Models\SiteContent;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardController extends Controller
 {
     public function __construct(private SiteContentRepository $repository) {}
 
-    public function __invoke(): View
+    public function __invoke(): Response
     {
         $locale = (string) config('locales.default', 'sq');
         $locales = (array) config('locales.available', []);
@@ -43,7 +44,7 @@ class DashboardController extends Controller
             $customised[$key] = $storedRows->contains('section', $key);
         }
 
-        return view('admin.dashboard', [
+        return Inertia::render('Admin/Dashboard', [
             'groups' => $groups,
             'sections' => $sections,
             'content' => $content,

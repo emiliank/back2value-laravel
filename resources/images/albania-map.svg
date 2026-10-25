@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="1400" viewBox="0 0 1200 1400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Glow effect for radar circles -->
+    <radialGradient id="radarGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#117A75;stop-opacity:0.4" />
+      <stop offset="70%" style="stop-color:#117A75;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#117A75;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Glow for main hub node -->
+    <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#0D9488;stop-opacity:0.8" />
+      <stop offset="60%" style="stop-color:#0D9488;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#0D9488;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Subtle node gradient -->
+    <radialGradient id="subNode" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#117A75;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0D9488;stop-opacity:0.8" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="1400" fill="#F8FAF9"/>
+  
+  <!-- Map frame -->
+  <rect x="50" y="50" width="1100" height="1200" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="0.5"/>
+  
+  <!-- Albania outline (simplified shape) -->
+  <g fill="none" stroke="#0D9488" stroke-width="2.5">
+    <path d="M 580 200 
+             L 620 210 L 660 220 L 700 240 L 720 280 L 740 330 L 750 380 L 760 450 
+             L 765 520 L 760 590 L 750 650 L 730 700 L 710 740 L 680 770 L 650 790 
+             L 610 800 L 570 805 L 530 800 L 490 790 L 460 770 L 440 740 L 420 700 
+             L 410 650 L 400 590 L 395 520 L 400 450 L 410 380 L 420 330 L 440 280 
+             L 460 240 L 490 220 L 530 210 L 580 200 Z" 
+          stroke-linejoin="round" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Internal network connection lines -->
+  <g stroke="#117A75" stroke-width="1" opacity="0.4" fill="none">
+    <!-- Main network connections -->
+    <line x1="620" y1="580" x2="680" y2="520" />
+    <line x1="620" y1="580" x2="560" y2="480" />
+    <line x1="620" y1="580" x2="580" y2="660" />
+    <line x1="620" y1="580" x2="540" y2="620" />
+    <line x1="620" y1="580" x2="700" y2="620" />
+    
+    <!-- Regional connections -->
+    <line x1="680" y1="520" x2="720" y2="450" />
+    <line x1="680" y1="520" x2="650" y2="420" />
+    <line x1="560" y1="480" x2="520" y2="420" />
+    <line x1="560" y1="480" x2="600" y2="400" />
+    <line x1="580" y1="660" x2="620" y2="720" />
+    <line x1="580" y1="660" x2="540" y2="700" />
+    <line x1="540" y1="620" x2="500" y2="580" />
+    <line x1="700" y1="620" x2="740" y2="580" />
+    
+    <!-- Secondary connections -->
+    <line x1="720" y1="450" x2="750" y2="380" />
+    <line x1="650" y1="420" x2="680" y2="350" />
+    <line x1="600" y1="400" x2="620" y2="330" />
+    <line x1="520" y1="420" x2="500" y2="350" />
+    <line x1="620" y1="720" x2="640" y2="760" />
+    <line x1="540" y1="700" x2="520" y2="740" />
+    <line x1="500" y1="580" x2="470" y2="540" />
+    <line x1="740" y1="580" x2="770" y2="540" />
+  </g>
+  
+  <!-- Node dots across major regions -->
+  <g fill="url(#subNode)">
+    <!-- Regional nodes -->
+    <circle cx="680" cy="520" r="4"/>
+    <circle cx="560" cy="480" r="4"/>
+    <circle cx="580" cy="660" r="4"/>
+    <circle cx="540" cy="620" r="4"/>
+    <circle cx="700" cy="620" r="4"/>
+    
+    <!-- Secondary nodes -->
+    <circle cx="720" cy="450" r="3"/>
+    <circle cx="650" cy="420" r="3"/>
+    <circle cx="600" cy="400" r="3"/>
+    <circle cx="520" cy="420" r="3"/>
+    <circle cx="620" cy="720" r="3"/>
+    <circle cx="540" cy="700" r="3"/>
+    <circle cx="500" cy="580" r="3"/>
+    <circle cx="740" cy="580" r="3"/>
+    <circle cx="750" cy="380" r="3"/>
+    <circle cx="680" cy="350" r="3"/>
+    <circle cx="620" cy="330" r="3"/>
+    <circle cx="500" cy="350" r="3"/>
+    <circle cx="640" cy="760" r="3"/>
+    <circle cx="520" cy="740" r="3"/>
+    <circle cx="470" cy="540" r="3"/>
+    <circle cx="770" cy="540" r="3"/>
+  </g>
+  
+  <!-- Main hub over Tirana -->
+  <g>
+    <!-- Concentric radar circles -->
+    <circle cx="620" cy="580" r="60" fill="url(#radarGlow)"/>
+    <circle cx="620" cy="580" r="45" fill="none" stroke="#117A75" stroke-width="1" opacity="0.3"/>
+    <circle cx="620" cy="580" r="30" fill="none" stroke="#0D9488" stroke-width="1.2" opacity="0.5"/>
+    <circle cx="620" cy="580" r="18" fill="none" stroke="#0D9488" stroke-width="1.5" opacity="0.7"/>
+    
+    <!-- Main glowing node -->
+    <circle cx="620" cy="580" r="12" fill="url(#nodeGlow)"/>
+    <circle cx="620" cy="580" r="6" fill="#0D9488"/>
+    <circle cx="620" cy="580" r="3" fill="#5EEAD4" opacity="0.9"/>
+  </g>
+  
+  <!-- Typography -->
+  <g font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+    <text x="620" y="720" font-size="28" font-weight="600" fill="#111827" text-anchor="middle" letter-spacing="0.15em">TIRANA</text>
+    <text x="620" y="750" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" letter-spacing="0.05em">Qendër 4S · Dyqani Kryesor</text>
+  </g>
+</svg>

@@ -104,7 +104,7 @@ final class ContentSchema
                 'sections' => ['settings'],
             ],
             'navigation' => [
-                'label' => 'Menjë & footer',
+                'label' => 'Menu & footer',
                 'icon' => 'box',
                 'group' => 'Të përgjithshme',
                 'description' => 'Lidhjet e menusë, butonat e kryenjtë dhe fundi i faqes.',
@@ -114,14 +114,14 @@ final class ContentSchema
                 'label' => 'Faqja kryesore',
                 'icon' => 'home',
                 'group' => 'Faqja kryesore',
-                'description' => 'Shiriti rregullativ, vlerat, hapat e diagnostikimit, procesi qarkullimit, partnerët dhe kartat e kontaktit.',
-                'sections' => ['compliance_banner', 'value_props', 'diagnostics_teaser', 'circular_process', 'partners', 'contact_cards'],
+                'description' => 'Shiriti rregullativ, kategoritë e baterive, vlerat, hapat e diagnostikimit, procesi qarkullimit, partnerët dhe kartat e kontaktit.',
+                'sections' => ['compliance_banner', 'product_categories', 'value_props', 'diagnostics_teaser', 'circular_process', 'partners', 'contact_cards'],
             ],
             'products' => [
                 'label' => 'Produktet & imazhet',
                 'icon' => 'image',
                 'group' => 'Katalogu',
-                'description' => 'Kartat e produkteve që shfaqen në faqen kryesore.',
+                'description' => 'Përmbajtja historike e kartave; kategoritë që shfaqen tani në faqen kryesore redaktohen atje.',
                 'sections' => ['products'],
             ],
             'catalog' => [
@@ -149,8 +149,8 @@ final class ContentSchema
                 'label' => 'Për Back2Value',
                 'icon' => 'shield',
                 'group' => 'Faqet e brendshme',
-                'description' => 'Pikat e forta, statistikat dhe shiriti i besimit.',
-                'sections' => ['about', 'stats', 'trust'],
+                'description' => 'Pikat e forta, statistikat, certifikatat dhe shiriti i besimit.',
+                'sections' => ['about', 'stats', 'certificates', 'trust'],
             ],
             'solutions' => [
                 'label' => 'Faqja e zgjidhjeve',
@@ -477,6 +477,33 @@ final class ContentSchema
                 ]],
             ],
 
+            'product_categories' => [
+                'title' => 'Kategoritë e baterive',
+                'kicker' => 'FAQJA KRYESORE',
+                'description' => 'Tri kartat me fotografi që dërgojnë vizitorët te bateritë përkatëse në katalog.',
+                'shape' => 'group',
+                'groups' => [[
+                    'label' => 'KARTAT E KATEGORIVE',
+                    'fields' => [
+                        self::t('eyebrow', 'Etiketa e seksionit', max: 80),
+                        self::t('title', 'Titulli', max: 120),
+                        self::area('description', 'Përshkrimi', max: 350, rows: 2, wide: true),
+                        self::t('cta_label', 'Teksti i lidhjes', max: 80),
+                        self::repeater('items', 'Kategoritë', [
+                            self::select('application', 'Filtri i katalogut', [
+                                'auto' => 'Auto & Automjete',
+                                'industrial' => 'Industriale & Pirunë',
+                                'backup_power' => 'Backup Power & UPS',
+                            ], optional: false),
+                            self::t('title', 'Titulli i kartës', max: 120),
+                            self::area('description', 'Përshkrimi', max: 350, rows: 3, wide: true),
+                            self::image('image', 'Fotografia e sfondit', hint: 'Ngarkoni fotografi JPG, PNG ose WebP deri në 5 MB.'),
+                            self::t('image_alt', 'Teksti alternativ i fotografisë', max: 180, wide: true),
+                        ], min: 3, maxItems: 3, titleField: 'title', addLabel: 'Shto kategori', wide: true),
+                    ],
+                ]],
+            ],
+
             'products' => [
                 'title' => 'Produktet dhe imazhet',
                 'kicker' => 'KATALOGU',
@@ -551,6 +578,33 @@ final class ContentSchema
                             self::t('value', 'Vlera', max: 30),
                             self::t('label', 'Etiketa', max: 80),
                             self::num('sort_order', 'Renditja', max: 1000), ], min: 1, maxItems: 8, titleField: 'label', addLabel: 'Shto statistikë', wide: true),
+                    ],
+                ]],
+            ],
+
+            'certificates' => [
+                'title' => 'Certifikatat',
+                'kicker' => 'PËR BACK2VALUE',
+                'description' => 'Dokumentet e certifikimit që shfaqen në faqen e burimeve.',
+                'shape' => 'group',
+                'groups' => [[
+                    'label' => 'CERTIFIKATAT',
+                    'fields' => [
+                        self::t('eyebrow', 'Etiketa e seksionit', max: 80),
+                        self::t('title', 'Titulli i seksionit', max: 120),
+                        self::area('description', 'Përshkrimi i seksionit', max: 350, rows: 2, wide: true),
+                        self::repeater('items', 'Certifikatat', [
+                            self::t('key', 'Identifikuesi', max: 80, optional: true),
+                            self::t('title', 'Titulli i certifikatës', max: 120),
+                            self::area('description', 'Përshkrimi', max: 500, rows: 3, wide: true),
+                            self::t('certificate_number', 'Numri i certifikatës', max: 100),
+                            self::t('issue_date', 'Data e lëshimit', max: 50),
+                            self::t('expiration_date', 'Data e skadencës', max: 50),
+                            self::image('image', 'Imazhi i certifikatës', hint: 'PNG, JPG, WebP ose PDF deri në 5 MB.', mimes: 'jpg,jpeg,png,webp,pdf'),
+                            self::url('pdf_url', 'Lidhja e PDF-s', max: 500, wide: true),
+                            self::t('pdf_label', 'Teksti i butonit PDF', max: 60, hint: 'P.sh: "Shiko certifikatën (PDF)"'),
+                            self::num('sort_order', 'Renditja në faqe', max: 1000),
+                        ], min: 0, maxItems: 10, titleField: 'title', addLabel: 'Shto certifikatë', wide: true),
                     ],
                 ]],
             ],
@@ -1165,9 +1219,12 @@ final class ContentSchema
     /**
      * @return array<string, mixed>
      */
-    private static function image(string $key, string $label, int $max = 255, int $rows = 3, bool $wide = false, ?string $hint = null, bool $optional = true): array
+    private static function image(string $key, string $label, int $max = 255, int $rows = 3, bool $wide = false, ?string $hint = null, bool $optional = true, ?string $mimes = null): array
     {
-        return self::base($key, $label, 'image', $max, $rows, $wide, $hint, $optional, null, false, false);
+        return array_merge(
+            self::base($key, $label, 'image', $max, $rows, $wide, $hint, $optional, null, false, false),
+            $mimes === null ? [] : ['mimes' => $mimes],
+        );
     }
 
     /**
@@ -1219,9 +1276,74 @@ final class ContentSchema
             'color' => array_filter([$presence, 'string', 'regex:/\A#[0-9a-fA-F]{6}\z/']),
             'url' => array_filter([$presence, 'string', 'max:'.$field['max'], 'url', 'starts_with:http://,https://']),
             'list', 'pairs' => [$presence, 'string', 'max:'.$field['max']],
-            'image' => array_filter([$presence, 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120']),
+            'image' => array_filter(array_merge([$presence], self::uploadRules($field), ['max:5120'])),
             default => array_filter([$presence, 'string', 'max:'.$field['max']]),
         };
+    }
+
+    /**
+     * Validation rules that control which MIME types an upload field accepts.
+     *
+     * @param  array<string, mixed>  $field
+     * @return list<string>
+     */
+    public static function uploadRules(array $field): array
+    {
+        $mimes = $field['mimes'] ?? null;
+
+        if (! is_string($mimes) || $mimes === '') {
+            // Generic raster images. The `image` rule keeps SVG blocked
+            // because Symfony's image sniffer rejects SVG markup as a raster
+            // image. PDFs are intentionally rejected for these fields.
+            return ['image', 'mimes:jpg,jpeg,png,webp,svg'];
+        }
+
+        $allowed = array_values(array_filter(array_map(
+            static fn (string $extension): string => strtolower(trim($extension)),
+            explode(',', $mimes),
+        )));
+
+        // PDF certificates need the generic `image` sniffer left out so PDF
+        // documents pass validation, while `mimetypes` still rejects spoofed
+        // content types. SVG stays unsupported here (no entry in `$mimes`).
+        return [
+            'mimes:'.implode(',', $allowed),
+            'mimetypes:'.implode(',', self::mimetypesFor($allowed)),
+        ];
+    }
+
+    /**
+     * Map file extensions to their MIME types.
+     *
+     * @param  list<string>  $extensions
+     * @return list<string>
+     */
+    private static function mimetypesFor(array $extensions): array
+    {
+        $map = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'avif' => 'image/avif',
+            'heic' => 'image/heic',
+            'svg' => 'image/svg+xml',
+            'pdf' => 'application/pdf',
+        ];
+
+        $mimeTypes = [];
+
+        foreach ($extensions as $extension) {
+            $mime = $map[$extension] ?? null;
+
+            if ($mime !== null && ! in_array($mime, $mimeTypes, true)) {
+                $mimeTypes[] = $mime;
+            }
+        }
+
+        return $mimeTypes;
     }
 
     /**

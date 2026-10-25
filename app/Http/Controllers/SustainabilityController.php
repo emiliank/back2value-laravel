@@ -3,15 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Content\SiteContentRepository;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class SustainabilityController extends Controller
 {
-    public function index(SiteContentRepository $content): View
+    public function index(SiteContentRepository $content): Response
     {
-        return view('sustainability.index', [
-            'page' => $content->section('sustainability'),
+        $page = $content->section('sustainability');
+
+        return Inertia::render('Public/Sustainability', [
+            'page' => $page,
             'activeNav' => 'sustainability',
+            'title' => $page['meta_title'] ?? 'Qëndrueshmëria | Back2Value',
+            'description' => $page['meta_description'] ?? '',
         ]);
     }
 }

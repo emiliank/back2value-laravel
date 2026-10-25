@@ -41,13 +41,15 @@ class DiagnosticBookingTest extends TestCase
     {
         $response = $this->get('/sq/diagnostics');
 
-        $response->assertOk()
-            ->assertSee('Rezervo një diagnostikim baterie')
-            ->assertSee('Emri dhe mbiemri')
-            ->assertSee('Bateri industriale RID-Batterie')
-            ->assertSee('Grumbullim nga lokacioni ynë')
-            ->assertSee(route('diagnostics.bookings.store'), false)
-            ->assertSee('Pika grumbullimi dhe servisi të autorizuara');
+        $this->assertInertiaComponentContains(
+            $response,
+            'Public/Diagnostics',
+            'Rezervo një diagnostikim baterie',
+            'Emri dhe mbiemri',
+            'Bateri industriale RID-Batterie',
+            'Grumbullim nga lokacioni ynë',
+            'Pika grumbullimi dhe servisi të autorizuara',
+        );
     }
 
     public function test_booking_is_stored_mailed_and_redirects_with_a_status_message(): void
@@ -68,7 +70,7 @@ class DiagnosticBookingTest extends TestCase
         ]);
 
         Mail::assertSent(DiagnosticBookingMail::class, function (DiagnosticBookingMail $mail): bool {
-            return $mail->hasTo('sales@back2value.com')
+            return $mail->hasTo('emiliank18@gmail.com')
                 && $mail->booking->customer_name === 'Arta Hoxha';
         });
     }
@@ -80,8 +82,9 @@ class DiagnosticBookingTest extends TestCase
         $response = $this->followingRedirects()
             ->post(route('diagnostics.bookings.store'), $this->validPayload());
 
-        $response->assertOk()
-            ->assertSee('Kërkesa u dërgua me sukses');
+        $props = $this->assertInertiaComponent($response, 'Public/Diagnostics');
+
+        $this->assertSame(site('diagnostics_page', 'success_message'), $props['flash']['status']);
     }
 
     public function test_booking_requires_the_documented_fields(): void

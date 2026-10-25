@@ -9,16 +9,22 @@ use App\Models\DiagnosticBooking;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class DiagnosticBookingController extends Controller
 {
-    public function create(SiteContentRepository $content): View
+    public function create(SiteContentRepository $content): Response
     {
-        return view('diagnostics.create', [
-            'page' => $content->section('diagnostics_page'),
+        $page = $content->section('diagnostics_page');
+
+        return Inertia::render('Public/Diagnostics', [
+            'page' => $page,
             'dropOffPoints' => $content->section('drop_off_points'),
             'activeNav' => 'diagnostics',
+            'title' => $page['meta_title'] ?? 'Rezervo Diagnostikim | Back2Value',
+            'description' => $page['meta_description'] ?? '',
+            'today' => now()->toDateString(),
         ]);
     }
 
@@ -29,7 +35,7 @@ class DiagnosticBookingController extends Controller
             'status' => 'pending',
         ]);
 
-        Mail::to('sales@back2value.com')->send(new DiagnosticBookingMail($booking));
+        Mail::to('emiliank18@gmail.com')->send(new DiagnosticBookingMail($booking));
 
         Log::info('Battery diagnostic booking received.', [
             'booking_id' => $booking->id,

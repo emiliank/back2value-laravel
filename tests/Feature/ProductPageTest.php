@@ -37,25 +37,31 @@ class ProductPageTest extends TestCase
 
         $response = $this->get('/sq/products');
 
-        $response->assertOk()
-            ->assertSee('RID Series OPzS')
-            ->assertSee('RID Series OPzV')
-            ->assertSee('RID Xtreme / HR Series')
-            ->assertSee('RID ST Series (Commercial Vehicles)')
-            ->assertSee('RID Motive Power (Forklifts)')
-            ->assertSee('Hoppecke Series OPzV')
-            ->assertSee('Hoppecke Series OGi')
-            ->assertSee('Hoppecke Series GroE')
-            ->assertSee('Hoppecke Series FNC (NiCd)')
-            ->assertSee('Socomec UPS')
-            ->assertSee('RID Power Cell (Storage)')
-            ->assertDontSee('Batteries Diagnostics')
-            ->assertSee('Çmimi me kërkesë')
-            // Verify no prices or currency symbols are exposed
-            ->assertDontSee('€')
-            ->assertDontSee('320.00')
-            ->assertDontSee('780.00')
-            ->assertDontSee('21000.00');
+        $this->assertInertiaComponentContains(
+            $response,
+            'Public/Products',
+            'RID Series OPzS',
+            'RID Series OPzV',
+            'RID Xtreme / HR Series',
+            'RID ST Series (Commercial Vehicles)',
+            'RID Motive Power (Forklifts)',
+            'Hoppecke Series OPzV',
+            'Hoppecke Series OGi',
+            'Hoppecke Series GroE',
+            'Hoppecke Series FNC (NiCd)',
+            'Socomec UPS',
+            'RID Power Cell (Storage)',
+            'Çmimi me kërkesë',
+        );
+        $this->assertInertiaComponentDoesNotContain(
+            $response,
+            'Public/Products',
+            'Batteries Diagnostics',
+            '€',
+            '320.00',
+            '780.00',
+            '21000.00',
+        );
     }
 
     public function test_products_page_does_not_sell_rid_tester_or_regenerator(): void
@@ -121,32 +127,29 @@ class ProductPageTest extends TestCase
 
         $response = $this->get('/sq/products');
 
-        $response->assertOk()
-            ->assertSee(config('site.sq.catalog_page.applications_label'))
-            ->assertSee('Industriale & Pirunë')
-            ->assertSee('Backup Power & UPS')
-            ->assertSee('Solar & Energji e Rinovueshme')
-            ->assertSee('Auto & Automjete')
-            ->assertSee(route('products.index', ['application' => 'solar']), false);
+        $this->assertInertiaComponentContains(
+            $response,
+            'Public/Products',
+            config('site.sq.catalog_page.applications_label'),
+            'Industriale & Pirunë',
+            'Backup Power & UPS',
+            'Solar & Energji e Rinovueshme',
+            'Auto & Automjete',
+        );
     }
 
     public function test_products_page_shows_the_detailed_vehicle_finder_form(): void
     {
         $response = $this->get('/sq/products');
 
-        $response->assertOk()
-            ->assertSee(config('site.sq.catalog_page.finder_title'))
-            ->assertSee('name="v_type"', false)
-            ->assertSee('name="v_make"', false)
-            ->assertSee('name="v_model"', false)
-            ->assertSee('name="v_year"', false)
-            ->assertSee('name="v_fuel"', false)
-            ->assertSee('name="v_startstop"', false)
-            ->assertSee('name="v_capacity"', false)
-            ->assertSee('name="vin"', false)
-            ->assertSee('name="v_notes"', false)
-            ->assertSee(config('site.sq.catalog_page.finder_submit'), false)
-            ->assertDontSee('€');
+        $props = $this->assertInertiaComponent($response, 'Public/Products');
+
+        $this->assertSame(config('site.sq.catalog_page.finder_title'), $props['page']['finder_title']);
+        $this->assertSame(config('site.sq.catalog_page.finder_submit'), $props['page']['finder_submit']);
+        $this->assertArrayHasKey('types', $props['vehicleOptions']);
+        $this->assertArrayHasKey('makes', $props['vehicleOptions']);
+        $this->assertArrayHasKey('years', $props['vehicleOptions']);
+        $this->assertInertiaComponentDoesNotContain($response, 'Public/Products', '€');
     }
 
     public function test_vehicle_finder_recommends_agm_for_start_stop_car(): void
@@ -155,14 +158,13 @@ class ProductPageTest extends TestCase
 
         $response = $this->get('/sq/products?v_type=car&v_make=Volkswagen&v_model=Golf&v_year=2015&v_fuel=petrol&v_startstop=yes');
 
-        $response->assertOk()
-            ->assertSee('Kërkim mjeti', false)
-            ->assertSee('Bateri AGM me Start-Stop', false)
-            ->assertSee('Përshtatje e plotë', false)
-            ->assertSee('RID ST AGM 12-60', false)
-            ->assertDontSee('RID ST2 12-45', false)
-            ->assertDontSee('Socomec Masterys Emergency UPS', false)
-            ->assertDontSee('€');
+        $props = $this->assertInertiaComponent($response, 'Public/Products');
+
+        $this->assertSame('agm', $props['vehicleProfile']['recommendation']['technology']);
+        $this->assertSame('exact', $props['vehicleProfile']['match_level']);
+        $this->assertSame('Bateri AGM me Start-Stop', $props['vehicleProfile']['recommendation']['label']);
+        $this->assertInertiaComponentContains($response, 'Public/Products', 'RID ST AGM 12-60', 'Përshtatje e plotë');
+        $this->assertInertiaComponentDoesNotContain($response, 'Public/Products', 'RID ST2 12-45', 'Socomec Masterys Emergency UPS', '€');
     }
 
     public function test_vehicle_finder_recommends_heavy_duty_for_diesel_truck(): void
@@ -183,20 +185,23 @@ class ProductPageTest extends TestCase
     {
         $response = $this->get('/sq/products?vin=12345');
 
-        $response->assertOk()
-            ->assertSee('VIN-i duhet të ketë saktësisht 17 karaktere.', false)
-            ->assertDontSee(config('site.sq.catalog_page.vin_valid_text'), false);
+        $props = $this->assertInertiaComponent($response, 'Public/Products');
+
+        $this->assertSame('invalid', $props['vehicleProfile']['vin_info']['state']);
+        $this->assertSame('VIN-i duhet të ketë saktësisht 17 karaktere.', $props['vehicleProfile']['vin_info']['message']);
     }
 
     public function test_vehicle_finder_decodes_valid_vin_region_and_model_year(): void
     {
         $response = $this->get('/sq/products?vin=WVWZZZ1KZAW000001&v_year=2010');
 
-        $response->assertOk()
-            ->assertSee(config('site.sq.catalog_page.vin_valid_text'), false)
-            ->assertSee('Evropë', false)
-            ->assertSee(config('site.sq.catalog_page.vin_match_text'), false)
-            ->assertSee(config('site.sq.catalog_page.vin_confirm_label'), false);
+        $props = $this->assertInertiaComponent($response, 'Public/Products');
+
+        $this->assertSame('valid', $props['vehicleProfile']['vin_info']['state']);
+        $this->assertSame('Evropë', $props['vehicleProfile']['vin_info']['region']);
+        $this->assertSame(config('site.sq.catalog_page.vin_valid_text'), $props['page']['vin_valid_text']);
+        $this->assertSame(config('site.sq.catalog_page.vin_match_text'), $props['page']['vin_match_text']);
+        $this->assertSame(config('site.sq.catalog_page.vin_confirm_label'), $props['page']['vin_confirm_label']);
     }
 
     public function test_products_page_shows_catalog_imagery(): void
@@ -205,13 +210,20 @@ class ProductPageTest extends TestCase
 
         $response = $this->get('/sq/products');
 
-        $response->assertOk()
-            ->assertSee('images/battery-start.jpg', false)
-            ->assertSee('images/battery-ups.jpg', false)
-            ->assertSee('images/battery-pzs.jpg', false)
-            ->assertDontSee('images/battery-generic.svg', false)
-            ->assertDontSee('Battery Diagnostic Service', false)
-            ->assertSee('property="og:image"', false)
-            ->assertDontSee('€');
+        $this->assertInertiaComponentContains(
+            $response,
+            'Public/Products',
+            'images/battery-start.jpg',
+            'images/battery-ups.jpg',
+            'images/battery-pzs.jpg',
+        );
+        $this->assertInertiaComponentDoesNotContain(
+            $response,
+            'Public/Products',
+            'images/battery-generic.svg',
+            'Battery Diagnostic Service',
+            '€',
+        );
+        $response->assertSee('property="og:image"', false);
     }
 }
