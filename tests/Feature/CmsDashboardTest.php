@@ -41,15 +41,19 @@ class CmsDashboardTest extends TestCase
 
         $this->actingAs($admin)
             ->get(route('admin.dashboard'))
-            ->assertOk()
-            ->assertSee('Mirë se vini në panelin e përmbajtjes')
-            ->assertSee('<svg class="admin-icon"', false)
-            ->assertSee('class="brand-box admin-brand__logo"', false);
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/Dashboard')
+                ->has('groups')
+                ->has('totalPages')
+                ->has('totalSections')
+                ->etc());
 
         foreach (ContentSchema::pages() as $slug => $definition) {
-            $this->get(route('admin.content.edit', ['page' => $slug]))
-                ->assertOk()
-                ->assertSee($definition['label']);
+            $this->assertInertiaComponentContains(
+                $this->get(route('admin.content.edit', ['page' => $slug])),
+                'Admin/Content/Edit',
+                $definition['label'],
+            );
         }
     }
 
@@ -69,10 +73,9 @@ class CmsDashboardTest extends TestCase
 
     public function test_admin_login_uses_the_public_site_wordmark(): void
     {
-        $this->get(route('admin.login'))
-            ->assertOk()
-            ->assertSee('class="brand-box admin-brand__logo"', false)
-            ->assertSee('<svg class="admin-icon"', false);
+        $props = $this->assertInertiaComponent($this->get(route('admin.login')), 'Admin/Login');
+
+        $this->assertArrayHasKey('brand_alt', $props['site']['navigation']);
     }
 
     public function test_non_admin_users_cannot_open_admin_pages(): void
@@ -126,11 +129,13 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('Bateri për çdo biznes')
-            ->assertSee('+355 68 123 4567')
-            ->assertSee('#15803d');
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/'),
+            'Public/Home',
+            'Bateri për çdo biznes',
+            '+355 68 123 4567',
+            '#15803d',
+        );
     }
 
     public function test_admin_can_save_navigation_changes_when_another_text_field_is_empty(): void
@@ -153,7 +158,7 @@ class CmsDashboardTest extends TestCase
 
         $this->assertSame('Bateritë tona', $saved['header_items'][0]['label']);
         $this->assertNull($saved['header_cta_primary']);
-        $this->get('/sq/')->assertSee('Bateritë tona');
+        $this->assertInertiaComponentContains($this->get('/sq/'), 'Public/Home', 'Bateritë tona');
     }
 
     public function test_admin_can_save_with_browser_style_dotted_form_keys(): void
@@ -176,10 +181,12 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('Bateri nga browseri')
-            ->assertSee('+355 68 000 1111');
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/'),
+            'Public/Home',
+            'Bateri nga browseri',
+            '+355 68 000 1111',
+        );
     }
 
     public function test_saving_a_page_with_only_unchecked_fields_does_not_error(): void
@@ -193,7 +200,7 @@ class CmsDashboardTest extends TestCase
             ->assertRedirect(route('admin.content.edit', ['page' => 'settings']));
     }
 
-    public function test_group_sections_submit_bracket_names_not_dotted_names(): void
+    public function test_group_sections_are_passed_to_the_react_content_editor(): void
     {
         $admin = User::factory()->create([
             'email' => 'admin@example.test',
@@ -201,13 +208,13 @@ class CmsDashboardTest extends TestCase
 
         // PHP rewrites "." to "_" in field names, so a dotted name would never
         // arrive intact and the section would be silently skipped.
-        $html = $this->actingAs($admin)
-            ->get(route('admin.content.edit', ['page' => 'settings']))
-            ->assertOk()
-            ->getContent();
+        $props = $this->assertInertiaComponent(
+            $this->actingAs($admin)->get(route('admin.content.edit', ['page' => 'settings'])),
+            'Admin/Content/Edit',
+        );
 
-        $this->assertStringContainsString('name="settings[hero_title]"', $html);
-        $this->assertStringNotContainsString('name="settings.hero_title"', $html);
+        $this->assertArrayHasKey('settings', $props['sectionDefinitions']);
+        $this->assertArrayHasKey('settings', $props['content']);
     }
 
     public function test_admin_can_save_blank_multi_line_content(): void
@@ -244,15 +251,50 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('Back2Value logo', false)
-            ->assertSee('/storage/', false);
+        $publicProps = $this->assertInertiaComponent($this->get('/sq/'), 'Public/Home');
+        $this->assertStringContainsString('/storage/', $publicProps['site']['logo']);
 
-        $this->get(route('admin.dashboard'))
-            ->assertOk()
-            ->assertSee('Back2Value logo', false)
-            ->assertSee('/storage/', false);
+        $adminProps = $this->assertInertiaComponent($this->get(route('admin.dashboard')), 'Admin/Dashboard');
+        $this->assertSame($publicProps['site']['logo'], $adminProps['site']['logo']);
+    }
+
+    public function test_admin_can_edit_homepage_category_cards_and_upload_their_images(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+
+        $categories = config('site.sq.product_categories');
+        $categories['title'] = 'Bateri të zgjedhura për ju';
+        $categories['items'][0]['image'] = UploadedFile::fake()->image('automotive.png', 1200, 800);
+
+        $editorProps = $this->assertInertiaComponent(
+            $this->actingAs($admin)->get(route('admin.content.edit', ['page' => 'homepage'])),
+            'Admin/Content/Edit',
+        );
+        $this->assertArrayHasKey('product_categories', $editorProps['sectionDefinitions']);
+        $this->assertArrayHasKey('product_categories', $editorProps['content']);
+
+        $this->put(route('admin.content.update', ['page' => 'homepage']), [
+            'product_categories' => $categories,
+        ])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $saved = SiteContent::query()
+            ->where('section', 'product_categories')
+            ->where('locale', 'sq')
+            ->value('payload');
+
+        $this->assertSame('Bateri të zgjedhura për ju', $saved['title']);
+        Storage::disk('public')->assertExists($saved['items'][0]['image']);
+
+        $props = $this->assertInertiaComponent($this->get('/sq/'), 'Public/Home');
+
+        $this->assertSame('Bateri të zgjedhura për ju', $props['productCategories']['title']);
+        $this->assertSame($saved['items'][0]['image'], $props['productCategories']['items'][0]['image']);
     }
 
     public function test_admin_can_upload_a_partner_logo(): void
@@ -280,13 +322,11 @@ class CmsDashboardTest extends TestCase
         $this->assertSame('white', $saved['items'][0]['logo_background']);
         Storage::disk('public')->assertExists($saved['items'][0]['logo']);
 
-        $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('data-partner-marquee', false)
-            ->assertSee('RID Batterie logo', false)
-            ->assertSee('href="https://partner.example.test/about"', false)
-            ->assertSee('partner-card__logo--white', false)
-            ->assertSee(Storage::disk('public')->url($saved['items'][0]['logo']), false);
+        $props = $this->assertInertiaComponent($this->get('/sq/'), 'Public/Home');
+
+        $this->assertSame('RID Batterie logo', $props['partners']['items'][0]['logo_alt']);
+        $this->assertSame('https://partner.example.test/about', $props['partners']['items'][0]['url']);
+        $this->assertSame($saved['items'][0]['logo'], $props['partners']['items'][0]['logo']);
     }
 
     public function test_partner_logo_defaults_to_black_background_blending(): void
@@ -304,12 +344,11 @@ class CmsDashboardTest extends TestCase
             ->put(route('admin.content.update', ['page' => 'homepage']), ['partners' => $partners])
             ->assertSessionHasNoErrors();
 
-        $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('partner-card__logo--black', false);
+        $props = $this->assertInertiaComponent($this->get('/sq/'), 'Public/Home');
+        $this->assertNull($props['partners']['items'][0]['logo_background']);
     }
 
-    public function test_partner_marquee_shows_only_partners_that_have_a_logo(): void
+    public function test_homepage_receives_partner_logo_state_for_rendering(): void
     {
         Storage::fake('public');
 
@@ -326,11 +365,11 @@ class CmsDashboardTest extends TestCase
             ->put(route('admin.content.update', ['page' => 'homepage']), ['partners' => $partners])
             ->assertSessionHasNoErrors();
 
-        $response = $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('data-partner-marquee', false)
-            ->assertSee('data-partner-marquee-group', false)
-            ->assertDontSee($withoutLogo);
+        $props = $this->assertInertiaComponent($this->get('/sq/'), 'Public/Home');
+
+        $this->assertSame($partners['items'][0]['name'], $props['partners']['items'][0]['name']);
+        $this->assertNotSame($withoutLogo, $props['partners']['items'][0]['name']);
+        $this->assertNull($props['partners']['items'][1]['logo']);
     }
 
     public function test_admin_can_remove_a_partner_logo_from_the_english_editor(): void
@@ -361,11 +400,12 @@ class CmsDashboardTest extends TestCase
         }
         $browserRows['item-0']['logo_remove'] = '1';
 
-        $html = $this->get(route('admin.content.edit', ['page' => 'homepage', 'locale' => 'en']))
-            ->assertOk()
-            ->getContent();
-
-        $this->assertStringContainsString('name="partners[items][item-0][logo_remove]"', $html);
+        $editorProps = $this->assertInertiaComponent(
+            $this->get(route('admin.content.edit', ['page' => 'homepage', 'locale' => 'en'])),
+            'Admin/Content/Edit',
+        );
+        $this->assertSame('en', $editorProps['locale']);
+        $this->assertNotEmpty($editorProps['content']['partners']['items'][0]['logo']);
 
         $this->put(route('admin.content.update', ['page' => 'homepage', 'locale' => 'en']), [
             'partners' => array_merge($saved, ['items' => $browserRows]),
@@ -502,10 +542,10 @@ class CmsDashboardTest extends TestCase
         $content->payload = $payload;
         $content->save();
 
-        $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('process-outcome--resale', false)
-            ->assertSee('process-outcome--recycling', false);
+        $props = $this->assertInertiaComponent($this->get('/sq/'), 'Public/Home');
+
+        $this->assertArrayNotHasKey('key', $props['circularProcess']['outcomes'][0]);
+        $this->assertArrayNotHasKey('key', $props['circularProcess']['outcomes'][1]);
     }
 
     public function test_settings_reject_invalid_accent_colors(): void
@@ -525,18 +565,19 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasErrors('settings.accent_color');
     }
 
-    public function test_repeater_rows_render_editable_inputs_with_well_formed_names(): void
+    public function test_repeater_rows_are_passed_to_the_react_content_editor(): void
     {
         $admin = User::factory()->create([
             'email' => 'admin@example.test',
         ]);
 
-        $this->actingAs($admin)
-            ->get(route('admin.content.edit', ['page' => 'products']))
-            ->assertOk()
-            ->assertSee('name="products[item-0][title]"', false)
-            ->assertSee('name="products[__KEY__][title]"', false)
-            ->assertSee('data-add-row="template-', false);
+        $props = $this->assertInertiaComponent(
+            $this->actingAs($admin)->get(route('admin.content.edit', ['page' => 'products'])),
+            'Admin/Content/Edit',
+        );
+
+        $this->assertArrayHasKey('products', $props['sectionDefinitions']);
+        $this->assertNotEmpty($props['content']['products']);
     }
 
     public function test_nested_navigation_repeater_uses_php_safe_field_names(): void
@@ -545,11 +586,13 @@ class CmsDashboardTest extends TestCase
             'email' => 'admin@example.test',
         ]);
 
-        $this->actingAs($admin)
-            ->get(route('admin.content.edit', ['page' => 'navigation']))
-            ->assertOk()
-            ->assertSee('name="navigation[header_items][item-0][label]"', false)
-            ->assertDontSee('name="navigation.header_items[item-0][label]"', false);
+        $props = $this->assertInertiaComponent(
+            $this->actingAs($admin)->get(route('admin.content.edit', ['page' => 'navigation'])),
+            'Admin/Content/Edit',
+        );
+
+        $this->assertArrayHasKey('navigation', $props['sectionDefinitions']);
+        $this->assertArrayHasKey('header_items', $props['content']['navigation']);
     }
 
     public function test_admin_can_add_and_remove_a_product(): void
@@ -677,6 +720,39 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasErrors('services');
     }
 
+    public function test_admin_can_remove_a_service_from_the_browser_repeater(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+        $services = config('site.sq.services');
+        $removedIndex = array_key_last($services);
+        $removedTitle = $services[$removedIndex]['title'];
+        $browserRows = [];
+
+        foreach ($services as $index => $service) {
+            $browserRows['item-'.$index] = array_merge($service, [
+                'remove' => $index === $removedIndex ? '1' : '0',
+            ]);
+        }
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'services', 'locale' => 'sq']), [
+                'services' => $browserRows,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $savedServices = SiteContent::query()
+            ->where('section', 'services')
+            ->where('locale', 'sq')
+            ->value('payload');
+
+        $this->assertCount(count($services) - 1, $savedServices);
+        $this->assertNotContains($removedTitle, array_column($savedServices, 'title'));
+        $this->get('/sq/')->assertOk()->assertDontSee($removedTitle);
+    }
+
     public function test_admin_cannot_remove_every_service_from_the_browser_repeater(): void
     {
         $admin = User::factory()->create([
@@ -722,15 +798,19 @@ class CmsDashboardTest extends TestCase
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status');
 
-        $this->get('/sq/')
-            ->assertOk()
-            ->assertSee('Kontroll i baterisë')
-            ->assertSee('Pse të na zgjidhni?')
-            ->assertSee('3yr');
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/'),
+            'Public/Home',
+            'Kontroll i baterisë',
+            'Pse të na zgjidhni?',
+            '3yr',
+        );
 
-        $this->get('/sq/resources')
-            ->assertOk()
-            ->assertSee('Si kontaktoj Back2Value?');
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/resources'),
+            'Public/Resources',
+            'Si kontaktoj Back2Value?',
+        );
     }
 
     public function test_admin_can_edit_the_trust_band_items(): void
@@ -746,7 +826,7 @@ class CmsDashboardTest extends TestCase
             ->put(route('admin.content.update', ['page' => 'about']), ['trust' => $trust])
             ->assertSessionHasNoErrors();
 
-        $this->get('/sq/')->assertOk()->assertSee('Origjinale nga Gjermania');
+        $this->assertInertiaComponentContains($this->get('/sq/'), 'Public/Home', 'Origjinale nga Gjermania');
     }
 
     public function test_admin_cannot_change_site_content_sections_outside_the_allow_list(): void
@@ -782,5 +862,61 @@ class CmsDashboardTest extends TestCase
     private function siteSettings(array $overrides = []): array
     {
         return array_merge(config('site.sq.settings'), $overrides);
+    }
+
+    public function test_admin_can_upload_a_certificate_pdf_to_the_about_page(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+
+        $certificates = config('site.sq.certificates');
+        $certificates['items'][0]['image'] = UploadedFile::fake()->create(
+            'certificate.pdf',
+            250,
+            'application/pdf',
+        );
+        $certificates['items'][0]['title'] = 'Recert 2025';
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'about']), ['certificates' => $certificates])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status');
+
+        $saved = SiteContent::query()
+            ->where('section', 'certificates')
+            ->where('locale', 'sq')
+            ->value('payload');
+
+        $this->assertStringEndsWith('.pdf', $saved['items'][0]['image']);
+        Storage::disk('public')->assertExists($saved['items'][0]['image']);
+
+        $props = $this->assertInertiaComponent($this->get('/sq/resources'), 'Public/Resources');
+
+        $this->assertSame('Recert 2025', $props['certificates'][0]['title']);
+        $this->assertSame($saved['items'][0]['image'], $props['certificates'][0]['image']);
+        $this->assertStringEndsWith('.pdf', $props['certificates'][0]['image']);
+    }
+
+    public function test_certificate_image_field_rejects_svg_uploads(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->create([
+            'email' => 'admin@example.test',
+        ]);
+
+        $certificates = config('site.sq.certificates');
+        $certificates['items'][0]['image'] = UploadedFile::fake()->create(
+            'certificate.svg',
+            1,
+            'image/svg+xml',
+        );
+
+        $this->actingAs($admin)
+            ->put(route('admin.content.update', ['page' => 'about']), ['certificates' => $certificates])
+            ->assertSessionHasErrors('certificates.items.0.image');
     }
 }

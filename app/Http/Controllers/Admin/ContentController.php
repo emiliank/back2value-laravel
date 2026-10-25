@@ -9,7 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Models\SiteContent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ContentController extends Controller
 {
@@ -18,7 +19,7 @@ class ContentController extends Controller
         private SiteContentRepository $repository,
     ) {}
 
-    public function dashboard(): View
+    public function dashboard(): Response
     {
         $pages = ContentSchema::pages();
         $sections = ContentSchema::sections();
@@ -42,7 +43,7 @@ class ContentController extends Controller
             ];
         }
 
-        return view('admin.dashboard', [
+        return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'pages' => count($pages),
                 'sections' => count($sections),
@@ -61,14 +62,14 @@ class ContentController extends Controller
         return redirect()->route('admin.content.edit', ['page' => 'settings', 'locale' => $this->locale(request())]);
     }
 
-    public function edit(Request $request, string $page): View
+    public function edit(Request $request, string $page): Response
     {
         $definition = $this->page($page);
         $sections = $definition['sections'];
 
         $locale = $request->route('locale') ?? $this->locale($request);
 
-        return view('admin.content.edit', [
+        return Inertia::render('Admin/Content/Edit', [
             'page' => $definition,
             'slug' => $page,
             'sectionDefinitions' => collect($sections)->mapWithKeys(fn (string $key): array => [$key => ContentSchema::section($key)])->all(),

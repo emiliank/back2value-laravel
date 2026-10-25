@@ -3,17 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Content\SiteContentRepository;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ResourceController extends Controller
 {
-    public function index(SiteContentRepository $content): View
+    public function index(SiteContentRepository $content): Response
     {
-        return view('resources.index', [
-            'about' => $content->section('about'),
+        $about = $content->section('about');
+        $certificatesSection = $content->section('certificates');
+
+        return Inertia::render('Public/Resources', [
+            'about' => $about,
             'stats' => SiteContentRepository::sorted($content->section('stats')['items'] ?? []),
+            'certificates' => SiteContentRepository::sorted($certificatesSection['items'] ?? []),
+            'certificatesEyebrow' => $certificatesSection['eyebrow'] ?? null,
+            'certificatesTitle' => $certificatesSection['title'] ?? null,
+            'certificatesDescription' => $certificatesSection['description'] ?? null,
             'trust' => $content->section('trust'),
             'activeNav' => 'resources',
+            'title' => $about['title'] ?? 'Rreth nesh | Back2Value',
+            'description' => $about['description'] ?? '',
         ]);
     }
 }

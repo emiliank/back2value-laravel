@@ -17,11 +17,14 @@ class LandingPageTest extends TestCase
 
         $response = $this->get('/sq/');
 
-        $response->assertStatus(200);
-        $response->assertSee('Bateri gjermane. Garanci reale. Shërbim vendor.');
-        $response->assertSee('Back2Value');
-        $response->assertSee(route('products.index'));
-        $response->assertSee('Me anë të RID Tester kontrollohet, testohet dhe diagnostikohet bateria, rigjenerohet');
+        $this->assertInertiaComponentContains(
+            $response,
+            'Public/Home',
+            'Bateri gjermane. Garanci reale. Shërbim vendor.',
+            'Back2Value',
+            route('products.index'),
+            'Me anë të RID Tester kontrollohet, testohet dhe diagnostikohet bateria, rigjenerohet',
+        );
     }
 
     public function test_home_page_shows_value_props_diagnostics_teaser_and_partners(): void
@@ -30,15 +33,35 @@ class LandingPageTest extends TestCase
 
         $response = $this->get('/sq/');
 
-        $response->assertOk()
-            ->assertSee('Rikthejmë 50–100% të kapacitetit origjinal')
-            ->assertSee('Kapacitet i rikthyer')
-            ->assertSee('Rezervo Diagnostikim')
-            ->assertSee('Të mbështetur nga partnerë ndërkombëtarë')
-            ->assertSee(route('diagnostics.create'), false)
-            ->assertSee(route('sustainability.index'), false)
-            ->assertSee(route('resources.index'), false)
-            ->assertDontSee('€');
+        $this->assertInertiaComponentContains(
+            $response,
+            'Public/Home',
+            'Rikthejmë 50–100% të kapacitetit origjinal',
+            'Kapacitet i rikthyer',
+            'Rezervo Diagnostikim',
+            'Të mbështetur nga partnerë ndërkombëtarë',
+            route('diagnostics.create'),
+            route('sustainability.index'),
+            route('resources.index'),
+        );
+        $this->assertInertiaComponentDoesNotContain($response, 'Public/Home', '€');
+    }
+
+    public function test_home_page_shows_three_battery_category_cards_linked_to_catalog_filters(): void
+    {
+        $this->seed(SiteContentSeeder::class);
+
+        $this->assertInertiaComponentContains(
+            $this->get('/sq/'),
+            'Public/Home',
+            'Zgjidhni kategorinë tuaj',
+            'Auto & Automjete',
+            'Industriale & Pirunë',
+            'Backup Power & UPS',
+            'images/battery-start.jpg',
+            'images/battery-pzs.jpg',
+            'images/battery-ups.jpg',
+        );
     }
 
     public function test_home_page_shows_regulatory_compliance_links(): void
@@ -47,13 +70,16 @@ class LandingPageTest extends TestCase
 
         $response = $this->get('/sq/');
 
-        $response->assertOk()
-            ->assertSee('Back2Value operates in line with')
-            ->assertSee('Albanian waste-management legislation', false)
-            ->assertSee('EU regulatory framework', false)
-            ->assertSee('for batteries, waste batteries, and circular economy principles.')
-            ->assertSee('https://akm.gov.al/ova_doc/ligj-nr-10463-date-22-9-2011-per-menaxhimin-e-integruar-te-mbetjeve/', false)
-            ->assertSee('https://eur-lex.europa.eu/eli/reg/2023/1542/oj/', false);
+        $this->assertInertiaComponentContains(
+            $response,
+            'Public/Home',
+            'Back2Value operates in line with',
+            'Albanian waste-management legislation',
+            'EU regulatory framework',
+            'for batteries, waste batteries, and circular economy principles.',
+            'https://akm.gov.al/ova_doc/ligj-nr-10463-date-22-9-2011-per-menaxhimin-e-integruar-te-mbetjeve/',
+            'https://eur-lex.europa.eu/eli/reg/2023/1542/oj/',
+        );
     }
 
     public function test_home_page_shows_hero_visual_and_social_meta(): void
@@ -62,11 +88,10 @@ class LandingPageTest extends TestCase
 
         $response = $this->get('/sq/');
 
-        $response->assertOk()
-            ->assertSee('images/hero-illustration.svg', false)
-            ->assertSee('property="og:image"', false)
-            ->assertSee('images/back2value-logo.png', false)
-            ->assertDontSee('€');
+        $this->assertInertiaComponentContains($response, 'Public/Home', 'images/hero-illustration.svg');
+        $response->assertSee('property="og:image"', false)
+            ->assertSee('images/back2value-logo.png', false);
+        $this->assertInertiaComponentDoesNotContain($response, 'Public/Home', '€');
     }
 
     public function test_home_page_shows_circular_process_flow(): void
@@ -75,21 +100,21 @@ class LandingPageTest extends TestCase
 
         $response = $this->get('/sq/');
 
-        $response->assertOk()
-            ->assertSee('id="procesi"', false)
-            ->assertSee('Nga mbledhja te rikthimi në qarkullim')
-            ->assertSee('Mbledhja')
-            ->assertSee('Testimi')
-            ->assertSee('Sortimi')
-            ->assertSee('Aktivizimi')
-            ->assertSee('Rishitje')
-            ->assertSee('Riciklim')
-            ->assertDontSee('Zero mbetje në landfill')
-            ->assertSee('process-flow', false)
-            ->assertDontSee('€');
+        $this->assertInertiaComponentContains(
+            $response,
+            'Public/Home',
+            'Nga mbledhja te rikthimi në qarkullim',
+            'Mbledhja',
+            'Testimi',
+            'Sortimi',
+            'Aktivizimi',
+            'Rishitje',
+            'Riciklim',
+        );
+        $this->assertInertiaComponentDoesNotContain($response, 'Public/Home', '€');
     }
 
-    public function test_home_page_does_not_display_products_or_prices(): void
+    public function test_home_page_does_not_display_catalog_products_or_prices(): void
     {
         $this->seed(SiteContentSeeder::class);
 
@@ -108,16 +133,15 @@ class LandingPageTest extends TestCase
 
         $homeResponse = $this->get('/sq/');
 
-        $homeResponse->assertStatus(200);
-        // Products and prices must not be shown on the home page
-        $homeResponse->assertDontSee('RID 6 OPzS 600');
-        $homeResponse->assertDontSee('€');
+        $this->assertInertiaComponentDoesNotContain($homeResponse, 'Public/Home', 'RID 6 OPzS 600', '€');
 
-        // Products should be displayed on the dedicated products catalog page
         $productsResponse = $this->get('/sq/products');
-        $productsResponse->assertStatus(200);
-        $productsResponse->assertSee('RID Series OPzS');
-        $productsResponse->assertSee('RID 6 OPzS 600');
-        $productsResponse->assertDontSee('€');
+        $this->assertInertiaComponentContains(
+            $productsResponse,
+            'Public/Products',
+            'RID Series OPzS',
+            'RID 6 OPzS 600',
+        );
+        $this->assertInertiaComponentDoesNotContain($productsResponse, 'Public/Products', '€');
     }
 }

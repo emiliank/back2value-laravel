@@ -80,6 +80,35 @@ return [
         'phone_label' => 'Phone',
         'map_label' => 'Open in Maps',
     ],
+    'product_categories' => [
+        'eyebrow' => 'FIND THE RIGHT BATTERY',
+        'title' => 'Choose your category',
+        'description' => 'Reliable battery solutions for vehicles, industrial equipment and backup power systems.',
+        'cta_label' => 'View products',
+        'items' => [
+            [
+                'application' => 'auto',
+                'title' => 'Auto & Vehicles',
+                'description' => 'Starting batteries for cars, vans and commercial fleets.',
+                'image' => 'images/battery-start.jpg',
+                'image_alt' => 'RID-Batterie starting battery for cars and trucks',
+            ],
+            [
+                'application' => 'industrial',
+                'title' => 'Industrial & Forklift',
+                'description' => 'Traction batteries for electric forklifts and industrial equipment.',
+                'image' => 'images/battery-pzs.jpg',
+                'image_alt' => 'RID traction battery with industrial cells and orange caps',
+            ],
+            [
+                'application' => 'backup_power',
+                'title' => 'Backup Power & UPS',
+                'description' => 'Reliable batteries for UPS and critical power systems.',
+                'image' => 'images/battery-ups.jpg',
+                'image_alt' => 'Green RID batteries for UPS systems and industrial use',
+            ],
+        ],
+    ],
     'products' => [
         [
             'key' => 'traction',
@@ -200,6 +229,12 @@ return [
             ['key' => 'response', 'value' => '48h', 'label' => 'Emergency SLA', 'sort_order' => 3],
             ['key' => 'rank', 'value' => '#1', 'label' => 'Exclusive Importer', 'sort_order' => 4],
         ],
+    ],
+    'certificates' => [
+        'eyebrow' => 'CERTIFICATES',
+        'title' => 'Our Certificates',
+        'description' => 'Certification documents that verify our quality and compliance with international standards.',
+        'items' => [],
     ],
     'trust' => [
         'items' => [

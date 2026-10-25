@@ -91,18 +91,13 @@ class BilingualSiteTest extends TestCase
     {
         $this->seed(SiteContentSeeder::class);
 
-        $this->get('/sq')->assertOk()
-            ->assertSee('language-switcher', false)
-            ->assertSee('<span class="language-switcher__label" lang="sq">SQ</span>', false)
-            ->assertSee('<span class="language-switcher__label" lang="en">EN</span>', false)
-            // The short code is backed by a readable name for screen readers.
-            ->assertSee('aria-label="Shqip"', false)
-            ->assertSee('aria-label="English"', false)
-            ->assertSee(route('home', ['locale' => 'en']), false);
+        $albanianProps = $this->assertInertiaComponent($this->get('/sq'), 'Public/Home');
+        $this->assertSame('sq', $albanianProps['site']['locale']);
+        $this->assertSame('Shqip', $albanianProps['site']['locales']['sq']['native']);
+        $this->assertSame('English', $albanianProps['site']['locales']['en']['native']);
 
-        $this->get('/en')->assertOk()
-            ->assertSee('language-switcher', false)
-            ->assertSee('aria-current="true"', false);
+        $englishProps = $this->assertInertiaComponent($this->get('/en'), 'Public/Home');
+        $this->assertSame('en', $englishProps['site']['locale']);
     }
 
     public function test_switching_language_keeps_the_visitor_on_the_same_page(): void
@@ -166,16 +161,23 @@ class BilingualSiteTest extends TestCase
 
         $admin = User::factory()->create(['email' => 'admin@example.test']);
 
-        $this->actingAs($admin)
+        $englishProps = $this->actingAs($admin)
             ->get(route('admin.content.edit', ['page' => 'settings', 'locale' => 'en']))
-            ->assertOk()
-            ->assertSee('admin-locale-tabs', false)
-            ->assertSee('German batteries. Real warranty. Vendor service.');
+            ->assertInertia(fn ($page) => $page->component('Admin/Content/Edit')->where('locale', 'en')->etc())
+            ->inertiaProps();
 
-        $this->actingAs($admin)
+        $this->assertSame('German batteries.', $englishProps['content']['settings']['hero_title']);
+        $this->assertSame('Real warranty.', $englishProps['content']['settings']['hero_highlight']);
+        $this->assertSame('Vendor service.', $englishProps['content']['settings']['hero_subtitle']);
+
+        $albanianProps = $this->actingAs($admin)
             ->get(route('admin.content.edit', ['page' => 'settings', 'locale' => 'sq']))
-            ->assertOk()
-            ->assertSee('Bateri gjermane. Garanci reale. Shërbim vendor.');
+            ->assertInertia(fn ($page) => $page->component('Admin/Content/Edit')->where('locale', 'sq')->etc())
+            ->inertiaProps();
+
+        $this->assertSame('Bateri gjermane.', $albanianProps['content']['settings']['hero_title']);
+        $this->assertSame('Garanci reale.', $albanianProps['content']['settings']['hero_highlight']);
+        $this->assertSame('Shërbim vendor.', $albanianProps['content']['settings']['hero_subtitle']);
     }
 
     public function test_saving_a_page_writes_only_the_language_being_edited(): void
@@ -237,6 +239,11 @@ class BilingualSiteTest extends TestCase
             'password' => 'very-secure-test-password',
         ]);
 
-        $this->get('/admin')->assertOk()->assertSee('Përmbledhja');
+        $this->get('/admin')->assertInertia(fn ($page) => $page
+            ->component('Admin/Dashboard')
+            ->has('groups')
+            ->has('totalPages')
+            ->has('totalSections')
+            ->etc());
     }
 }

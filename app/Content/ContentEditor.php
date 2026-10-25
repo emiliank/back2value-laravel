@@ -452,7 +452,7 @@ class ContentEditor
                         continue;
                     }
 
-                    $rules[$uploadName] = array_filter([$field['required'] ? 'required' : 'nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120']);
+                    $rules[$uploadName] = array_filter(array_merge([$field['required'] ? 'required' : 'nullable'], ContentSchema::uploadRules($field), ['max:5120']));
                     $rules[$uploadName.'_path'] = ['nullable', 'string', 'max:255'];
                     $rules[$uploadName.'_remove'] = ['nullable', 'boolean'];
                 }
@@ -469,7 +469,7 @@ class ContentEditor
             }
 
             return [
-                $name => array_filter([$field['required'] ? 'required' : 'nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120']),
+                $name => array_filter(array_merge([$field['required'] ? 'required' : 'nullable'], ContentSchema::uploadRules($field), ['max:5120'])),
                 $name.'_path' => ['nullable', 'string', 'max:255'],
                 $name.'_remove' => ['nullable', 'boolean'],
             ];

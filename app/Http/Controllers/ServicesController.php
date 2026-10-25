@@ -3,16 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Content\SiteContentRepository;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ServicesController extends Controller
 {
-    public function index(SiteContentRepository $content): View
+    public function index(SiteContentRepository $content): Response
     {
-        return view('services.index', [
-            'page' => $content->section('services_page'),
+        $page = $content->section('services_page');
+
+        return Inertia::render('Public/Services', [
+            'page' => $page,
             'dropOffPoints' => $content->section('drop_off_points'),
             'activeNav' => 'services',
+            'title' => ($page['meta_title'] ?? 'Shërbimet Teknike | Back2Value').' | Back2Value',
+            'description' => $page['meta_description'] ?? '',
         ]);
     }
 }

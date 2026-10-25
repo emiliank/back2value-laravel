@@ -79,6 +79,35 @@ return [
         'phone_label' => 'Telefon',
         'map_label' => 'Hap në Maps',
     ],
+    'product_categories' => [
+        'eyebrow' => 'GJENI BATERINË E DUHUR',
+        'title' => 'Zgjidhni kategorinë tuaj',
+        'description' => 'Zgjidhje të besueshme baterish për automjete, pajisje industriale dhe sisteme rezervë energjie.',
+        'cta_label' => 'Shiko produktet',
+        'items' => [
+            [
+                'application' => 'auto',
+                'title' => 'Auto & Automjete',
+                'description' => 'Bateri startimi për vetura, furgonë dhe flota komerciale.',
+                'image' => 'images/battery-start.jpg',
+                'image_alt' => 'Bateri startimi RID-Batterie për automjete dhe kamionë',
+            ],
+            [
+                'application' => 'industrial',
+                'title' => 'Industriale & Pirunë',
+                'description' => 'Bateri traksionare për pirunë elektrikë dhe pajisje industriale.',
+                'image' => 'images/battery-pzs.jpg',
+                'image_alt' => 'Bateri traksionare RID me qeliza industriale dhe kapakë portokalli',
+            ],
+            [
+                'application' => 'backup_power',
+                'title' => 'Backup Power & UPS',
+                'description' => 'Bateri të besueshme për UPS dhe sisteme kritike të energjisë.',
+                'image' => 'images/battery-ups.jpg',
+                'image_alt' => 'Bateri të gjelbra RID për sisteme UPS dhe përdorim industrial',
+            ],
+        ],
+    ],
     'products' => [
         [
             'key' => 'traction',
@@ -199,6 +228,12 @@ return [
             ['key' => 'response', 'value' => '48h', 'label' => 'SLA Emergjent', 'sort_order' => 3],
             ['key' => 'rank', 'value' => '#1', 'label' => 'Importues Ekskluziv', 'sort_order' => 4],
         ],
+    ],
+    'certificates' => [
+        'eyebrow' => 'CERTIFIKATAT',
+        'title' => 'Certifikatat Tona',
+        'description' => 'Dokumentet e certifikimit që vërtetojnë cilësinë dhe përputhshmërinë me standardet ndërkombëtare.',
+        'items' => [],
     ],
     'trust' => [
         'items' => [

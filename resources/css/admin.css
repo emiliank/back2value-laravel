@@ -97,9 +97,19 @@
     flex: 0 0 auto;
 }
 
-.admin-nav__icon .admin-icon {
+.admin-nav__icon .admin-icon,
+.admin-nav__icon .icon-badge,
+.admin-site-link .icon-badge,
+.admin-logout .icon-badge {
     width: 19px;
     height: 19px;
+}
+
+.admin-nav__icon .icon-badge svg,
+.admin-site-link .icon-badge svg,
+.admin-logout .icon-badge svg {
+    width: 100%;
+    height: 100%;
 }
 
 .admin-inline-icon {
@@ -109,7 +119,8 @@
     vertical-align: middle;
 }
 
-.admin-inline-icon .admin-icon {
+.admin-inline-icon .admin-icon,
+.admin-inline-icon .icon-badge {
     width: 16px;
     height: 16px;
 }
@@ -240,7 +251,17 @@
     align-items: center;
     justify-content: space-between;
     gap: 25px;
-    margin: 36px 0 25px;
+    margin: 36px 0 30px;
+    padding: 26px 30px;
+    border: 1px solid #e5e9ef;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 28px -27px rgba(17, 26, 46, 0.28);
+}
+
+.admin-welcome > div {
+    flex: 1;
+    min-width: 0;
 }
 
 .admin-welcome h2,
@@ -375,7 +396,33 @@
     min-height: 185px;
     flex-direction: column;
     align-items: flex-start;
-    padding: 19px;
+    padding: 20px 18px 18px;
+}
+
+.admin-metric__icon {
+    margin-bottom: 12px;
+}
+
+.admin-metric__label {
+    margin-top: 0;
+    color: #778194;
+    font-size: 0.79rem;
+}
+
+.admin-metric > strong {
+    margin-top: 2px;
+    color: #172136;
+    font-size: 1.72rem;
+    font-weight: 760;
+    letter-spacing: -0.05em;
+}
+
+.admin-metric > a {
+    margin-top: auto;
+    padding-top: 10px;
+    color: #0d966e;
+    font-size: 0.74rem;
+    font-weight: 650;
 }
 
 .admin-metric__icon {
@@ -441,7 +488,12 @@
 
 .admin-quick-panel {
     margin-top: 25px;
-    padding: 25px;
+    padding: 0;
+    border: 1px solid #e5e9ef;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 28px -27px rgba(17, 26, 46, 0.28);
+    overflow: hidden;
 }
 
 .admin-panel__heading {
@@ -449,7 +501,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    margin-bottom: 24px;
+    padding: 24px;
+    border-bottom: 1px solid #eef2f5;
 }
 
 .admin-panel__heading h2 {
@@ -471,41 +524,81 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
+    padding: 24px;
 }
 
-.admin-quick-links > a {
+.admin-quick-link {
     position: relative;
     display: flex;
-    min-height: 125px;
-    flex-direction: column;
-    padding: 19px 48px 18px 19px;
+    align-items: center;
+    gap: 14px;
+    min-height: 80px;
+    padding: 16px 20px;
     border: 1px solid #e8ecf0;
+    border-left: 4px solid transparent;
     border-radius: 12px;
-    transition: border-color 160ms ease, background 160ms ease;
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
-.admin-quick-links > a:hover {
-    border-color: #c5e7da;
+.admin-quick-link:hover {
+    border-left-color: #0d9e73;
     background: #fbfefc;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -20px rgba(17, 26, 46, 0.12);
 }
 
-.admin-quick-links strong {
+.admin-quick-link__icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    place-items: center;
+    border-radius: 10px;
+    background: #eaf9f2;
+    color: #11936c;
+    font-size: 1rem;
+}
+
+.admin-quick-link__icon .admin-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.admin-quick-link__body strong {
     color: #243047;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
+    font-weight: 720;
+    letter-spacing: -0.01em;
 }
 
-.admin-quick-links > a > span:not(.admin-quick-link__arrow) {
-    margin-top: 8px;
+.admin-quick-link__body small {
+    margin-top: 3px;
     color: #7f8998;
-    font-size: 0.79rem;
-    line-height: 1.55;
+    font-size: 0.76rem;
+    line-height: 1.5;
 }
 
 .admin-quick-link__arrow {
-    position: absolute;
-    top: 19px;
-    right: 19px;
+    margin-left: auto;
     color: #0d9e73;
+}
+
+.admin-quick-note {
+    margin: 0;
+    padding: 18px 24px;
+    border-top: 1px solid #eef2f5;
+    background: #fbfefc;
+    color: #6b7686;
+    font-size: 0.78rem;
+    line-height: 1.55;
+}
+
+.admin-quick-note strong {
+    color: #243047;
+    font-weight: 700;
 }
 
 .admin-live-card {

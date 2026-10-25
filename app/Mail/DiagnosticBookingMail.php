@@ -18,8 +18,8 @@ class DiagnosticBookingMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'sales@back2value.com',
-            to: ['sales@back2value.com'],
+            from: 'emiliank18@gmail.com',
+            to: ['emiliank18@gmail.com'],
             subject: 'New Battery Diagnostic Booking - '.$this->booking->customer_name,
         );
     }

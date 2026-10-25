@@ -7,11 +7,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AuthController extends Controller
 {
-    public function create(Request $request): View|RedirectResponse
+    public function create(Request $request): Response|RedirectResponse
     {
         if ($request->user() !== null) {
             $adminEmail = config('admin.email');
@@ -25,7 +26,7 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        return view('admin.login', [
+        return Inertia::render('Admin/Login', [
             'adminConfigured' => filled(config('admin.email')) && filled(config('admin.password')),
         ]);
     }

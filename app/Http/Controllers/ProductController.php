@@ -6,11 +6,12 @@ use App\Content\SiteContentRepository;
 use App\Models\Battery;
 use App\Services\VehicleFitmentService;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductController extends Controller
 {
-    public function index(Request $request, SiteContentRepository $content, VehicleFitmentService $vehicleFitment): View
+    public function index(Request $request, SiteContentRepository $content, VehicleFitmentService $vehicleFitment): Response
     {
         $settings = $content->section('settings');
         $catalogPage = $content->section('catalog_page');
@@ -151,7 +152,7 @@ class ProductController extends Controller
             fn ($items, string $category): array => [$category => $this->categoryImage($category)]
         );
 
-        return view('products.index', [
+        return Inertia::render('Public/Products', [
             'groupedProducts' => $groupedProducts,
             'categoryImages' => $categoryImages,
             'allCategories' => $allCategories,
@@ -165,6 +166,8 @@ class ProductController extends Controller
             'vehicleProfile' => $vehicleProfile,
             'vehicleQuery' => $vehicleQuery,
             'vehicleOptions' => $vehicleFitment->options(),
+            'title' => $catalogPage['meta_title'] ?? 'Bateritë tona | Back2Value',
+            'description' => $catalogPage['meta_description'] ?? '',
         ]);
     }
 

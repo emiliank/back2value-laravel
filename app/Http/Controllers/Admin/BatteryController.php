@@ -9,11 +9,12 @@ use App\Models\Battery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class BatteryController extends Controller
 {
-    public function index(Request $request, SiteContentRepository $content): View
+    public function index(Request $request, SiteContentRepository $content): Response
     {
         $query = Battery::query();
 
@@ -58,7 +59,7 @@ class BatteryController extends Controller
             ->paginate(30)
             ->withQueryString();
 
-        return view('admin.catalog.index', [
+        return Inertia::render('Admin/Catalog/Index', [
             'batteries' => $batteries,
             'filters' => [
                 'q' => $request->query('q'),
@@ -86,9 +87,9 @@ class BatteryController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(): Response
     {
-        return view('admin.catalog.form', [
+        return Inertia::render('Admin/Catalog/Form', [
             'battery' => new Battery(['status' => 'new', 'warranty_months' => 24, 'is_available' => true, 'stock_status' => 'in_stock']),
             'action' => route('admin.catalog.store'),
             'method' => 'POST',
@@ -99,6 +100,7 @@ class BatteryController extends Controller
             'applicationTypes' => $this->options('application_type'),
             'statusLabels' => $this->statusLabels(),
             'stockStatuses' => Battery::stockStatusLabels(),
+            'specKeys' => BatteryRequest::SPEC_KEYS,
         ]);
     }
 
@@ -111,9 +113,9 @@ class BatteryController extends Controller
             ->with('status', 'Bateria "'.$battery->model.'" u shtua në katalog.');
     }
 
-    public function edit(Battery $battery): View
+    public function edit(Battery $battery): Response
     {
-        return view('admin.catalog.form', [
+        return Inertia::render('Admin/Catalog/Form', [
             'battery' => $battery,
             'action' => route('admin.catalog.update', ['battery' => $battery]),
             'method' => 'PUT',
@@ -124,6 +126,7 @@ class BatteryController extends Controller
             'applicationTypes' => $this->options('application_type'),
             'statusLabels' => $this->statusLabels(),
             'stockStatuses' => Battery::stockStatusLabels(),
+            'specKeys' => BatteryRequest::SPEC_KEYS,
         ]);
     }
 

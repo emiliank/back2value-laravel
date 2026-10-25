@@ -268,8 +268,8 @@ class SiteContentRepository
     }
 
     /**
-     * Recursively fill keys that exist in the defaults but are missing from a
-     * stored payload, so newly shipped content keys appear without a re-save.
+     * Fill missing associative keys from defaults without restoring removed
+     * entries from stored repeatable lists.
      *
      * @param  array<string, mixed>  $defaults
      * @param  array<string, mixed>  $saved
@@ -277,6 +277,10 @@ class SiteContentRepository
      */
     private function mergeMissing(array $defaults, array $saved): array
     {
+        if (array_is_list($defaults) && array_is_list($saved)) {
+            return $saved;
+        }
+
         foreach ($defaults as $key => $value) {
             if (! array_key_exists($key, $saved)) {
                 $saved[$key] = $value;

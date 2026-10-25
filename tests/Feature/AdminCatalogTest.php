@@ -105,22 +105,22 @@ class AdminCatalogTest extends TestCase
         Battery::factory()->count(3)->create(['is_available' => true]);
         Battery::factory()->create(['is_available' => false]);
 
-        $this->get(route('admin.catalog.index'))
-            ->assertOk()
-            ->assertSee(route('admin.catalog.create'))
-            ->assertSee('4')
-            ->assertSee('3');
+        $props = $this->assertInertiaComponent($this->get(route('admin.catalog.index')), 'Admin/Catalog/Index');
+
+        $this->assertSame(4, $props['total']);
+        $this->assertSame(3, $props['availableCount']);
     }
 
     public function test_create_form_renders(): void
     {
         $this->admin();
 
-        $this->get(route('admin.catalog.create'))
-            ->assertOk()
-            ->assertSee('Bateri i ri')
-            ->assertSee('name="brand"', false)
-            ->assertSee('name="specs[dimensions]"', false);
+        $props = $this->assertInertiaComponent($this->get(route('admin.catalog.create')), 'Admin/Catalog/Form');
+
+        $this->assertSame('Bateri i ri', $props['title']);
+        $this->assertSame(route('admin.catalog.store'), $props['action']);
+        $this->assertSame('POST', $props['method']);
+        $this->assertContains('dimensions', $props['specKeys']);
     }
 
     public function test_admin_can_create_a_battery(): void
@@ -269,10 +269,17 @@ class AdminCatalogTest extends TestCase
             'is_available' => true,
         ]);
 
-        $this->get(route('products.index'))
-            ->assertOk()
-            ->assertSee('Ndryshim Solar')
-            ->assertSee('Jashtë stokut');
+        $props = $this->assertInertiaComponent(
+            $this->get(route('products.index')),
+            'Public/Products',
+        );
+
+        $products = collect($props['groupedProducts'])->flatten(1);
+        $product = $products->sole('model', 'Ndryshim Solar');
+
+        $this->assertSame('out_of_stock', $product['stock_status']);
+        $this->assertTrue($product['needs_preorder']);
+        $this->assertSame('Jashtë stokut', $product['stock_label']);
     }
 
     public function test_in_stock_products_are_not_labelled_as_preorder(): void
@@ -284,10 +291,16 @@ class AdminCatalogTest extends TestCase
             'stock_status' => 'in_stock',
         ]);
 
-        $this->get(route('products.index'))
-            ->assertOk()
-            ->assertSee('Në stok')
-            ->assertDontSee('Ndryshim Solar');
+        $props = $this->assertInertiaComponent(
+            $this->get(route('products.index')),
+            'Public/Products',
+        );
+
+        $products = collect($props['groupedProducts'])->flatten(1);
+        $product = $products->sole('model', 'Në Stok Normal');
+
+        $this->assertSame('in_stock', $product['stock_status']);
+        $this->assertFalse($product['needs_preorder']);
     }
 
     public function test_needing_preorder_scope_covers_preorder_and_out_of_stock(): void
